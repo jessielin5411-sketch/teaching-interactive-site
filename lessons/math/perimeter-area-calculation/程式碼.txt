@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>4年級數學冒險島：周長與面積特訓班</title>
+    <style>
+        /* 全域卡通風樣式 */
+        :root {
+            --primary-bg: #E3F2FD;
+            --card-bg: #FFFFFF;
+            --text-color: #37474F;
+            --accent-yellow: #FFF9C4;
+            --accent-blue: #90CAF9;
+            --accent-green: #A5D6A7;
+            --accent-pink: #FFCDD2;
+            --border-color: #B0BEC5;
+            --btn-hover: #64B5F6;
+        }
+
+        body {
+            font-family: "Comic Sans MS", "Chalkboard SE", "Microsoft JhengHei", sans-serif;
+            background-color: var(--primary-bg);
+            color: var(--text-color);
+            margin: 0;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        h1 {
+            color: #1565C0;
+            text-shadow: 2px 2px 0px #FFF;
+            text-align: center;
+            font-size: 1.8rem;
+            margin: 15px 0;
+        }
+
+        h2 {
+            color: #0277BD;
+            border-bottom: 3px dashed #81D4FA;
+            padding-bottom: 10px;
+        }
+
+        /* 導覽列與分頁機制 */
+        .navbar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            background: #BBDEFB;
+            padding: 15px;
+            border-radius: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            width: 95%;
+            max-width: 900px;
+        }
+
+        .nav-btn {
+            padding: 10px 15px;
+            font-size: 16px;
+            font-weight: bold;
+            border: 3px solid #1E88E5;
+            border-radius: 15px;
+            background-color: #FFF;
+            color: #1E88E5;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex: 1 1 auto;
+            text-align: center;
+        }
+
+        .nav-btn.active, .nav-btn:hover {
+            background-color: #1E88E5;
+            color: #FFF;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(30,136,229,0.3);
+        }
+
+        /* 分頁內容容器 */
+        .page {
+            display: none;
+            width: 95%;
+            max-width: 900px;
+            background: var(--card-bg);
+            border: 5px solid #64B5F6;
+            border-radius: 25px;
+            padding: 20px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 卡通對話框 */
+        .character-box {
+            display: flex;
+            align-items: center;
+            background: #F1F8E9;
+            border: 3px solid #8BC34A;
+            border-radius: 20px;
+            padding: 15px;
+            margin-bottom: 25px;
+            box-shadow: 3px 3px 0 #AED581;
+        }
+
+        .avatar {
+            font-size: 45px;
+            margin-right: 15px;
+            background: #FFF;
+            padding: 10px;
+            border-radius: 50%;
+            border: 3px solid #8BC34A;
+            flex-shrink: 0;
+        }
+
+        .dialogue {
+            font-size: 18px;
+            font-weight: bold;
+            color: #33691E;
+            line-height: 1.5;
+        }
+
+        /* 畫布與網格樣式 */
+        .canvas-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .grid-canvas {
+            background-color: #FAFAFA;
+            border: 4px solid #78909C;
+            border-radius: 15px;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.05);
+            max-width: 100%;
+            height: auto;
+            touch-action: none; /* 防止手機拖拉畫布 */
+        }
+
+        .control-panel {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .action-btn {
+            padding: 12px 20px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 5px 0 rgba(0,0,0,0.15);
+            transition: all 0.1s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .action-btn:active {
+            transform: translateY(5px);
+            box-shadow: 0 0px 0 rgba(0,0,0,0.15);
+        }
+
+        .btn-blue { background-color: #4FC3F7; color: #01579B; border: 2px solid #0288D1; }
+        .btn-green { background-color: #81C784; color: #1B5E20; border: 2px solid #388E3C; }
+        .btn-orange { background-color: #FFB74D; color: #E65100; border: 2px solid #F57C00; }
+        .btn-pink { background-color: #F48FB1; color: #880E4F; border: 2px solid #C2185B; }
+
+        /* 數據顯示大字體 */
+        .info-display {
+            font-size: 22px;
+            font-weight: bold;
+            background: #ECEFF1;
+            padding: 15px 25px;
+            border-radius: 15px;
+            border: 3px dashed #B0BEC5;
+            text-align: center;
+            min-width: 250px;
+            color: #263238;
+        }
+
+        /* 測驗區樣式 */
+        .quiz-card {
+            background: #FFFDE7;
+            border: 4px solid #FFF176;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 3px 3px 0 #FFEE58;
+        }
+
+        .quiz-card p {
+            font-size: 20px;
+            color: #424242;
+            margin-top: 0;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .option-btn {
+            padding: 15px;
+            font-size: 18px;
+            text-align: left;
+            background: white;
+            border: 2px solid #E0E0E0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .option-btn:hover {
+            background: #FFF9C4;
+            border-color: #FBC02D;
+            transform: translateX(5px);
+        }
+
+        .feedback {
+            margin-top: 15px;
+            font-size: 20px;
+            font-weight: bold;
+            min-height: 30px;
+        }
+        .correct { color: #2E7D32; animation: pop 0.3s ease-out; }
+        .wrong { color: #C62828; animation: shake 0.3s ease-in-out; }
+
+        @keyframes pop {
+            0% { transform: scale(0.9); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        /* 響應式調整 */
+        @media (max-width: 600px) {
+            .action-btn { font-size: 16px; padding: 10px; }
+            .info-display { font-size: 18px; }
+            .dialogue { font-size: 16px; }
+            .avatar { font-size: 35px; }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>島嶼幾何大冒險 🏝️ <br><span style="font-size: 1.2rem; color: #555;">(L7: 周長與面積)</span></h1>
+
+    <!-- 頂部多頁面導覽列 -->
+    <div class="navbar">
+        <button class="nav-btn active" onclick="switchPage('home')">🏠 冒險起點</button>
+        <button class="nav-btn" onclick="switchPage('m1')">🔍 1. 周長與面積動畫</button>
+        <button class="nav-btn" onclick="switchPage('m3')">✂️ 2. 複合圖形切補</button>
+        <button class="nav-btn" onclick="switchPage('m4')">🎯 3. 隨堂大挑戰</button>
+        <button class="nav-btn" onclick="switchPage('m5')">🏆 4. 終極魔王挑戰</button>
+    </div>
+
+    <!-- ==================== 頁面：首頁 ==================== -->
+    <div id="page-home" class="page active">
+        <h2>歡迎來到幾何數學島！</h2>
+        <div class="character-box">
+            <div class="avatar">🦊</div>
+            <div class="dialogue">皮皮：「嗨！我是皮皮。聽說四年級的小朋友常常把『圍在外面一圈的周長』和『平鋪在裡面的面積』搞混，今天我們要用魔法動畫來一探究竟喔！」</div>
+        </div>
+        <p style="font-size: 18px; line-height: 1.8;">請點選上方導覽列按鈕，開啟我們的數位數學實驗室：</p>
+        <ul style="font-size: 18px; line-height: 2.2; color: #424242; font-weight: bold;">
+            <li><span style="color:#1E88E5;">🔍 周長與面積動畫：</span> 觀看動態小瓢蟲走外框，與方格填滿內部的強烈視覺差異。</li>
+            <li><span style="color:#43A047;">✂️ 複合圖形切補移：</span> 親自當小畫家，點選「切割法」與「填補法」破解怪獸圖形！</li>
+            <li><span style="color:#E53935;">🎯 隨堂大挑戰：</span> 看看你是不是已經成為周長與面積的超級小大師。</li>
+            <li><span style="color:#8E24AA;">🏆 終極魔王挑戰：</span> 隱藏版進階測驗，全部過關還可以輸入名字領取專屬贈書！</li>
+        </ul>
+    </div>
+
+    <!-- ==================== 頁面：模組一概念區辨 ==================== -->
+    <div id="page-m1" class="page">
+        <h2>🔍 周長量 vs 面積量：視覺化大解密</h2>
+        <div class="character-box">
+            <div class="avatar">🐻</div>
+            <div class="dialogue">妮妮：「要求周長時，就像小瓢蟲繞著周界走一圈；求面積時，就像鋪磁磚把內部塗滿！快點下面按鈕看看差別吧！」</div>
+        </div>
+
+        <div class="canvas-container">
+            <div class="info-display" id="m1-formula">長 = 5 公分，寬 = 3 公分</div>
+            
+            <canvas id="canvas-m1" class="grid-canvas" width="400" height="300"></canvas>
+            
+            <div class="control-panel">
+                <button class="action-btn btn-blue" onclick="animateM1('perimeter')">🐞 走一圈 (求周長)</button>
+                <button class="action-btn btn-green" onclick="animateM1('area')">🟩 鋪方格 (求面積)</button>
+                <button class="action-btn btn-orange" onclick="resetM1()">🔄 擦掉重來</button>
+            </div>
+            <div class="info-display" id="m1-result" style="color:#1565C0; background:#E3F2FD;">點擊上方按鈕觀察動畫喔！</div>
+        </div>
+    </div>
+
+    <!-- ==================== 頁面：模組三複合圖形 ==================== -->
+    <div id="page-m3" class="page">
+        <h2>✂️ 複合圖形「切、補」特訓</h2>
+        <div class="character-box">
+            <div class="avatar">🐯</div>
+            <div class="dialogue">丹丹：「遇到像 L 型的怪獸圖形怎麼辦？我們可以用美美最愛的『切割法』，也可以用妮妮的『填補大減小法』喔！」</div>
+        </div>
+
+        <div class="canvas-container">
+            <canvas id="canvas-m3" class="grid-canvas" width="500" height="350"></canvas>
+            
+            <div class="control-panel">
+                <button class="action-btn btn-orange" onclick="transformM3('normal')">🦕 恢復原貌</button>
+                <button class="action-btn btn-green" onclick="transformM3('cut')">✂️ 美美切割法</button>
+                <button class="action-btn btn-pink" onclick="transformM3('fill')">🧱 妮妮填補法</button>
+            </div>
+            <div class="info-display" id="m3-result" style="font-size:22px; background:#FFF9C4; border-color:#FBC02D;">全部面積 = 232 平方公尺</div>
+        </div>
+    </div>
+
+    <!-- ==================== 頁面：隨堂測驗驗收 ==================== -->
+    <div id="page-m4" class="page">
+        <h2>🎯 隨堂不漏氣大挑戰</h2>
+        <div class="character-box">
+            <div class="avatar">🐰</div>
+            <div class="dialogue">美美：「恭喜你完成了魔法島訓練！最後來做 5 道最經典的題目，看看你的幾何戰鬥力吧！」</div>
+        </div>
+
+        <!-- 題1 -->
+        <div class="quiz-card" id="q1">
+            <p><b>Q1. 一張感恩卡的長邊是 4 公分、寬邊是 2 公分，請問它的【周長】是多少公分？</b></p>
+            <div class="options-container">
+                <button class="option-btn" onclick="checkAnswer(1, false, this)">A. 8 平方公分</button>
+                <button class="option-btn" onclick="checkAnswer(1, true, this)">B. 12 公分</button>
+                <button class="option-btn" onclick="checkAnswer(1, false, this)">C. 6 公分</button>
+            </div>
+            <div class="feedback" id="f1"></div>
+        </div>
+
+        <!-- 題2 -->
+        <div class="quiz-card" id="q2">
+            <p><b>Q2. 承上題，請問這張感恩卡的【面積】是多少平方公分？</b></p>
+            <div class="options-container">
+                <button class="option-btn" onclick="checkAnswer(2, true, this)">A. 8 平方公分</button>
+                <button class="option-btn" onclick="checkAnswer(2, false, this)">B. 12 平方公分</button>
+                <button class="option-btn" onclick="checkAnswer(2, false, this)">C. 8 公分</button>
+            </div>
+            <div class="feedback" id="f2"></div>
+        </div>
+
+        <!-- 題3 -->
+        <div class="quiz-card" id="q3">
+            <p><b>Q3. 關於「周長相同」的兩個長方形，下列哪一個說法是正確的？</b></p>
+            <div class="options-container">
+                <button class="option-btn" onclick="checkAnswer(3, false, this)">A. 它們圍出來的面積一定也一樣大。</button>
+                <button class="option-btn" onclick="checkAnswer(3, true, this)">B. 面積不一定相同。</button>
+                <button class="option-btn" onclick="checkAnswer(3, false, this)">C. 邊長一定都一模一樣。</button>
+            </div>
+            <div class="feedback" id="f3"></div>
+        </div>
+
+        <!-- 題4 (新增：複合面積-L型) -->
+        <div class="quiz-card" id="q4">
+            <p><b>Q4. 請問下面這個 L 型土地的【面積】是多少平方公尺？</b></p>
+            <div style="display: flex; justify-content: center; margin: 15px 0;">
+                <svg width="200" height="150" viewBox="0 0 200 150" style="background: #FAFAFA; border: 3px solid #CFD8DC; border-radius: 15px;">
+                    <!-- L型多邊形 -->
+                    <polygon points="40,30 85,30 85,75 160,75 160,120 40,120" fill="#FFE082" stroke="#F57C00" stroke-width="3" stroke-linejoin="round"/>
+                    <!-- 尺寸標示 -->
+                    <text x="20" y="80" font-weight="bold" font-size="16" fill="#37474F" text-anchor="middle">6m</text>
+                    <text x="100" y="140" font-weight="bold" font-size="16" fill="#37474F" text-anchor="middle">8m</text>
+                    <text x="62" y="20" font-weight="bold" font-size="14" fill="#37474F" text-anchor="middle">3m</text>
+                    <text x="175" y="102" font-weight="bold" font-size="14" fill="#37474F" text-anchor="middle">3m</text>
+                </svg>
+            </div>
+            <div class="options-container">
+                <button class="option-btn" onclick="checkAnswer(4, false, this)">A. 48 平方公尺</button>
+                <button class="option-btn" onclick="checkAnswer(4, true, this)">B. 33 平方公尺</button>
+                <button class="option-btn" onclick="checkAnswer(4, false, this)">C. 20 平方公尺</button>
+            </div>
+            <div class="feedback" id="f4"></div>
+        </div>
+
+        <!-- 題5 (新增：複合面積-挖空型) -->
+        <div class="quiz-card" id="q5">
+            <p><b>Q5. 學校有一塊長方形的草地，中間蓋了一座沙坑（如圖）。請問剩下「草地（綠色部分）」的面積是多少平方公尺？</b></p>
+            <div style="display: flex; justify-content: center; margin: 15px 0;">
+                <svg width="220" height="170" viewBox="0 0 220 170" style="background: #FAFAFA; border: 3px solid #CFD8DC; border-radius: 15px;">
+                    <!-- 外層草地 -->
+                    <rect x="30" y="25" width="160" height="120" fill="#A5D6A7" stroke="#388E3C" stroke-width="3" rx="5"/>
+                    <!-- 內層沙坑 -->
+                    <rect x="75" y="65" width="70" height="50" fill="#FFF9C4" stroke="#FBC02D" stroke-width="3" rx="3" stroke-dasharray="6,4"/>
+                    <!-- 尺寸標示 -->
+                    <text x="110" y="18" font-weight="bold" font-size="16" fill="#37474F" text-anchor="middle">10m</text>
+                    <text x="14" y="90" font-weight="bold" font-size="16" fill="#37474F" text-anchor="middle">8m</text>
+                    <text x="110" y="58" font-weight="bold" font-size="14" fill="#E65100" text-anchor="middle">4m</text>
+                    <text x="160" y="95" font-weight="bold" font-size="14" fill="#E65100" text-anchor="middle">3m</text>
+                    <text x="110" y="95" font-weight="bold" font-size="14" fill="#795548" text-anchor="middle">沙坑</text>
+                </svg>
+            </div>
+            <div class="options-container">
+                <button class="option-btn" onclick="checkAnswer(5, false, this)">A. 80 平方公尺</button>
+                <button class="option-btn" onclick="checkAnswer(5, true, this)">B. 68 平方公尺</button>
+                <button class="option-btn" onclick="checkAnswer(5, false, this)">C. 12 平方公尺</button>
+            </div>
+            <div class="feedback" id="f5"></div>
+        </div>
+    </div>
+
+    <!-- ==================== 頁面：終極魔王挑戰與贈書 ==================== -->
+    <div id="page-m5" class="page">
+        <h2>🏆 終極魔王挑戰：破關拿贈書</h2>
+        <div class="character-box">
+            <div class="avatar">🦉</div>
+            <div class="dialogue">貓頭鷹校長：「孩子，這是最後的試煉！這裡共有 10 題，一題 10 分。你需要達到 80 分以上，才可以領取我的珍藏秘笈贈書喔！」</div>
+        </div>
+        
+        <div id="adv-score-board" style="font-size: 22px; font-weight: bold; background: #FFF9C4; padding: 15px; border-radius: 10px; border: 3px solid #FBC02D; text-align: center; margin-bottom: 20px;">
+            目前的挑戰進度：0/10 題 ｜ 目前得分：0 分
+        </div>
+
+        <div id="adv-quiz-container">
+            <!-- 題目將由 JavaScript 動態生成 -->
+        </div>
+
+        <!-- 贈書/重新挑戰 領取區塊 (預設隱藏) -->
+        <div id="reward-section" style="display: none; text-align: center; margin-top: 30px; padding: 25px; background: #E8F5E9; border: 4px dashed #4CAF50; border-radius: 20px;">
+            <div id="adv-final-msg"></div>
+            
+            <input type="text" id="student-name" placeholder="輸入姓名..." style="padding: 12px; font-size: 20px; border-radius: 10px; border: 3px solid #81C784; width: 80%; max-width: 300px; text-align: center; margin-top: 15px;">
+            <br>
+            <button id="claim-btn" class="action-btn btn-green" style="margin: 20px auto 0; font-size: 20px; justify-content: center;" onclick="claimReward()">領取專屬贈書 🎁</button>
+            
+            <!-- 重新挑戰按鈕 -->
+            <button id="retry-btn" class="action-btn btn-orange" style="margin: 20px auto 0; font-size: 20px; justify-content: center;" onclick="resetAdvQuiz()">🔄 重新挑戰 (題目會變喔！)</button>
+            
+            <div id="reward-result" style="margin-top: 20px; font-size: 22px; font-weight: bold;"></div>
+        </div>
+    </div>
+
+    <!-- ==================== 核心 JavaScript 邏輯 ==================== -->
+    <script>
+        // --- 核心分頁機制 ---
+        function switchPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('page-' + pageId).classList.add('active');
+            
+            const btns = document.querySelectorAll('.nav-btn');
+            for(let i=0; i<btns.length; i++){
+                if(btns[i].getAttribute('onclick').includes(pageId)){
+                    btns[i].classList.add('active');
+                }
+            }
+            if(pageId === 'm1') initM1();
+            if(pageId === 'm3') drawM3('normal');
+        }
+
+        // ==================== 模組一：周長面積動畫 ====================
+        const canvas1 = document.getElementById('canvas-m1');
+        const ctx1 = canvas1.getContext('2d');
+        let m1Scale = 40; 
+        let rectX = 100, rectY = 80, rectW = 5 * m1Scale, rectH = 3 * m1Scale;
+        let animationId = null;
+
+        function initM1() {
+            if(animationId) cancelAnimationFrame(animationId);
+            ctx1.clearRect(0, 0, canvas1.width, canvas1.height);
+            drawGrid(ctx1, canvas1.width, canvas1.height, m1Scale);
+            ctx1.fillStyle = '#FFFFFF';
+            ctx1.fillRect(rectX, rectY, rectW, rectH);
+            ctx1.strokeStyle = '#37474F';
+            ctx1.lineWidth = 4;
+            ctx1.strokeRect(rectX, rectY, rectW, rectH);
+            document.getElementById('m1-result').innerHTML = "點擊上方按鈕觀察動畫喔！";
+            document.getElementById('m1-result').style.color = "#1565C0";
+        }
+
+        function drawGrid(ctx, w, h, scale) {
+            ctx.strokeStyle = '#CFD8DC';
+            ctx.lineWidth = 1;
+            for(let x=0; x<=w; x+=scale) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke(); }
+            for(let y=0; y<=h; y+=scale) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); }
+        }
+
+        function animateM1(type) {
+            if(animationId) cancelAnimationFrame(animationId);
+            initM1();
+            if (type === 'perimeter') {
+                let progress = 0; let totalLength = 16; 
+                const resDiv = document.getElementById('m1-result');
+                resDiv.innerHTML = "🐞 瓢蟲正在繞著周界走...";
+                resDiv.style.color = "#D32F2F";
+                function stepPerimeter() {
+                    progress += 0.15; 
+                    ctx1.clearRect(0, 0, canvas1.width, canvas1.height);
+                    drawGrid(ctx1, canvas1.width, canvas1.height, m1Scale);
+                    ctx1.fillStyle = '#FFFFFF'; ctx1.fillRect(rectX, rectY, rectW, rectH);
+                    ctx1.strokeStyle = '#B0BEC5'; ctx1.lineWidth = 4; ctx1.strokeRect(rectX, rectY, rectW, rectH);
+                    ctx1.strokeStyle = '#E53935'; ctx1.lineWidth = 8; ctx1.lineCap = 'round'; ctx1.lineJoin = 'round';
+                    ctx1.beginPath(); ctx1.moveTo(rectX, rectY);
+                    let cur = progress, currentX = rectX, currentY = rectY;
+                    if(cur > 0) { let move = Math.min(cur, 5); currentX = rectX + move * m1Scale; ctx1.lineTo(currentX, rectY); cur -= 5; }
+                    if(cur > 0) { let move = Math.min(cur, 3); currentY = rectY + move * m1Scale; ctx1.lineTo(rectX + rectW, currentY); cur -= 3; }
+                    if(cur > 0) { let move = Math.min(cur, 5); currentX = (rectX + rectW) - move * m1Scale; ctx1.lineTo(currentX, rectY + rectH); cur -= 5; }
+                    if(cur > 0) { let move = Math.min(cur, 3); currentY = (rectY + rectH) - move * m1Scale; ctx1.lineTo(rectX, currentY); }
+                    ctx1.stroke();
+                    ctx1.fillStyle = '#B71C1C'; ctx1.beginPath(); ctx1.arc(currentX, currentY, 8, 0, Math.PI * 2); ctx1.fill();
+                    if (progress < totalLength) animationId = requestAnimationFrame(stepPerimeter);
+                    else resDiv.innerHTML = `🏁 走完一圈！周長 = (5 + 3) × 2 = <b>16 公分</b>`;
+                }
+                stepPerimeter();
+            } else if (type === 'area') {
+                let col = 0, row = 0;
+                const resDiv = document.getElementById('m1-result');
+                resDiv.innerHTML = "🟩 正在將內部平鋪方格...";
+                resDiv.style.color = "#2E7D32";
+                function stepArea() {
+                    ctx1.fillStyle = 'rgba(129, 199, 132, 0.85)'; ctx1.strokeStyle = '#1B5E20'; ctx1.lineWidth = 2;
+                    ctx1.fillRect(rectX + col*m1Scale, rectY + row*m1Scale, m1Scale, m1Scale);
+                    ctx1.strokeRect(rectX + col*m1Scale, rectY + row*m1Scale, m1Scale, m1Scale);
+                    ctx1.fillStyle = '#000'; ctx1.font = '16px Arial'; ctx1.textAlign = 'center'; ctx1.textBaseline = 'middle';
+                    ctx1.fillText((row*5 + col + 1).toString(), rectX + col*m1Scale + m1Scale/2, rectY + row*m1Scale + m1Scale/2);
+                    col++;
+                    if(col >= 5) { col = 0; row++; }
+                    if(row < 3) setTimeout(stepArea, 200); 
+                    else resDiv.innerHTML = `✨ 鋪滿了！一排有 5 格，有 3 排。面積 = 5 × 3 = <b>15 平方公分</b>`;
+                }
+                stepArea();
+            }
+        }
+        function resetM1() { initM1(); }
+
+        // ==================== 模組三：複合圖形程式碼 ====================
+        const canvas3 = document.getElementById('canvas-m3');
+        const ctx3 = canvas3.getContext('2d');
+        let m3Scale = 15; 
+        function drawM3(mode) {
+            ctx3.clearRect(0, 0, canvas3.width, canvas3.height);
+            drawGrid(ctx3, canvas3.width, canvas3.height, m3Scale);
+            let startX = 80, startY = 50;
+            if (mode === 'normal') {
+                ctx3.fillStyle = '#FFE082'; ctx3.strokeStyle = '#F57C00'; ctx3.lineWidth = 4; ctx3.lineJoin = 'round';
+                ctx3.beginPath(); ctx3.moveTo(startX, startY); ctx3.lineTo(startX + 12*m3Scale, startY);
+                ctx3.lineTo(startX + 12*m3Scale, startY + 6*m3Scale); ctx3.lineTo(startX + 20*m3Scale, startY + 6*m3Scale);
+                ctx3.lineTo(startX + 20*m3Scale, startY + 14*m3Scale); ctx3.lineTo(startX, startY + 14*m3Scale);
+                ctx3.closePath(); ctx3.fill(); ctx3.stroke();
+                ctx3.fillStyle = '#37474F'; ctx3.font = 'bold 18px Arial';
+                ctx3.fillText('12 m', startX + 4*m3Scale, startY - 10); ctx3.fillText('6 m', startX + 12*m3Scale + 8, startY + 3*m3Scale);
+                ctx3.fillText('20 m', startX + 8*m3Scale, startY + 14*m3Scale + 25); ctx3.fillText('14 m', startX - 45, startY + 7*m3Scale);
+                document.getElementById('m3-result').innerHTML = "全部面積 = 232 平方公尺";
+                document.getElementById('m3-result').style.color = "#37474F";
+            } else if (mode === 'cut') {
+                ctx3.fillStyle = '#A5D6A7'; ctx3.fillRect(startX, startY, 12*m3Scale, 6*m3Scale); ctx3.strokeRect(startX, startY, 12*m3Scale, 6*m3Scale);
+                ctx3.fillStyle = '#90CAF9'; ctx3.fillRect(startX, startY + 6*m3Scale, 20*m3Scale, 8*m3Scale); ctx3.strokeRect(startX, startY + 6*m3Scale, 20*m3Scale, 8*m3Scale);
+                ctx3.strokeStyle = '#E53935'; ctx3.lineWidth = 4; ctx3.setLineDash([8, 6]); ctx3.beginPath(); ctx3.moveTo(startX, startY + 6*m3Scale); ctx3.lineTo(startX + 12*m3Scale, startY + 6*m3Scale); ctx3.stroke(); ctx3.setLineDash([]); 
+                ctx3.fillStyle = '#1B5E20'; ctx3.font = 'bold 18px Arial'; ctx3.fillText('① 12 × 6 = 72', startX + 10, startY + 3.5*m3Scale);
+                ctx3.fillStyle = '#01579B'; ctx3.fillText('② 20 × 8 = 160', startX + 5*m3Scale, startY + 10*m3Scale);
+                document.getElementById('m3-result').innerHTML = "✂️ (12×6) + (20×8) = 72 + 160 = <b>232 平方公尺</b>";
+                document.getElementById('m3-result').style.color = "#1B5E20";
+            } else if (mode === 'fill') {
+                ctx3.fillStyle = '#FFE082'; ctx3.fillRect(startX, startY, 20*m3Scale, 14*m3Scale); ctx3.strokeStyle = '#F57C00'; ctx3.lineWidth = 3; ctx3.strokeRect(startX, startY, 20*m3Scale, 14*m3Scale);
+                ctx3.fillStyle = 'rgba(244, 143, 177, 0.7)'; ctx3.fillRect(startX + 12*m3Scale, startY, 8*m3Scale, 6*m3Scale);
+                ctx3.strokeStyle = '#C2185B'; ctx3.lineWidth = 4; ctx3.setLineDash([8, 6]); ctx3.strokeRect(startX + 12*m3Scale, startY, 8*m3Scale, 6*m3Scale); ctx3.setLineDash([]);
+                ctx3.fillStyle = '#880E4F'; ctx3.font = 'bold 16px Arial'; ctx3.fillText('補空缺', startX + 13*m3Scale, startY + 2.5*m3Scale); ctx3.fillText('8 × 6 = 48', startX + 12.5*m3Scale, startY + 4.5*m3Scale);
+                ctx3.fillStyle = '#E65100'; ctx3.font = 'bold 20px Arial'; ctx3.fillText('大長方形：20 × 14 = 280', startX + 2*m3Scale, startY + 10*m3Scale);
+                document.getElementById('m3-result').innerHTML = "🧱 大減小: 280 - (8×6) = 280 - 48 = <b>232 平方公尺</b>";
+                document.getElementById('m3-result').style.color = "#880E4F";
+            }
+        }
+        function transformM3(type) { drawM3(type); }
+
+        // ==================== 模組四：隨堂測驗 ====================
+        function checkAnswer(qNum, isCorrect, clickedBtn) {
+            let feedbackId = 'f' + qNum;
+            let feedbackDiv = document.getElementById(feedbackId);
+            const messages = {
+                1: { correct: "正確算法：長方形周長 = (長 + 寬) × 2，(4 + 2) × 2 = 12 公分。", wrong: "思考方向：這題問的是「周長」喔！周長是外圍繞一圈的長度，記得要把長和寬加起來再乘以 2。" },
+                2: { correct: "正確算法：長方形面積 = 長 × 寬，4 × 2 = 8 平方公分。", wrong: "思考方向：這題問的是「面積」！面積是裡面的大小，要把長和寬相乘，要注意單位是「平方公分」喔！" },
+                3: { correct: "正確算法：周長一樣，面積不一定一樣喔！例如長5寬3和長6寬2，周長都是16，但面積分別是15和12。", wrong: "思考方向：你可以想像拿兩條一樣長的繩子，圍出長寬不同的長方形，裡面的格子數會一樣多嗎？" },
+                4: { correct: "正確算法：可用填補大減小：(8×6) - (5×3) = 48 - 15 = 33。或切割成兩塊：(3×6) + (5×3) = 18 + 15 = 33 平方公尺。", wrong: "思考方向：這個 L 型不是單純的長方形！試著把它「切」成兩個長方形，或是先「補」成大長方形再減掉缺角。" },
+                5: { correct: "正確算法：大草地面積 (10×8=80) - 沙坑面積 (4×3=12) = 80 - 12 = 68 平方公尺。", wrong: "思考方向：綠色草地的中間被沙坑挖掉了一塊。先算算看整塊大草地原本有多大，再扣掉沙坑的大小吧！" }
+            };
+            let parent = clickedBtn.parentElement;
+            parent.querySelectorAll('.option-btn').forEach(b => { b.style.background = 'white'; b.style.borderColor = '#E0E0E0'; });
+            if (isCorrect) {
+                clickedBtn.style.background = '#C8E6C9'; clickedBtn.style.borderColor = '#4CAF50';
+                feedbackDiv.innerHTML = `🎉 太棒了！回答完全正確！<br><span style="color:#2E7D32; font-size: 18px; font-weight: normal; display: inline-block; margin-top: 5px;">${messages[qNum].correct}</span>`;
+                feedbackDiv.className = "feedback correct";
+            } else {
+                clickedBtn.style.background = '#FFCDD2'; clickedBtn.style.borderColor = '#F44336';
+                feedbackDiv.innerHTML = `❌ 哎呀，再想一想！<br><span style="color:#C62828; font-size: 18px; font-weight: normal; display: inline-block; margin-top: 5px;">${messages[qNum].wrong}</span>`;
+                feedbackDiv.className = "feedback wrong";
+                feedbackDiv.classList.remove('wrong'); void feedbackDiv.offsetWidth; feedbackDiv.classList.add('wrong');
+            }
+        }
+
+        // ==================== 模組五：終極魔王挑戰 (動態出題) ====================
+        let advQuestions = [];
+        let advScore = 0;
+        let advAnsweredCount = 0;
+        let questionState = {};
+
+        // 產生隨機題目陣列的函數
+        function generateAdvQuestions() {
+            advQuestions = [];
+
+            // 輔助函數：隨機整數
+            function randomInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+
+            // 輔助函數：建立選項並洗牌
+            function makeQuestion(qText, correctTxt, wrong1Txt, wrong2Txt, correctMsg, wrongMsg) {
+                let options = [correctTxt, wrong1Txt, wrong2Txt];
+                // 洗牌演算法 (Fisher-Yates)
+                for (let i = options.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [options[i], options[j]] = [options[j], options[i]];
+                }
+                let ansIdx = options.indexOf(correctTxt);
+                let displayOpts = options.map((opt, i) => String.fromCharCode(65 + i) + ". " + opt);
+                return { q: qText, opts: displayOpts, ans: ansIdx, correctMsg: correctMsg, wrongMsg: wrongMsg };
+            }
+
+            // Q1. 面積推周長
+            let s1 = randomInt(5, 10); let a1 = s1 * s1; let p1 = s1 * 4;
+            advQuestions.push(makeQuestion(
+                `👑 挑戰 1 (已知面積推算周長)：<br>一個正方形的面積是 ${a1} 平方公分，請問它的「周長」是多少公分？`,
+                `${p1} 公分`, `${a1} 公分`, `${s1 * 2} 公分`,
+                `正確算法：邊長是 ${s1} (因為 ${s1}×${s1}=${a1})，周長 = ${s1} × 4 = ${p1} 公分。`,
+                `思考方向：面積 = 邊長 × 邊長。哪兩個一樣的數字相乘會是 ${a1} 呢？找出邊長後，再算周長喔！`
+            ));
+
+            // Q2. 複合圖形挖空
+            let l2 = randomInt(12, 16); let w2 = randomInt(8, 11); let s2 = randomInt(3, 5);
+            let a2All = l2 * w2; let a2Pool = s2 * s2; let a2Left = a2All - a2Pool;
+            advQuestions.push(makeQuestion(
+                `👑 挑戰 2 (複合圖形面積挖空)：<br>長 ${l2} 公尺、寬 ${w2} 公尺的長方形土地，挖掉一個邊長 ${s2} 公尺的正方形水池。剩下的面積是多少平方公尺？`,
+                `${a2Left}`, `${a2All}`, `${a2All - s2}`,
+                `正確算法：全部面積 ${l2}×${w2}=${a2All}，水池面積 ${s2}×${s2}=${a2Pool}，${a2All} - ${a2Pool} = ${a2Left} 平方公尺。`,
+                `思考方向：先算出全部長方形的面積，再扣掉中間水池的面積喔！`
+            ));
+
+            // Q3. 周長推面積
+            let s3 = randomInt(6, 12); let p3 = s3 * 4; let a3 = s3 * s3;
+            advQuestions.push(makeQuestion(
+                `👑 挑戰 3 (已知周長推算面積)：<br>用一條長 ${p3} 公分的鐵絲，剛好圍成一個正方形。正方形的「面積」是多少平方公分？`,
+                `${a3}`, `${p3}`, `${a3 * 10}`,
+                `正確算法：邊長 = ${p3} ÷ 4 = ${s3}，面積 = ${s3} × ${s3} = ${a3} 平方公分。`,
+                `思考方向：${p3} 公分是「周長」。正方形有四個一樣長的邊，先算出邊長是多少，再來算面積！`
+            ));
+
+            // Q4. 周長與長，求面積
+            let w4 = randomInt(3, 6); let l4 = w4 + randomInt(2, 5); let p4 = (l4 + w4) * 2; let a4 = l4 * w4;
+            advQuestions.push(makeQuestion(
+                `👑 挑戰 4 (已知周長與長，求面積)：<br>長方形的周長是 ${p4} 公分，長是 ${l4} 公分，請問面積是多少平方公分？`,
+                `${a4}`, `${l4 * p4}`, `${(p4 / 2) * l4}`,
+                `正確算法：長+寬 = ${p4} ÷ 2 = ${p4 / 2}。寬 = ${p4 / 2} - ${l4} = ${w4}。面積 = ${l4} × ${w4} = ${a4} 平方公分。`,
+                `思考方向：周長的一半是「長+寬」。先算出寬是多少，再來算面積喔！`
+            ));
+
+            // Q5. 單位換算
+            let m5 = randomInt(20, 50) * 10;
+            advQuestions.push(makeQuestion(
+                `👑 挑戰 5 (單位換算)：<br>學校籃球場的面積大約是 ${m5} 平方公尺，換算成平方公分是多少？`,
+                `${m5}0000`, `${m5}00`, `${m5}000000`,
+                `正確算法：1平方公尺 = 10000平方公分，${m5} 加上四個 0，等於 ${m5}0000 平方公分。`,
+                `思考方向：記得 1 平方公尺 = 10000 平方公分 (後面有4個0)，再仔細算一下！`
+            ));
+
+            // Q6. 面積大小比較
+            let m6 = randomInt(2, 8); let cm6_base = randomInt(1, 9);
+            let cm6 = cm6_base * 10000; let m6cm = m6 * 10000;
+            let ans6, w6_1, w6_2;
+            if (m6cm > cm6) { ans6 = "房間比較大"; w6_1 = "陽台比較大"; w6_2 = "一樣大"; }
+            else if (m6cm < cm6) { ans6 = "陽台比較大"; w6_1 = "房間比較大"; w6_2 = "一樣大"; }
+            else { ans6 = "一樣大"; w6_1 = "房間比較大"; w6_2 = "陽台比較大"; }
+            advQuestions.push(makeQuestion(
+                `👑 挑戰 6 (不同單位的面積比較)：<br>房間面積是 ${m6} 平方公尺，陽台面積是 ${cm6} 平方公分，哪一個面積比較大？`,
+                ans6, w6_1, w6_2,
+                `正確算法：${m6}平方公尺 = ${m6cm}平方公分，因為 ${Math.max(m6cm, cm6)} 比較大，所以答案是 ${ans6}。`,
+                `思考方向：單位不同不能直接比大小！把 ${m6} 平方公尺換算成平方公分再來比較吧。`
+            ));
+
+            // Q7. 圖形拼湊
+            let s7 = randomInt(4, 8); let p7 = (s7 * 2 + s7) * 2;
+            advQuestions.push(makeQuestion(
+                `👑 挑戰 7 (圖形拼湊與周長)：<br>把兩個邊長 ${s7} 公分的正方形，拼成一個大長方形。這個長方形的「周長」是多少公分？`,
+                `${p7}`, `${s7 * 8}`, `${s7 * 4}`,
+                `正確算法：拼起來後，長變成 ${s7}+${s7}=${s7 * 2}，寬還是 ${s7}。周長 = (${s7 * 2}+${s7}) × 2 = ${p7} 公分。`,
+                `思考方向：試著在紙上畫畫看！拼成的大長方形，長會變成多少？寬又是多少呢？再算周長！`
+            ));
+
+            // Q8. 周長與寬求長
+            let w8 = randomInt(8, 12); let l8 = w8 + randomInt(5, 10); let p8 = (l8 + w8) * 2;
+            advQuestions.push(makeQuestion(
+                `👑 挑戰 8 (已知周長與寬，求長)：<br>將一條長 ${p8} 公分的繩子圍出一個長方形，如果寬是 ${w8} 公分，長是幾公分？`,
+                `${l8}`, `${p8 - w8}`, `${(p8 / 2) + w8}`,
+                `正確算法：長+寬 = ${p8} ÷ 2 = ${p8 / 2}，長 = ${p8 / 2} - ${w8} = ${l8} 公分。`,
+                `思考方向：繩子長度就是周長。長+寬 = 周長 ÷ 2，想想看長應該是多少？`
+            ));
+
+            // Q9. 面積概念
+            let m9 = randomInt(2, 6);
+            advQuestions.push(makeQuestion(
+                `👑 挑戰 9 (面積概念)：<br>邊長 ${m9} 公尺的正方形，如果用 1 平方公分的方塊去排，一排可以排幾個？`,
+                `${m9 * 100} 個`, `${m9 * 10} 個`, `${m9 * 1000} 個`,
+                `正確算法：1公尺 = 100公分，${m9} 公尺 = ${m9 * 100} 公分，所以一排可以排 ${m9 * 100} 個 1 公分的方塊。`,
+                `思考方向：方塊的邊長是 1 公分。想想看，${m9} 公尺等於幾公分呢？`
+            ));
+
+            // Q10. 陷阱題
+            let l10 = randomInt(4, 7); let w10 = randomInt(2, 3); let a10 = l10 * w10;
+            advQuestions.push(makeQuestion(
+                `👑 挑戰 10 (陷阱題！求指定單位面積)：<br>有一塊長方形花圃，長是 ${l10} 公尺，寬是 ${w10} 公尺，請問面積是多少「平方公分」？`,
+                `${a10}0000`, `${a10}`, `${a10}000`,
+                `正確算法：面積 = ${l10} × ${w10} = ${a10} 平方公尺。${a10} 平方公尺 = ${a10}0000 平方公分。`,
+                `思考方向：這是一題陷阱題！注意最後問的單位是「平方公分」。先算出平方公尺，再換算加上4個0。`
+            ));
+        }
+
+        // 初始化魔王挑戰畫面
+        function renderAdvQuiz() {
+            generateAdvQuestions(); // 動態生成新的隨機題目
+            const container = document.getElementById('adv-quiz-container');
+            container.innerHTML = '';
+            advScore = 0;
+            advAnsweredCount = 0;
+            questionState = {};
+            
+            advQuestions.forEach((qObj, index) => {
+                questionState[index] = { firstTryDone: false, correct: false };
+
+                let html = `
+                    <div class="quiz-card" id="adv-q${index}">
+                        <p><b>${qObj.q}</b></p>
+                        <div class="options-container">
+                            ${qObj.opts.map((opt, oIdx) => `
+                                <button class="option-btn" onclick="handleAdvClick(${index}, ${oIdx}, this)">${opt}</button>
+                            `).join('')}
+                        </div>
+                        <div class="feedback" id="adv-f${index}" style="margin-top: 15px;"></div>
+                    </div>
+                `;
+                container.innerHTML += html;
+            });
+            updateScoreBoard();
+            
+            // 隱藏結果區
+            document.getElementById('reward-section').style.display = 'none';
+            document.getElementById('reward-result').innerHTML = '';
+            document.getElementById('student-name').value = '';
+        }
+
+        // 更新記分板
+        function updateScoreBoard() {
+            document.getElementById('adv-score-board').innerHTML = `目前的挑戰進度：${advAnsweredCount}/10 題 ｜ 目前得分：<span style="color:#D32F2F;">${advScore} 分</span>`;
+        }
+
+        // 魔王題庫答題點擊邏輯
+        function handleAdvClick(qIndex, oIndex, btn) {
+            const qObj = advQuestions[qIndex];
+            const isCorrect = (oIndex === qObj.ans);
+            const feedbackDiv = document.getElementById(`adv-f${qIndex}`);
+            const parent = btn.parentElement;
+
+            // 分數結算邏輯（只限第一次點擊計分）
+            if (!questionState[qIndex].firstTryDone) {
+                questionState[qIndex].firstTryDone = true;
+                advAnsweredCount++;
+                if (isCorrect) {
+                    advScore += 10;
+                    questionState[qIndex].correct = true;
+                }
+                updateScoreBoard();
+                checkGameEnd();
+            }
+
+            // UI 更新選項顏色
+            parent.querySelectorAll('.option-btn').forEach(b => {
+                b.style.background = 'white';
+                b.style.borderColor = '#E0E0E0';
+            });
+
+            if (isCorrect) {
+                btn.style.background = '#C8E6C9'; 
+                btn.style.borderColor = '#4CAF50';
+                feedbackDiv.innerHTML = `🎉 答對了！<br><span style="color:#2E7D32; font-size: 18px; font-weight: normal; display: inline-block; margin-top: 5px;">${qObj.correctMsg}</span>`;
+                feedbackDiv.className = "feedback correct";
+            } else {
+                btn.style.background = '#FFCDD2'; 
+                btn.style.borderColor = '#F44336';
+                feedbackDiv.innerHTML = `❌ 哎呀，掉進陷阱了！<br><span style="color:#C62828; font-size: 18px; font-weight: normal; display: inline-block; margin-top: 5px;">${qObj.wrongMsg}</span>`;
+                feedbackDiv.className = "feedback wrong";
+                
+                feedbackDiv.classList.remove('wrong');
+                void feedbackDiv.offsetWidth; 
+                feedbackDiv.classList.add('wrong');
+            }
+        }
+
+        // 檢查是否全部答完
+        function checkGameEnd() {
+            if (advAnsweredCount === advQuestions.length) {
+                const rewardSec = document.getElementById('reward-section');
+                const resultMsg = document.getElementById('adv-final-msg');
+                const nameInput = document.getElementById('student-name');
+                const claimBtn = document.getElementById('claim-btn');
+                const retryBtn = document.getElementById('retry-btn');
+                
+                rewardSec.style.display = 'block';
+
+                if (advScore >= 80) {
+                    resultMsg.innerHTML = `
+                        <h3 style="color: #2E7D32; font-size: 26px; margin-top: 0;">🌟 恭喜你獲得 ${advScore} 分，成功通過試煉！🌟</h3>
+                        <p style="font-size: 18px; font-weight: bold; color: #555;">請在下方輸入你的真實名字，領取專屬贈書：</p>
+                    `;
+                    nameInput.style.display = 'inline-block';
+                    claimBtn.style.display = 'inline-flex';
+                    // 為了鼓勵，過關後也可以讓他們選擇重新挑戰
+                    retryBtn.style.display = 'inline-flex';
+                } else {
+                    resultMsg.innerHTML = `
+                        <h3 style="color: #C62828; font-size: 26px; margin-top: 0;">💪 哎呀！你得了 ${advScore} 分！</h3>
+                        <p style="font-size: 18px; font-weight: bold; color: #555;">需要達到 80 分才能拿到證書喔！<br>沒關係，趕快點擊下方按鈕，重新挑戰一次吧！</p>
+                    `;
+                    nameInput.style.display = 'none';
+                    claimBtn.style.display = 'none';
+                    retryBtn.style.display = 'inline-flex';
+                }
+                setTimeout(() => rewardSec.scrollIntoView({behavior: 'smooth'}), 300);
+            }
+        }
+
+        // 領取贈書功能
+        function claimReward() {
+            let name = document.getElementById('student-name').value.trim();
+            let resultDiv = document.getElementById('reward-result');
+            
+            if (name === "") {
+                resultDiv.innerHTML = "⚠️ 嗶嗶！請先輸入你的名字喔！";
+                resultDiv.style.color = "#D32F2F";
+                return;
+            }
+            
+            resultDiv.style.color = "#E65100";
+            resultDiv.innerHTML = `
+                <div style="background: #FFF9C4; padding: 20px; border-radius: 15px; border: 3px solid #FBC02D; margin-top: 15px; animation: pop 0.5s ease-out;">
+                    <div style="font-size: 50px; margin-bottom: 10px;">📚🏆🎁</div>
+                    恭喜幾何大師 <span style="color: #D84315; font-size: 28px;">${name}</span> ！<br>
+                    你已成功突破所有難關，獲得虛擬學習贈書：<br>
+                    <span style="color: #1565C0; font-size: 26px; display: inline-block; margin: 15px 0;">《幾何島嶼的終極祕密》</span><br>
+                    <span style="font-size: 16px; color: #555;">(請截圖這個畫面，拿給老師領取實體小禮物或榮譽章喔！)</span>
+                </div>
+            `;
+        }
+
+        // 重新挑戰按鈕邏輯
+        function resetAdvQuiz() {
+            renderAdvQuiz();
+            // 平滑滾動回到魔王區塊頂部
+            document.getElementById('page-m5').scrollIntoView({behavior: 'smooth'});
+        }
+
+        // 視窗載入時啟動
+        window.onload = function() {
+            renderAdvQuiz(); // 初始化魔王題庫
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>閱讀理解偵探社</title>
+  <style>
+    :root{--ink:#273142;--muted:#667085;--paper:#f7edcf;--brown:#7a4d2a;--gold:#efb83f;--red:#d9534f;--green:#2f9a68;--blue:#3977b8;--line:#d8c9a6;--shadow:0 9px 0 rgba(74,50,30,.16)}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;color:var(--ink);font-family:"Segoe UI","Noto Sans TC",system-ui,sans-serif;background:radial-gradient(circle at 20% 15%,rgba(122,77,42,.08) 0 3px,transparent 4px) 0 0/45px 45px,var(--paper)}
+    button{font:inherit;cursor:pointer}.hidden{display:none!important}.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:64px;padding:10px clamp(14px,4vw,34px);color:#fff;background:#283747;border-bottom:5px solid var(--gold)}.brand{font-size:clamp(18px,3vw,25px);font-weight:950}.home{color:#fff;text-decoration:none;font-weight:850}
+    .shell{width:min(1050px,calc(100% - 24px));margin:0 auto;padding:26px 0 50px}.panel{position:relative;padding:clamp(20px,4vw,36px);border:3px solid var(--brown);border-radius:18px;background:#fffdf5;box-shadow:var(--shadow)}.panel::after{position:absolute;inset:8px;border:2px dashed rgba(122,77,42,.2);border-radius:11px;pointer-events:none;content:""}
+    .start{text-align:center}.detective{width:130px;height:130px;display:grid;place-items:center;margin:0 auto 14px;border:7px solid #fff;border-radius:50%;background:var(--gold);font-size:72px;box-shadow:var(--shadow);animation:bob 2s ease-in-out infinite}h1,h2,h3,p{margin-top:0}h1{margin-bottom:10px;font-size:clamp(38px,7vw,68px);line-height:1.05;color:#283747;text-shadow:0 5px 0 rgba(239,184,63,.4)}h2{font-size:clamp(28px,4vw,40px)}.lead{max-width:720px;margin:0 auto 20px;color:var(--muted);font-size:18px;line-height:1.7;font-weight:650}.case-file{max-width:720px;margin:22px auto;padding:20px;border:2px solid var(--line);border-radius:14px;background:#fff7df;text-align:left}.case-file h3{margin-bottom:8px;color:var(--brown);font-size:24px}
+    .button{min-height:52px;padding:0 22px;border:2px solid transparent;border-radius:12px;font-weight:950;box-shadow:0 6px 0 rgba(39,49,66,.15)}.primary{color:#fff;background:var(--red)}.secondary{color:var(--ink);border-color:var(--line);background:#fff}.button:active,.option:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(39,49,66,.15)}.actions{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:20px}.source{margin-top:16px;color:var(--muted);font-size:13px;font-weight:750}.source button{border:0;color:var(--blue);background:transparent;font-weight:900;text-decoration:underline}
+    .case-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}.badge{display:inline-flex;padding:7px 12px;border-radius:999px;color:#fff;background:var(--brown);font-weight:900}.clue-board{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:18px 0}.clue{min-height:78px;display:grid;place-items:center;padding:8px;border:2px dashed #baa77e;border-radius:13px;color:#8b7d64;background:#f8f1dd;text-align:center;font-weight:850}.clue.found{color:#fff;border-style:solid;border-color:#20794e;background:var(--green);animation:pop .35s}.story{padding:clamp(18px,4vw,30px);border:2px solid var(--line);border-radius:14px;background:#fffef9;font-size:18px;line-height:2;text-align:justify}.story-title{margin-bottom:14px;color:var(--brown);text-align:center}#storyText{white-space:pre-line}
+    .question-box{margin-top:22px;padding:22px;border:3px solid #bfd4e8;border-radius:16px;background:#f1f7fd}.question-meta{display:flex;justify-content:space-between;gap:10px;margin-bottom:12px;color:var(--blue);font-weight:950}.question-text{font-size:22px;line-height:1.55;font-weight:900}.options{display:grid;grid-template-columns:1fr 1fr;gap:11px}.option{min-height:68px;padding:13px;border:2px solid #cbd5df;border-radius:12px;color:var(--ink);background:#fff;font-weight:800;line-height:1.5;box-shadow:0 5px 0 rgba(39,49,66,.11)}.option:hover{border-color:var(--blue);background:#eef7ff}.option.correct{color:#fff;border-color:#23784f;background:var(--green)}.option.wrong{color:#fff;border-color:#a93737;background:var(--red)}.feedback{margin-top:15px;padding:14px;border-radius:11px;background:#fff1bd;font-weight:800;line-height:1.55}
+    .solve{text-align:center}.evidence{max-width:700px;margin:20px auto;padding:20px;border:3px double var(--brown);background:#fff8e7;text-align:left}.evidence li{margin:10px 0;line-height:1.55;font-weight:750}.stamp{display:inline-block;margin:15px;padding:10px 18px;border:5px double var(--red);color:var(--red);font-size:34px;font-weight:950;transform:rotate(-7deg)}@keyframes bob{50%{transform:translateY(-8px) rotate(-3deg)}}@keyframes pop{50%{transform:scale(1.08)}}@media(max-width:700px){.options{grid-template-columns:1fr}.clue-board{grid-template-columns:1fr 1fr}.case-head{align-items:flex-start;flex-direction:column}}
+  </style>
+</head>
+<body>
+  <header class="topbar"><div class="brand">🔎 閱讀理解偵探社</div><a class="home" href="../index.html">返回國語活動</a></header>
+  <main class="shell">
+    <section class="panel start" id="startScreen">
+      <div class="detective">🕵️</div>
+      <h1>閱讀理解偵探社</h1>
+      <p class="lead">仔細閱讀案件短文，回答主旨、人物動機、因果與推論問題。每答對一題，就能取得一條重要線索！</p>
+      <div class="case-file"><h3 id="startTitle">案件載入中...</h3><p id="startBrief"></p><strong>任務：蒐集 4 條線索，破解案件真相。</strong></div>
+      <button class="button primary" id="startButton">接受案件</button>
+      <p class="source"><span id="sourceNote">正在載入案件...</span><button id="refreshButton">更新題庫</button></p>
+    </section>
+
+    <section class="panel hidden" id="caseScreen">
+      <div class="case-head"><div><span class="badge" id="caseId"></span><h2 id="caseTitle"></h2></div><strong id="progressText">線索 0 / 4</strong></div>
+      <div class="clue-board" id="clueBoard"></div>
+      <article class="story"><h3 class="story-title" id="storyTitle"></h3><div id="storyText"></div></article>
+      <section class="question-box" id="questionBox">
+        <div class="question-meta"><span id="questionType"></span><span id="questionCount"></span></div>
+        <p class="question-text" id="questionText"></p>
+        <div class="options" id="options"></div>
+        <div class="feedback hidden" id="feedback"></div>
+        <div class="actions"><button class="button primary hidden" id="nextButton">下一個問題</button></div>
+      </section>
+    </section>
+
+    <section class="panel solve hidden" id="solveScreen">
+      <div class="detective">🕵️‍♀️</div><h2>線索蒐集完成！</h2><p class="lead">四條線索已經拼湊起來，你能說出案件真相嗎？</p>
+      <ol class="evidence" id="evidenceList"></ol><button class="button primary" id="solveButton">揭曉案件真相</button>
+    </section>
+
+    <section class="panel solve hidden" id="resultScreen">
+      <div class="detective">🎉</div><div class="stamp">成功破案</div><h2 id="resultTitle"></h2><p class="lead" id="solutionText"></p>
+      <div class="actions"><button class="button primary" id="retryButton">再次偵查</button><a class="button secondary" href="../index.html">返回國語活動</a></div>
+    </section>
+  </main>
+  <script>
+    // 貼上 Google 試算表的 gviz JSON 網址後，即可改用線上案件。
+    const SHEET_QUERY_URL = "";
+    const fallbackCase = {
+      caseId:"CASE-001",title:"圖書館裡消失的新書",brief:"學校圖書館的一本新書突然不見了，請找出事情的真相。",
+      storyTitle:"午休時間的圖書館",
+      story:"午休時，圖書館老師發現展示架上的新書《星空旅行》不見了。早上最後一位翻閱這本書的是小杰，他離開前還一直說自己非常想借回家。老師在桌下找到一張畫著星星的書籤，大家便猜測是喜歡畫星星的小杰拿走了書。\n\n放學前，小安抱著一疊書來到圖書館。她說午休時窗外突然刮起大風，《星空旅行》從展示架掉到地上，封面還沾到了水。她擔心書本繼續受損，便先帶回教室擦乾，卻忘了告訴老師。小杰也說，那張星星書籤是他早上閱讀時不小心掉下的。老師聽完後，提醒大家：發現問題時，應該先告知負責的人，才不會造成誤會。",
+      solution:"新書並不是被偷走的。小安看到書掉落並沾水，出於保護書本的想法把它帶回教室擦乾；但她沒有先告知老師，才造成大家誤會小杰。",
+      questions:[
+        {type:"主旨題",question:"這篇短文主要想告訴我們什麼？",options:["看到問題時應先告知負責的人，避免造成誤會","圖書館不應該展示新書","喜歡畫星星的人容易被誤會","下雨天不能到圖書館"],answer:0,clue:"老師提醒：處理問題前要先告知負責的人。"},
+        {type:"人物動機題",question:"小安為什麼把《星空旅行》帶回教室？",options:["她想偷偷借回家","她想送給小杰","她擔心書本沾水後繼續受損","她不喜歡展示架的位置"],answer:2,clue:"小安的目的是保護沾到水的新書。"},
+        {type:"因果題",question:"大家為什麼一開始懷疑小杰拿走新書？",options:["因為他早上翻過書，又留下星星書籤","因為小安指認了他","因為老師看到他把書帶走","因為他沒有來上課"],answer:0,clue:"小杰想借書，加上現場留下他的星星書籤。"},
+        {type:"推論題",question:"從短文可以推論，小安下次遇到相同情況最可能怎麼做？",options:["把書留在積水中","先通知老師，再協助處理書本","立刻責怪小杰","把書藏起來不說"],answer:1,clue:"小安應會先通知老師，再協助保護書本。"}
+      ]
+    };
+    let activeCase=fallbackCase,index=0,found=[];
+    const $=id=>document.getElementById(id);
+    function setScreen(id){["startScreen","caseScreen","solveScreen","resultScreen"].forEach(x=>$(x).classList.toggle("hidden",x!==id))}
+    function showCaseInfo(){$("startTitle").textContent=activeCase.title;$("startBrief").textContent=activeCase.brief;$("caseId").textContent=activeCase.caseId;$("caseTitle").textContent=activeCase.title;$("storyTitle").textContent=activeCase.storyTitle;$("storyText").textContent=activeCase.story}
+    function tableToCase(table){const labels=table.cols.map(c=>c.label.trim()),rows=table.rows.map(r=>Object.fromEntries(labels.map((label,i)=>[label,String(r.c[i]?.v??"").trim()]))),first=rows[0];return{caseId:first.caseId,title:first.title,brief:first.brief,storyTitle:first.storyTitle,story:first.story,solution:first.solution,questions:rows.filter(r=>r.question).map(r=>({type:r.type,question:r.question,options:[r.option1,r.option2,r.option3,r.option4],answer:Number(r.answer)-1,clue:r.clue}))}}
+    function loadCase(){if(!SHEET_QUERY_URL){activeCase=fallbackCase;showCaseInfo();$("sourceNote").textContent="目前使用預設案件；設定 Google 試算表後可線上更新";return} $("sourceNote").textContent="正在更新案件...";const oldGoogle=window.google,script=document.createElement("script"),timer=setTimeout(fail,10000);function cleanup(){clearTimeout(timer);script.remove();if(oldGoogle===undefined)delete window.google;else window.google=oldGoogle}function fail(){cleanup();activeCase=fallbackCase;showCaseInfo();$("sourceNote").textContent="線上案件讀取失敗，目前使用預設案件"}window.google={visualization:{Query:{setResponse:data=>{if(data.status!=="ok")return fail();cleanup();activeCase=tableToCase(data.table);showCaseInfo();$("sourceNote").textContent="已載入 Google 試算表最新案件"}}}};script.onerror=fail;script.src=`${SHEET_QUERY_URL}&_=${Date.now()}`;document.head.appendChild(script)}
+    function start(){index=0;found=[];setScreen("caseScreen");renderClues();renderQuestion()}
+    function renderClues(){const board=$("clueBoard");board.innerHTML="";activeCase.questions.forEach((q,i)=>{const d=document.createElement("div");d.className="clue"+(found[i]?" found":"");d.textContent=found[i]?`🔍 ${q.type}`:"❓ 尚未取得";board.appendChild(d)});$("progressText").textContent=`線索 ${found.filter(Boolean).length} / ${activeCase.questions.length}`}
+    function renderQuestion(){const q=activeCase.questions[index];$("questionType").textContent=q.type;$("questionCount").textContent=`問題 ${index+1} / ${activeCase.questions.length}`;$("questionText").textContent=q.question;$("feedback").classList.add("hidden");$("nextButton").classList.add("hidden");const options=$("options");options.innerHTML="";q.options.forEach((text,i)=>{const b=document.createElement("button");b.className="option";b.textContent=text;b.onclick=()=>answer(b,i,q);options.appendChild(b)})}
+    function answer(button,choice,q){document.querySelectorAll(".option").forEach(b=>b.disabled=true);const ok=choice===q.answer;if(ok){button.classList.add("correct");found[index]=q.clue;renderClues();$("feedback").textContent=`取得線索：${q.clue}`;$("nextButton").classList.remove("hidden")}else{button.classList.add("wrong");document.querySelectorAll(".option")[q.answer].classList.add("correct");$("feedback").textContent="這個推理還不夠完整。閱讀短文中的關鍵句，再試一次！";setTimeout(renderQuestion,1800)}$("feedback").classList.remove("hidden")}
+    function next(){if(index<activeCase.questions.length-1){index++;renderQuestion()}else{const list=$("evidenceList");list.innerHTML="";found.forEach(x=>{const li=document.createElement("li");li.textContent=x;list.appendChild(li)});setScreen("solveScreen")}}
+    function solve(){$("resultTitle").textContent=activeCase.title;$("solutionText").textContent=activeCase.solution;setScreen("resultScreen")}
+    $("startButton").onclick=start;$("nextButton").onclick=next;$("solveButton").onclick=solve;$("retryButton").onclick=start;$("refreshButton").onclick=loadCase;loadCase();
+  </script>
+</body>
+</html>

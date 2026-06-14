@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>數學互動學習</title>
+  <style>
+    :root{--ink:#26364e;--muted:#68758a;--blue:#3b79bd;--yellow:#efb83f;--paper:#f7fbff;--line:#d6e3ef;--shadow:0 8px 0 rgba(38,54,78,.14)}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;color:var(--ink);font-family:"Segoe UI","Noto Sans TC",system-ui,sans-serif;background:radial-gradient(circle at 12% 15%,rgba(239,184,63,.22) 0 4px,transparent 5px),linear-gradient(90deg,rgba(59,121,189,.07) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(rgba(59,121,189,.07) 1px,transparent 1px) 0 0/28px 28px,var(--paper);background-size:100px 100px,28px 28px,28px 28px}a{text-decoration:none;color:inherit}.top{padding:18px clamp(16px,4vw,40px);border-bottom:1px solid var(--line);background:rgba(255,255,255,.92)}.top a{color:var(--blue);font-weight:900}.shell{width:min(1050px,calc(100% - 28px));margin:0 auto;padding:55px 0}.head{text-align:center}.head h1{margin:0;font-size:clamp(40px,7vw,70px);text-shadow:0 5px 0 rgba(239,184,63,.3)}.head p{max-width:700px;margin:14px auto;color:var(--muted);font-size:19px;line-height:1.7;font-weight:650}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-top:38px}.card{min-height:290px;display:flex;flex-direction:column;justify-content:space-between;padding:28px;border:3px solid var(--accent);border-radius:22px;background:var(--tint);box-shadow:var(--shadow);transition:transform .2s,filter .2s}.card:hover{transform:translateY(-7px) rotate(-1deg);filter:saturate(1.12)}.icon{font-size:78px}.card h2{margin:10px 0 8px;font-size:31px}.card p{color:var(--muted);font-size:17px;line-height:1.65;font-weight:650}.tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:15px}.tag{padding:6px 10px;border-radius:999px;color:var(--blue);background:#fff;font-size:13px;font-weight:850}.go{align-self:flex-start;margin-top:20px;padding:10px 16px;border-radius:999px;color:#fff;background:var(--accent);font-weight:900}@media(max-width:700px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header class="top"><a href="../../index.html">← 返回互動教學站</a></header>
+  <main class="shell">
+    <section class="head"><h1>數學互動學習</h1><p>運用生活情境、圖像與互動練習，逐步理解數學概念。</p></section>
+    <section class="grid">
+      <a class="card" href="./cross-day-calculation/index.html" style="--accent:var(--blue);--tint:#eaf5ff">
+        <div><div class="icon">🌙⏰</div><h2>跨日計算教學</h2><p>學習跨越午夜的經過時間、結束時間與起始時間計算，並完成互動測驗。</p><div class="tags"><span class="tag">時間計算</span><span class="tag">互動教學</span><span class="tag">隨堂測驗</span></div></div>
+        <span class="go">開始學習</span>
+      </a>
+      <a class="card" href="./perimeter-area-calculation/index.html" style="--accent:#4b9568;--tint:#eff9f1">
+        <div><div class="icon">📐🏝️</div><h2>周長與面積計算</h2><p>透過動畫與方格圖理解周長和面積的差異，挑戰生活應用題與終極魔王關卡。</p><div class="tags"><span class="tag">四年級數學</span><span class="tag">幾何概念</span><span class="tag">冒險挑戰</span></div></div>
+        <span class="go" style="background:#4b9568">開始學習</span>
+      </a>
+    </section>
+  </main>
+</body>
+</html>

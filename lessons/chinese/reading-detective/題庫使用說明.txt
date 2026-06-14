@@ -1,0 +1,28 @@
+閱讀理解偵探社：Google 試算表題庫使用說明
+
+設定方式：
+1. 將 reading-case-bank.csv 匯入 Google 試算表。
+2. 將試算表設為「知道連結的任何人 -> 檢視者」。
+3. 取得網址：
+   https://docs.google.com/spreadsheets/d/試算表ID/gviz/tq?tqx=out:json
+4. 開啟 index.html，將 SHEET_QUERY_URL 的空字串換成上述網址。
+
+欄位說明：
+- caseId：案件編號。
+- title：案件名稱。
+- brief：任務簡介。
+- storyTitle：短文標題。
+- story：閱讀短文。
+- solution：破案後顯示的案件真相。
+- type：題型，例如主旨題、人物動機題、因果題、推論題。
+- question：問題內容。
+- option1～option4：四個答案選項。
+- answer：正確答案編號，填寫 1、2、3 或 4。
+- clue：答對後取得的線索。
+
+使用規則：
+1. 每一列代表一個問題。
+2. 同一案件的 caseId、title、brief、storyTitle、story、solution 請填寫相同內容。
+3. 建議每個案件至少包含主旨、人物動機、因果與推論四種問題。
+4. 學生答錯時必須重新閱讀並再次作答；答對才能取得線索。
+5. 全部問題答對後，才會進入破解案件真相畫面。

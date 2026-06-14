@@ -1,0 +1,26 @@
+成語勇者大冒險：老師題庫使用說明
+
+Google 試算表：
+https://docs.google.com/spreadsheets/d/1Q7G9uAi1ZotD_5k7FhuDsNPmm3ezm-1Spw-SZDP88-s/edit
+
+學生遊戲讀取網址：
+https://docs.google.com/spreadsheets/d/1Q7G9uAi1ZotD_5k7FhuDsNPmm3ezm-1Spw-SZDP88-s/gviz/tq?tqx=out:csv
+
+欄位說明：
+- level：basic 為基礎題，advanced 為進階題。
+- idiom：成語。
+- meaning：成語解釋。
+- sentence：進階題的填空句，空格請使用 ____。
+- option1：進階題正確答案。
+- option2、option3、option4：進階題錯誤選項。
+- enabled：填「是」會出題，填「否」則暫停使用。
+
+使用規則：
+1. 基礎題與進階題各需至少 10 題啟用中的題目。
+2. 基礎題的錯誤選項會由其他基礎題解釋自動隨機產生。
+3. 進階題必須填寫 option1、option2、option3、option4，且 option1 必須是正確答案。
+4. 學生每次開始遊戲，系統會從該關卡隨機抽出 10 題。
+5. 修改試算表後，學生重新整理遊戲頁面即可取得最新題目。
+
+學生能讀取題庫前，請將試算表設為：
+共用 -> 一般存取權 -> 知道連結的任何人 -> 檢視者

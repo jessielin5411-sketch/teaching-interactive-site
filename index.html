@@ -1,0 +1,445 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="整合數學、國語、自然、社會與英文的互動教學網站。">
+  <title>互動教學站</title>
+  <style>
+    :root {
+      --ink: #17334a;
+      --muted: #5d7080;
+      --paper: #fffdf8;
+      --white: #fff;
+      --line: #dce5e8;
+      --teal: #147d82;
+      --teal-dark: #0d6266;
+      --coral: #ef6f61;
+      --yellow: #efb83f;
+      --green: #4b9568;
+      --blue: #3b79bd;
+      --shadow: 0 18px 50px rgba(23, 51, 74, 0.13);
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: linear-gradient(90deg, rgba(59, 121, 189, 0.05) 1px, transparent 1px) 0 0 / 28px 28px, linear-gradient(rgba(59, 121, 189, 0.05) 1px, transparent 1px) 0 0 / 28px 28px, var(--paper);
+      font-family: "Segoe UI", "Noto Sans TC", system-ui, sans-serif;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    button { font: inherit; }
+
+    .site-header {
+      position: sticky;
+      z-index: 10;
+      top: 0;
+      border-bottom: 1px solid rgba(220, 229, 232, 0.88);
+      background: rgba(255, 253, 248, 0.92);
+      backdrop-filter: blur(14px);
+    }
+
+    .nav {
+      width: min(1180px, calc(100% - 32px));
+      min-height: 68px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 19px;
+      font-weight: 900;
+    }
+
+    .brand-mark {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      color: var(--white);
+      background: var(--teal);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-links a {
+      min-height: 40px;
+      display: inline-flex;
+      align-items: center;
+      padding: 0 12px;
+      border-radius: 8px;
+      color: var(--muted);
+      font-weight: 750;
+    }
+
+    .nav-links a:hover {
+      color: var(--teal-dark);
+      background: #eaf6f4;
+    }
+
+    .hero {
+      position: relative;
+      min-height: min(720px, calc(100vh - 68px));
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      isolation: isolate;
+      background: #dceff0;
+    }
+
+    .hero-image {
+      position: absolute;
+      z-index: -2;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      inset: 0;
+      background: linear-gradient(90deg, rgba(255, 253, 248, 0.98) 0%, rgba(255, 253, 248, 0.92) 34%, rgba(255, 253, 248, 0.35) 64%, rgba(255, 253, 248, 0.04) 100%);
+    }
+
+    .hero-inner {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 72px 0 88px;
+    }
+
+    .hero-copy { max-width: 610px; }
+
+    .eyebrow {
+      display: inline-flex;
+      margin: 0 0 16px;
+      padding: 7px 11px;
+      border: 2px solid var(--teal);
+      border-radius: 999px;
+      color: var(--teal-dark);
+      background: #eaf8f5;
+      font-size: 16px;
+      font-weight: 900;
+    }
+
+    h1 {
+      max-width: 600px;
+      margin: 0;
+      font-size: clamp(46px, 7vw, 78px);
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      max-width: 560px;
+      margin: 22px 0 0;
+      color: #405b6d;
+      font-size: clamp(18px, 2vw, 22px);
+      line-height: 1.7;
+      font-weight: 650;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 30px;
+    }
+
+    .button {
+      min-height: 48px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 0 18px;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      font-weight: 850;
+      transition: transform 160ms ease, box-shadow 160ms ease;
+    }
+
+    .button:hover {
+      transform: translateY(-2px);
+    }
+
+    .button-primary {
+      color: var(--white);
+      background: var(--coral);
+      border-color: #d9584c;
+      box-shadow: 0 7px 0 rgba(23, 51, 74, 0.14);
+    }
+
+    .button-secondary {
+      border-color: var(--line);
+      background: rgba(255, 255, 255, 0.9);
+    }
+
+    .section {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 72px 0;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 28px;
+      margin-bottom: 24px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: clamp(30px, 4vw, 44px);
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+
+    .section-note {
+      max-width: 520px;
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.65;
+      font-weight: 650;
+    }
+
+    .subject-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .subject-card {
+      min-height: 244px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border: 2px solid var(--accent);
+      border-radius: 8px;
+      background: var(--card-bg);
+      box-shadow: 0 7px 0 rgba(23, 51, 74, 0.13);
+      transition: transform 180ms ease, box-shadow 180ms ease;
+    }
+
+    .subject-card:hover {
+      transform: translateY(-5px) rotate(-1deg);
+      box-shadow: var(--shadow);
+    }
+
+    .subject-icon {
+      width: 52px;
+      height: 52px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      color: var(--white);
+      background: var(--accent);
+      font-size: 23px;
+      font-weight: 900;
+    }
+
+    .subject-card h3 {
+      margin: 18px 0 7px;
+      font-size: 24px;
+      letter-spacing: 0;
+    }
+
+    .subject-card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.55;
+      font-weight: 620;
+    }
+
+    .status {
+      align-self: flex-start;
+      margin-top: 18px;
+      padding: 6px 9px;
+      border-radius: 999px;
+      color: var(--white);
+      background: var(--accent);
+      font-size: 13px;
+      font-weight: 850;
+    }
+
+    .roadmap {
+      display: grid;
+      grid-template-columns: 0.8fr 1.2fr;
+      gap: 28px;
+      padding: 32px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #edf7f5;
+    }
+
+    .roadmap p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.7;
+      font-weight: 650;
+    }
+
+    footer {
+      padding: 26px 16px 34px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      text-align: center;
+      font-weight: 650;
+    }
+
+    @media (max-width: 1020px) {
+      .subject-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 760px) {
+      .nav-links a:not(:last-child) { display: none; }
+
+      .hero {
+        min-height: 690px;
+        align-items: end;
+      }
+
+      .hero-image { object-position: 65% center; }
+
+      .hero::after {
+        background: linear-gradient(180deg, rgba(255, 253, 248, 0.08) 0%, rgba(255, 253, 248, 0.78) 45%, rgba(255, 253, 248, 0.99) 70%);
+      }
+
+      .hero-inner { padding: 280px 0 52px; }
+      .section-head { display: block; }
+      .section-note { margin-top: 10px; }
+      .subject-grid { grid-template-columns: 1fr 1fr; }
+      .roadmap { grid-template-columns: 1fr; padding: 24px; }
+    }
+
+    @media (max-width: 520px) {
+      .subject-grid { grid-template-columns: 1fr; }
+      .subject-card { min-height: 210px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <nav class="nav" aria-label="主要導覽">
+      <a class="brand" href="./index.html" aria-label="回到首頁">
+        <span class="brand-mark">學</span>
+        <span>互動教學站</span>
+      </a>
+      <div class="nav-links">
+        <a href="#subjects">教學單元</a>
+        <a href="#roadmap">網站規劃</a>
+        <a href="#subjects">開始探索</a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" aria-labelledby="hero-title">
+      <img class="hero-image" src="./assets/hero-classroom.png" alt="學生與老師一起進行互動學習">
+      <div class="hero-inner">
+        <div class="hero-copy">
+          <p class="eyebrow">從探索開始，把知識學得更清楚</p>
+          <h1 id="hero-title">每一堂課，都能成為一次互動體驗。</h1>
+          <p class="lead">整合數學、國語、自然、社會與英文教學內容，讓學生透過操作、觀察與挑戰，主動建立自己的理解。</p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#subjects">開始學習闖關 <span aria-hidden="true">↓</span></a>
+            <a class="button button-secondary" href="#roadmap">查看網站規劃</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="subjects" aria-labelledby="subjects-title">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">教學單元入口</p>
+          <h2 id="subjects-title">今天想挑戰哪一科？</h2>
+        </div>
+        <p class="section-note">每個科目之後都會建立獨立分頁，放入主題課程、互動練習與學習挑戰。</p>
+      </div>
+
+      <div class="subject-grid">
+        <a class="subject-card" href="./lessons/math/index.html" style="--accent: var(--blue); --card-bg: #eef6ff">
+          <div>
+            <div class="subject-icon">數</div>
+            <h3>數學</h3>
+            <p>從圖形、數量與生活情境中理解數學概念。</p>
+          </div>
+          <span class="status">開始學習</span>
+        </a>
+
+        <a class="subject-card" href="./lessons/chinese/index.html" style="--accent: var(--coral); --card-bg: #fff1ef">
+          <div>
+            <div class="subject-icon">國</div>
+            <h3>國語</h3>
+            <p>挑戰成語、閱讀理解與文字推理任務。</p>
+          </div>
+          <span class="status">開始闖關</span>
+        </a>
+
+        <article class="subject-card" style="--accent: var(--green); --card-bg: #eff9f1">
+          <div>
+            <div class="subject-icon">SEL</div>
+            <h3>SEL 課程</h3>
+            <p>認識情緒、練習同理與溝通，培養良好的人際互動能力。</p>
+          </div>
+          <span class="status">即將開放</span>
+        </article>
+
+        <article class="subject-card" style="--accent: var(--yellow); --card-bg: #fff8df">
+          <div>
+            <div class="subject-icon">玩</div>
+            <h3>綜合小遊戲</h3>
+            <p>透過趣味任務與生活挑戰，練習合作、思考與解決問題。</p>
+          </div>
+          <span class="status">即將開放</span>
+        </article>
+
+        <a class="subject-card" href="./lessons/english/index.html" style="--accent: var(--teal); --card-bg: #eaf8f6">
+          <div>
+            <div class="subject-icon">EN</div>
+            <h3>英文</h3>
+            <p>用聽、說、讀與情境挑戰累積英語能力。</p>
+          </div>
+          <span class="status">開始練習</span>
+        </a>
+      </div>
+    </section>
+
+    <section class="section" id="roadmap" aria-labelledby="roadmap-title">
+      <div class="roadmap">
+        <div>
+          <p class="eyebrow">網站規劃</p>
+          <h2 id="roadmap-title">首頁負責導覽，分頁專注學習。</h2>
+        </div>
+        <p>接下來每個科目會建立自己的教學首頁，再依課程主題加入互動活動。這樣能維持清楚的導覽結構，也方便後續持續增加新的教材內容。</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>互動教學站 · 教學單元持續建置中</footer>
+</body>
+</html>
