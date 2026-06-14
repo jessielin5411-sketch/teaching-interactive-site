@@ -10,8 +10,69 @@
     <style>
         body {
             font-family: 'Noto Sans TC', sans-serif;
-            background-color: #f8f4eb;
+            background:
+                radial-gradient(circle at 50% 0%, rgba(255, 222, 89, .42), transparent 34%),
+                linear-gradient(135deg, #8f1118 0%, #d42426 48%, #7c0c13 100%);
+            overflow-x: hidden;
         }
+        .festive-pattern {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            opacity: .18;
+            background-image: radial-gradient(#ffd76a 1.5px, transparent 1.5px);
+            background-size: 26px 26px;
+        }
+        .lantern {
+            position: fixed;
+            z-index: 20;
+            top: -8px;
+            width: 70px;
+            height: 82px;
+            display: grid;
+            place-items: center;
+            border: 4px solid #ffd76a;
+            border-radius: 45%;
+            color: #ffd76a;
+            background: #c51d25;
+            box-shadow: inset 0 0 18px rgba(255, 222, 89, .5), 0 8px 20px rgba(70, 0, 0, .35);
+            font-size: 30px;
+            font-weight: 900;
+            animation: lanternSwing 3s ease-in-out infinite alternate;
+            transform-origin: top center;
+        }
+        .lantern::before { content: ""; position: absolute; top: -35px; width: 3px; height: 34px; background: #ffd76a; }
+        .lantern::after { content: "〰"; position: absolute; bottom: -29px; color: #ffd76a; font-size: 28px; }
+        .lantern-left { left: clamp(12px, 5vw, 70px); }
+        .lantern-right { right: clamp(12px, 5vw, 70px); animation-delay: -1.2s; }
+        .falling-blessing {
+            position: fixed;
+            z-index: 5;
+            top: -70px;
+            pointer-events: none;
+            font-size: clamp(22px, 3vw, 38px);
+            animation: blessingFall linear infinite;
+            filter: drop-shadow(0 4px 3px rgba(70, 0, 0, .3));
+        }
+        .firework {
+            position: fixed;
+            z-index: 60;
+            pointer-events: none;
+            animation: fireworkBurst .9s ease-out forwards;
+        }
+        .firework span {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--spark);
+            transform: rotate(calc(var(--i) * 30deg)) translateY(-6px);
+            animation: sparkFly .9s ease-out forwards;
+        }
+        @keyframes lanternSwing { from { transform: rotate(-5deg); } to { transform: rotate(5deg); } }
+        @keyframes blessingFall { to { transform: translateY(115vh) rotate(360deg); } }
+        @keyframes fireworkBurst { 0% { transform: scale(.2); opacity: 1; } 100% { transform: scale(1); opacity: 0; } }
+        @keyframes sparkFly { to { transform: rotate(calc(var(--i) * 30deg)) translateY(-90px); } }
         .red-gradient {
             background: linear-gradient(135deg, #d42426 0%, #a01a1c 100%);
         }
@@ -30,6 +91,11 @@
         }
         .bounce {
             animation: bounce 2s infinite;
+        }
+        @media (max-width: 720px) {
+            .lantern { width: 48px; height: 58px; font-size: 21px; opacity: .82; }
+            .lantern-left { left: 6px; }
+            .lantern-right { right: 6px; }
         }
         
         /* 台灣正統直式注音排版：定位於國字右側 */
@@ -102,6 +168,10 @@
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
+    <div class="festive-pattern" aria-hidden="true"></div>
+    <div class="lantern lantern-left" aria-hidden="true">春</div>
+    <div class="lantern lantern-right" aria-hidden="true">福</div>
+    <div id="falling-decorations" aria-hidden="true"></div>
     <a href="../index.html" aria-label="返回綜合小遊戲" style="position:fixed;z-index:50;top:16px;left:16px;padding:10px 16px;border-radius:999px;color:#fff;background:#991b1b;box-shadow:0 4px 0 rgba(0,0,0,.18);font-weight:800;text-decoration:none;">← 返回綜合小遊戲</a>
 
     <!-- 遊戲主容器 (預設開啟注音，可動態加入 no-zhuyin 類別) -->
@@ -120,10 +190,15 @@
             <div class="flex items-center gap-1 text-stone-600 font-medium">
                 <span>🧧 家族同樂直式注音版</span>
             </div>
-            <!-- 注音切換開關 -->
-            <button onclick="toggleZhuyin()" id="zhuyin-toggle-btn" class="flex items-center gap-2 bg-[#d42426] text-white px-3 py-1 rounded-full text-xs font-bold hover:brightness-110 shadow-sm transition-all">
-                <span>注音：開 (ㄅㄆㄇ)</span>
-            </button>
+            <div class="flex items-center gap-2">
+                <button onclick="toggleSound()" id="sound-toggle-btn" class="flex items-center gap-1 bg-[#d4af37] text-red-950 px-3 py-1 rounded-full text-xs font-bold hover:brightness-110 shadow-sm transition-all" aria-label="切換音效">
+                    <span>🔇 音效：關</span>
+                </button>
+                <!-- 注音切換開關 -->
+                <button onclick="toggleZhuyin()" id="zhuyin-toggle-btn" class="flex items-center gap-2 bg-[#d42426] text-white px-3 py-1 rounded-full text-xs font-bold hover:brightness-110 shadow-sm transition-all">
+                    <span>注音：開 (ㄅㄆㄇ)</span>
+                </button>
+            </div>
         </div>
 
         <!-- 歡迎頁面 -->
@@ -258,6 +333,9 @@
         let timer = null;
         let canAnswer = true;
         let showZhuyin = true; // 預設開啟注音
+        let soundEnabled = false;
+        let audioContext = null;
+        let melodyTimer = null;
 
         const gameContainer = document.getElementById('game-container');
         const zhuyinToggleBtn = document.getElementById('zhuyin-toggle-btn');
@@ -268,6 +346,98 @@
         const optionsContainer = document.getElementById('options-container');
         const feedback = document.getElementById('feedback');
         const timerCircle = document.getElementById('timer-circle');
+        const soundToggleBtn = document.getElementById('sound-toggle-btn');
+
+        function getAudioContext() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioContext.state === 'suspended') audioContext.resume();
+            return audioContext;
+        }
+
+        function playTone(frequency, duration = .16, type = 'sine', delay = 0, volume = .08) {
+            if (!soundEnabled) return;
+            const context = getAudioContext();
+            const oscillator = context.createOscillator();
+            const gain = context.createGain();
+            const start = context.currentTime + delay;
+            oscillator.type = type;
+            oscillator.frequency.setValueAtTime(frequency, start);
+            gain.gain.setValueAtTime(0, start);
+            gain.gain.linearRampToValueAtTime(volume, start + .015);
+            gain.gain.exponentialRampToValueAtTime(.001, start + duration);
+            oscillator.connect(gain).connect(context.destination);
+            oscillator.start(start);
+            oscillator.stop(start + duration);
+        }
+
+        function playFestiveJingle() {
+            [523, 659, 784, 1047, 784, 1047].forEach((note, index) => playTone(note, .18, 'triangle', index * .12, .075));
+        }
+
+        function playCorrectSound() {
+            [659, 784, 1047].forEach((note, index) => playTone(note, .22, 'triangle', index * .09, .09));
+        }
+
+        function playWrongSound() {
+            playTone(220, .25, 'sawtooth', 0, .05);
+            playTone(165, .35, 'sawtooth', .16, .045);
+        }
+
+        function startMelodyLoop() {
+            clearInterval(melodyTimer);
+            if (!soundEnabled) return;
+            melodyTimer = setInterval(() => {
+                if (!quizScreen.classList.contains('hidden')) playFestiveJingle();
+            }, 12000);
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            soundToggleBtn.innerHTML = soundEnabled ? '<span>🔊 音效：開</span>' : '<span>🔇 音效：關</span>';
+            soundToggleBtn.className = soundEnabled
+                ? "flex items-center gap-1 bg-[#d42426] text-white px-3 py-1 rounded-full text-xs font-bold hover:brightness-110 shadow-sm transition-all"
+                : "flex items-center gap-1 bg-[#d4af37] text-red-950 px-3 py-1 rounded-full text-xs font-bold hover:brightness-110 shadow-sm transition-all";
+            if (soundEnabled) {
+                playFestiveJingle();
+                startMelodyLoop();
+            } else {
+                clearInterval(melodyTimer);
+            }
+        }
+
+        function createFallingDecorations() {
+            const holder = document.getElementById('falling-decorations');
+            const symbols = ['🧧', '✨', '🌸', '🏮', '🪙'];
+            for (let i = 0; i < 16; i++) {
+                const item = document.createElement('span');
+                item.className = 'falling-blessing';
+                item.textContent = symbols[i % symbols.length];
+                item.style.left = `${3 + Math.random() * 94}%`;
+                item.style.animationDuration = `${8 + Math.random() * 8}s`;
+                item.style.animationDelay = `${-Math.random() * 14}s`;
+                holder.appendChild(item);
+            }
+        }
+
+        function launchFireworks() {
+            const colors = ['#ffd76a', '#ff5656', '#fff3b0', '#ff9f1c'];
+            for (let burst = 0; burst < 6; burst++) {
+                const firework = document.createElement('div');
+                firework.className = 'firework';
+                firework.style.left = `${15 + Math.random() * 70}%`;
+                firework.style.top = `${15 + Math.random() * 55}%`;
+                firework.style.setProperty('--spark', colors[burst % colors.length]);
+                for (let i = 0; i < 12; i++) {
+                    const spark = document.createElement('span');
+                    spark.style.setProperty('--i', i);
+                    firework.appendChild(spark);
+                }
+                document.body.appendChild(firework);
+                setTimeout(() => firework.remove(), 1000);
+            }
+        }
 
         // 將拼音與聲調切分，例如 "ㄔㄨㄢˊ" 切分為 { base: "ㄔㄨㄢ", tone: "ˊ" }
         function splitZhuyin(zhuyinStr) {
@@ -316,6 +486,7 @@
         }
 
         function startGame() {
+            if (!soundEnabled) toggleSound();
             startScreen.classList.add('hidden');
             quizScreen.classList.remove('hidden');
             resultScreen.classList.add('hidden');
@@ -358,6 +529,8 @@
                 if (timeLeft <= 0) {
                     clearInterval(timer);
                     handleAnswer(-1); // 時間到
+                } else if (timeLeft <= 5) {
+                    playTone(440, .08, 'square', 0, .035);
                 }
             }, 1000);
         }
@@ -381,11 +554,14 @@
 
             if (selectedIndex === correctIndex) {
                 // 答對
+                playCorrectSound();
+                launchFireworks();
                 score += (10 + timeLeft);
                 buttons[selectedIndex].classList.add('bg-green-100', 'border-green-500', 'text-green-800');
                 showFeedback(parseZhuyin("答{ㄉㄚˊ}對{ㄉㄨㄟˋ}了{ㄌㄜ˙}！恭{ㄍㄨㄥ}喜{ㄒㄧˇ}發{ㄈㄚ}財{ㄘㄞˊ} 🧧"), "text-green-600");
             } else {
                 // 答錯
+                playWrongSound();
                 if (selectedIndex !== -1) {
                     buttons[selectedIndex].classList.add('bg-red-100', 'border-red-500', 'text-red-800');
                 }
@@ -409,6 +585,9 @@
         }
 
         function showResult() {
+            clearInterval(melodyTimer);
+            playFestiveJingle();
+            setTimeout(launchFireworks, 180);
             quizScreen.classList.add('hidden');
             resultScreen.classList.remove('hidden');
             document.getElementById('final-score').innerText = score;
@@ -438,6 +617,7 @@
 
         window.onload = function() {
             initWelcomeScreen();
+            createFallingDecorations();
         }
     </script>
 </body>
