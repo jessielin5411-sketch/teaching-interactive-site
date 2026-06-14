@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>綜合小遊戲</title>
+  <style>
+    :root{--ink:#49351d;--muted:#79664d;--orange:#e88624;--red:#d84b45;--paper:#fff9e9;--shadow:0 9px 0 rgba(73,53,29,.16)}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;color:var(--ink);font-family:"Segoe UI","Noto Sans TC",system-ui,sans-serif;background:radial-gradient(circle at 15% 20%,rgba(232,134,36,.18) 0 5px,transparent 6px),linear-gradient(90deg,rgba(216,75,69,.06) 1px,transparent 1px) 0 0/30px 30px,linear-gradient(rgba(216,75,69,.06) 1px,transparent 1px) 0 0/30px 30px,var(--paper);background-size:110px 110px,30px 30px,30px 30px}
+    a{text-decoration:none;color:inherit}.top{padding:18px clamp(16px,4vw,40px);background:#fff;border-bottom:1px solid #f0dfc3}.top a{color:var(--red);font-weight:900}.shell{width:min(1000px,calc(100% - 28px));margin:0 auto;padding:55px 0}.head{text-align:center}.head h1{margin:0;font-size:clamp(38px,7vw,68px)}.head p{max-width:700px;margin:14px auto;color:var(--muted);font-size:19px;line-height:1.7;font-weight:650}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px;margin-top:38px}.card{min-height:300px;display:flex;flex-direction:column;justify-content:space-between;padding:28px;border:3px solid var(--accent);border-radius:24px;background:var(--card);box-shadow:var(--shadow);transition:transform .2s,box-shadow .2s}.card:hover{transform:translateY(-7px) rotate(-1deg);box-shadow:0 15px 25px rgba(73,53,29,.17)}.icon{font-size:78px}.card h2{margin:10px 0 8px;font-size:31px}.card p{color:var(--muted);font-size:17px;line-height:1.65;font-weight:650}.go{align-self:flex-start;margin-top:20px;padding:10px 17px;border-radius:999px;color:#fff;background:var(--accent);font-weight:900}@media(max-width:700px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header class="top"><a href="../../index.html">← 返回互動教學站</a></header>
+  <main class="shell">
+    <section class="head">
+      <h1>🎲 綜合小遊戲</h1>
+      <p>動動腦、找線索，在趣味猜謎中發現生活中的新知識！</p>
+    </section>
+    <section class="grid">
+      <a class="card" href="./new-year-riddles/index.html" style="--accent:#d84b45;--card:#fff0e8">
+        <div><div class="icon">🧧🏮</div><h2>新年猜謎</h2><p>挑戰新春冷知識，看看誰最了解過年的傳統與習俗。</p></div>
+        <span class="go">開始猜謎</span>
+      </a>
+      <a class="card" href="./horse-riddles/index.html" style="--accent:#8b623e;--card:#fff7d8">
+        <div><div class="icon">🐴❓</div><h2>有關馬的猜謎</h2><p>逐步取得線索，猜出藏在題目裡的各種「馬」。</p></div>
+        <span class="go">開始挑戰</span>
+      </a>
+    </section>
+  </main>
+</body>
+</html>

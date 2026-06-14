@@ -1,0 +1,336 @@
+
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>猜猜是什馬 - 全題庫更新版</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Noto+Sans+TC:wght@500;700&display=swap');
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background: linear-gradient(135deg, #fef9c3 0%, #d9f99d 100%);
+            min-height: 100vh;
+        }
+        .game-font { font-family: 'ZCOOL KuaiLe', cursive, 'Noto Sans TC'; }
+        .card-bounce { animation: bounceIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
+        @keyframes bounceIn {
+            0% { opacity: 0; transform: scale(0.3); }
+            50% { opacity: 1; transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        .btn-hover { transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .btn-hover:hover:not(:disabled) { transform: scale(1.05); }
+        .progress-bar { transition: width 1s linear; }
+        .animate-blink { animation: blink 0.5s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+        .float-animation { animation: floating 3s ease-in-out infinite; }
+        @keyframes floating { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
+        .fade-in { animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body>
+    <a href="../index.html" aria-label="返回綜合小遊戲" style="position:fixed;z-index:50;top:16px;left:16px;padding:10px 16px;border-radius:999px;color:#fff;background:#854d0e;box-shadow:0 4px 0 rgba(0,0,0,.18);font-weight:800;text-decoration:none;">← 返回綜合小遊戲</a>
+
+<div id="app" class="container mx-auto px-4 py-8 max-w-2xl">
+    <!-- 主選單 -->
+    <div v-if="gameState === 'menu'" class="text-center space-y-8 py-10 card-bounce">
+        <div class="text-8xl float-animation">🐎</div>
+        <h1 class="text-6xl font-bold text-orange-600 game-font drop-shadow-lg">猜猜是什馬？</h1>
+        <p class="text-2xl text-brown-700 font-bold">請選擇挑戰模式</p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-10">
+            <button @click="selectMode('names')" class="bg-white p-8 rounded-3xl shadow-xl border-4 border-orange-400 hover:bg-orange-50 transition-all group">
+                <div class="text-5xl mb-4 group-hover:scale-110 transition-transform">🍎</div>
+                <div class="text-2xl font-bold text-orange-700">第一部分</div>
+                <div class="text-lg text-gray-500">名稱有「馬」字</div>
+            </button>
+            <button @click="selectMode('idioms')" class="bg-white p-8 rounded-3xl shadow-xl border-4 border-blue-400 hover:bg-blue-50 transition-all group">
+                <div class="text-5xl mb-4 group-hover:scale-110 transition-transform">📚</div>
+                <div class="text-2xl font-bold text-blue-700">第二部分</div>
+                <div class="text-lg text-gray-500">有「馬」字的成語</div>
+            </button>
+        </div>
+    </div>
+
+    <!-- 遊戲進行中 -->
+    <div v-else-if="gameState === 'playing'" class="bg-white rounded-3xl shadow-2xl p-6 md:p-8 relative">
+        <div class="flex justify-between items-center mb-4">
+            <button @click="exitGame" class="text-gray-400 hover:text-gray-600 font-bold">⬅ 放棄挑戰</button>
+            <div class="flex gap-4">
+                <span class="bg-blue-100 px-3 py-1 rounded-full text-blue-600 font-bold">題: {{ currentIdx + 1 }}/{{ activePool.length }}</span>
+                <span class="bg-yellow-100 px-3 py-1 rounded-full text-yellow-600 font-bold">分: {{ totalScore }}</span>
+            </div>
+        </div>
+
+        <div class="w-full bg-gray-200 h-4 rounded-full mb-6 overflow-hidden">
+            <div class="progress-bar h-full" 
+                 :class="[timerClass, timer <= 15 ? 'animate-blink' : '']" 
+                 :style="{ width: (timer / 30) * 100 + '%' }"></div>
+        </div>
+
+        <div class="space-y-6">
+            <div class="bg-orange-50 p-6 rounded-2xl border-2 border-orange-200 min-h-[220px]">
+                <h2 class="text-xl font-bold text-orange-800 mb-4 flex items-center">
+                    <span class="mr-2">💡</span> 謎面線索（{{ currentQuestion.category || '挑戰題' }}）：
+                </h2>
+                <ul class="space-y-3">
+                    <li v-for="(clue, index) in visibleClues" :key="index" class="text-lg text-gray-700 flex items-start fade-in">
+                        <span class="bg-orange-400 text-white rounded-full w-6 h-6 flex-shrink-0 flex items-center justify-center text-xs mt-1 mr-3 font-bold">{{ index + 1 }}</span>
+                        {{ clue }}
+                    </li>
+                </ul>
+            </div>
+
+            <div class="flex justify-center gap-4">
+                <button @click="showNextClue" :disabled="visibleCluesCount >= currentQuestion.clues.length"
+                    class="bg-indigo-500 text-white px-4 py-2 rounded-xl font-bold disabled:opacity-50 text-sm btn-hover">
+                    增加線索 (-10分)
+                </button>
+            </div>
+
+            <div class="mt-4">
+                <input v-model="userAnswer" @keyup.enter="checkAnswer" type="text" placeholder="輸入答案..." 
+                    class="w-full border-4 border-yellow-300 rounded-xl px-4 py-3 text-xl mb-4 focus:border-yellow-500 outline-none text-center font-bold">
+                
+                <div class="grid grid-cols-2 gap-3">
+                    <button v-for="option in shuffledOptions" :key="option" @click="selectOption(option)"
+                        class="bg-gray-50 border-2 border-gray-200 hover:border-orange-400 p-3 rounded-xl font-bold text-gray-700 transition-all shadow-sm btn-hover">
+                        {{ option }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 結算畫面 -->
+    <div v-else-if="gameState === 'end'" class="text-center space-y-6 card-bounce">
+        <div class="bg-white rounded-3xl shadow-2xl p-8 border-8 border-yellow-400">
+            <h2 class="text-5xl font-bold text-orange-600 mb-2 game-font">挑戰結束！</h2>
+            
+            <div class="grid grid-cols-2 gap-4 mb-8">
+                <div class="bg-orange-50 p-4 rounded-2xl">
+                    <p class="text-gray-500 text-sm">挑戰類別</p>
+                    <p class="text-xl font-bold text-orange-700">{{ mode === 'names' ? '名稱篇' : '成語篇' }}</p>
+                </div>
+                <div class="bg-blue-50 p-4 rounded-2xl">
+                    <p class="text-gray-500 text-sm">答對題數</p>
+                    <p class="text-xl font-bold text-blue-700">{{ correctCount }} / {{ activePool.length }}</p>
+                </div>
+                <div class="bg-yellow-50 p-4 rounded-2xl col-span-2">
+                    <p class="text-gray-500 text-sm">獲得總分</p>
+                    <p class="text-5xl font-black text-yellow-600">{{ totalScore }}</p>
+                </div>
+            </div>
+
+            <div class="mb-8">
+                <div class="text-lg font-bold text-gray-600 mb-2">榮譽評價</div>
+                <div class="text-3xl font-bold text-orange-500">{{ performanceRating }}</div>
+            </div>
+
+            <div class="flex flex-col gap-3">
+                <button @click="startCurrentMode" class="w-full bg-orange-500 text-white py-4 rounded-2xl font-bold text-xl btn-hover shadow-lg">
+                    再戰一回
+                </button>
+                <button @click="gameState = 'menu'" class="w-full bg-gray-200 text-gray-600 py-3 rounded-2xl font-bold btn-hover">
+                    返回主選單
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 反饋彈窗 -->
+    <div v-if="feedback" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-8 text-center card-bounce shadow-2xl">
+            <div v-if="feedback === 'correct'">
+                <div class="text-6xl mb-2">✨</div>
+                <h3 class="text-3xl font-bold text-green-600 mb-4">答對了！</h3>
+                <div class="text-7xl mb-6 float-animation">{{ currentQuestion.icon || '🐎' }}</div>
+                <div class="bg-yellow-50 p-4 rounded-xl text-left mb-6 border-l-4 border-yellow-400">
+                    <p class="text-gray-700 font-bold mb-1">小百科：</p>
+                    <p class="text-gray-600">{{ currentQuestion.wiki || '這是一個與馬有關的精彩知識！' }}</p>
+                    <p v-if="currentQuestion.example" class="mt-2 text-gray-600 italic">例句：{{ currentQuestion.example }}</p>
+                </div>
+                <button @click="nextQuestion" class="w-full bg-green-500 text-white text-xl py-4 rounded-xl font-bold shadow-lg btn-hover">下一題</button>
+            </div>
+            <div v-else-if="feedback === 'wrong'">
+                <div class="text-6xl mb-2">❌</div>
+                <h3 class="text-3xl font-bold text-red-500 mb-2">答錯囉！</h3>
+                <p class="text-red-600 font-bold mb-4">扣除 20 分！</p>
+                <button @click="feedback = null" class="w-full bg-blue-500 text-white text-xl py-4 rounded-xl font-bold shadow-lg btn-hover">繼續嘗試</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const { createApp, ref, computed } = Vue;
+
+    const SoundManager = {
+        ctx: null,
+        init() { if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); },
+        play(freq, type, duration, vol = 0.1) {
+            if (!this.ctx) return;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+            gain.gain.setValueAtTime(vol, this.ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration);
+            osc.connect(gain); gain.connect(this.ctx.destination);
+            osc.start(); osc.stop(this.ctx.currentTime + duration);
+        }
+    };
+
+    const horseNameTrivia = [
+        { answer: "馬拉松", category: "運動名稱", wiki: "起源於希臘戰士菲迪皮德斯奔跑報捷的故事。", clues: ["是一種長跑運動", "全程總共 42 公里 195 公尺", "起源於希臘時代", "參賽者會把號碼牌別在胸前"], options: ["馬拉松", "馬克杯", "馬鈴薯", "馬力歐"], icon: "🏃" },
+        { answer: "馬拉拉", category: "人名", wiki: "馬拉拉勇敢發聲，激勵了全球無數追求教育平等的人。", clues: ["以爭取女權和女性受教育權而聞名的社會活動家", "巴基斯坦女性", "2014 年獲得諾貝爾和平獎", "曾出版《我是馬拉拉》一書"], options: ["馬拉拉", "馬可波羅", "馬丁路德", "馬克思"], icon: "👩‍🎓" },
+        { answer: "馬克杯", category: "杯子", wiki: "馬克杯（Mug）因其厚實且有手把，非常適合日常盛裝冷熱飲。", clues: ["有半圓形手柄、有厚度的杯子", "常用來裝熱飲料", "表面可印製各種圖案、文字"], options: ["馬克杯", "高腳杯", "馬口鐵罐", "馬賽克"], icon: "☕" },
+        { answer: "馬鈴薯", category: "植物", wiki: "馬鈴薯是世界重要糧食，但發芽會產生茄鹼，務必小心。", clues: ["茄科，塊莖可供食用", "全球第四大重要的糧食作物", "洋芋片、炸薯條的主要原料", "塊莖發芽會產生毒素，不可食用"], options: ["馬鈴薯", "馬蹄蓮", "馬齒莧", "馬拉巴栗"], icon: "🥔" },
+        { answer: "馬賽克", category: "藝術技法", wiki: "Mosaic 原意是以碎片拼圖，現在也用於數位影像的遮蔽處理。", clues: ["一種鑲嵌藝術", "西元前 3000 年發源於美索不達米亞", "常以玻璃或陶瓷碎片拼成畫面", "現代常用來遮蔽不想被看到的畫面"], options: ["馬賽克", "馬卡龍", "馬拉松", "馬克杯"], icon: "🔳" },
+        { answer: "馬卡龍", category: "甜點", wiki: "這款精緻甜點因圓潤色彩與細膩口感享譽全球。", clues: ["一種小圓餅形狀的法式甜點", "有多種口味、顏色繽紛", "外殼堅硬但易碎，內餡黏稠扎實"], options: ["馬卡龍", "馬芬蛋糕", "馬鈴薯餅", "馬賽克餅"], icon: "🍪" },
+        { answer: "抽水馬桶", category: "家中設備", wiki: "抽水馬桶是人類公共衛生史上的重大發明。", clues: ["家家必備的重要衛生物品", "能帶走身體排出的廢棄物", "1778 年由約瑟夫·布拉梅發明", "是改善公共衛生的重要發明"], options: ["抽水馬桶", "馬克杯", "馬達", "馬路"], icon: "🚽" },
+        { answer: "馬力歐", category: "遊戲主角", wiki: "任天堂最有名的義大利水管工，也是電子遊戲歷史的象徵。", clues: ["日本任天堂遊戲的重要人物", "造型是留著鬍子的義大利水管工人", "任務是打敗魔王庫巴拯救碧姬公主", "超級蘑菇道具可以讓身體變大"], options: ["馬力歐", "馬達", "馬自達", "馬爾濟斯"], icon: "🍄" }
+    ];
+
+    const horseIdiomsGame = [
+        { answer: "馬到成功", wiki: "形容戰馬一到便取得勝利。現多比喻成功容易且迅速。", example: "2026年的世界棒球經典賽，中華隊一定能旗開得勝、馬到成功。", clues: ["比喻事情進展順利", "很快就取得預期的成果", "常用於祝賀詞", "取得預期中的成果"], options: ["馬到成功", "一馬當先", "萬馬奔騰", "老馬識途"] },
+        { answer: "一馬當先", wiki: "原指作戰時策馬衝在陣地最前面。後比喻領先、帶頭。", example: "他是班上的飛毛腿，他總是在比賽中一馬當先，遙遙領先其他選手。", clues: ["一個人領先", "勇於帶頭或衝鋒在前", "走在最前面", "形容領先其他競爭者"], options: ["一馬當先", "天馬行空", "快馬加鞭", "走馬看花"] },
+        { answer: "萬馬奔騰", wiki: "形容聲勢浩大，場面壯觀。常用於形容群眾運動或自然景觀。", example: "狂風捲著雪花，從山頂上呼嘯而過，猶如萬馬奔騰。", clues: ["形容聲勢極其壯大", "氣勢雄偉、震撼人心", "像一萬匹馬在奔跑", "常用來形容自然景觀"], options: ["萬馬奔騰", "千軍萬馬", "馬到成功", "指鹿為馬"] },
+        { answer: "馬不停蹄", wiki: "馬跑個不停，蹄不落地。比喻一刻也不停留地連續前進。", example: "為了趕在期限內完成專案報告，阿舅馬不停蹄的開了一整天的會。", clues: ["形容工作或行程非常緊湊", "一刻也不停留地前進", "行程銜接得很緊", "不停地奔忙"], options: ["馬不停蹄", "快馬加鞭", "走馬看花", "心猿意馬"] },
+        { answer: "老馬識途", wiki: "老馬認識路。比喻年長或有經驗的人熟悉情況，能起引導作用。", example: "在這片陌生的森林裡，幸好有老馬識途的嚮導帶路，我們才沒有迷路。", clues: ["比喻閱歷深、經驗豐富的人", "能夠引領或指引方向", "形容有經驗的老手", "能在迷茫中找到路"], options: ["老馬識途", "指鹿為馬", "害群之馬", "塞翁失馬"] },
+        { answer: "指鹿為馬", wiki: "指著鹿說是馬。比喻故意顛倒黑白，混淆是非。", example: "他竟敢在大眾面前指鹿為馬、顛倒黑白，真是膽大妄為。", clues: ["故意混淆是非、顛倒黑白", "欺騙大眾", "藉以展現自己的威嚴", "明明是錯的卻硬說是對的"], options: ["指鹿為馬", "露出馬腳", "蛛絲馬跡", "心猿意馬"] },
+        { answer: "車水馬龍", wiki: "車像流水，馬像游龍。形容交通繁忙、熱鬧非凡的景象。", example: "知名的淡水老街，每到假日時，總是車水馬龍，非常熱鬧。", clues: ["形容街道熱鬧繁華", "車輛與行人來來往往", "絡繹不絕", "形容交通非常繁忙"], options: ["車水馬龍", "萬馬奔騰", "馬到成功", "走馬看花"] },
+        { answer: "害群之馬", wiki: "危害馬群的劣馬。比喻危害社會或集體的人。", example: "他違規闖紅燈造成車禍，變成了阻塞交通的害群之馬。", clues: ["不遵守團體規範", "破壞紀律", "危害群體的人", "比喻團體中的敗類"], options: ["害群之馬", "老馬識途", "塞翁失馬", "懸崖勒馬"] },
+        { answer: "塞翁失馬", wiki: "比喻雖然暫時吃虧，卻可能因此得到好處。也指世事多變，禍福難測。", example: "他的舊車不見了，保險公司賠他一部新車，真可說是塞翁失馬。", clues: ["比喻暫時受到損失", "因禍得福", "終於得到好處", "壞事可能變成好事"], options: ["塞翁失馬", "指鹿為馬", "馬到成功", "天馬行空"] },
+        { answer: "天馬行空", wiki: "天馬馳聘於空中。形容才思豪放，或指言論空闊不切實際。", example: "唐朝的詩仙李白才氣縱橫，行文如天馬行空，一氣呵成。", clues: ["比喻文才氣勢豪放不拘", "形容浮誇不著邊際", "想像力非常豐富", "不拘泥於現實"], options: ["天馬行空", "走馬看花", "一馬當先", "心猿意馬"] },
+        { answer: "快馬加鞭", wiki: "給跑得很快的馬再加上鞭打。形容快上加快，急急忙忙。", example: "距離完工期限只剩一個月，施工單位快馬加鞭，日夜不休，力求如期完工。", clues: ["對跑很快的馬再加以鞭策", "使牠跑得更快", "形容快上加快", "比喻努力不懈地加速"], options: ["快馬加鞭", "馬不停蹄", "一馬當先", "萬馬奔騰"] },
+        { answer: "走馬看花", wiki: "騎在馬上看花。原形容得意愉快的心情。後比喻觀察事物不深入，不細緻。", example: "想要把一個地方的歷史了解得很仔細，走馬看花的方法是行不通的。", clues: ["比喻粗略、匆促的觀看", "不能仔細深入了解事物", "形容看得很表面", "蜻蜓點水式的觀察"], options: ["走馬看花", "天馬行空", "指鹿為馬", "蛛絲馬跡"] },
+        { answer: "露出馬腳", wiki: "比喻隱瞞的真相洩漏出來，被看穿了真實面目。", example: "放心好了！他偷偷摸摸做的這些事情，遲早會露出馬腳來。", clues: ["隱藏起來的真相洩漏", "被發現了", "露出破綻", "秘密洩漏出來"], options: ["露出馬腳", "指鹿為馬", "蛛絲馬跡", "懸崖勒馬"] },
+        { answer: "蛛絲馬跡", wiki: "蜘蛛的絲和馬蹄的痕跡。比喻與事情根源有關的隱約可尋的線索。", example: "這個名偵探憑著一點蛛絲馬跡，就找出真正的兇手，令人佩服。", clues: ["比喻可供尋查推求的線索", "細微的跡象", "尋找真相的關鍵", "微小的證據"], options: ["蛛絲馬跡", "露出馬腳", "走馬看花", "心猿意馬"] },
+        { answer: "心猿意馬", wiki: "心像猿猴在跳，意像馬在奔馳。形容心思散亂不定。", example: "做事要專心，不可心猿意馬，魂不守舍。", clues: ["比喻心思不專注、不集中", "比喻心意反覆不定", "心思如猿猴跳躍", "形容難以控制的心神"], options: ["心猿意馬", "天馬行空", "馬不停蹄", "一馬當先"] },
+        { answer: "懸崖勒馬", wiki: "懸崖峭壁前及時勒住馬匹。比喻在面臨極大危險前及時省悟回頭。", example: "他交了壞朋友，心性逐漸沉淪，再不懸崖勒馬，那就後悔莫及了。", clues: ["臨到懸崖時緊勒住馬", "比喻到了危險邊緣及時回頭", "及時停止錯誤的行為", "回頭是岸"], options: ["懸崖勒馬", "害群之馬", "馬到成功", "快馬加鞭"] }
+    ];
+
+    createApp({
+        setup() {
+            const gameState = ref('menu');
+            const mode = ref('');
+            const activePool = ref([]);
+            const currentIdx = ref(0);
+            const visibleCluesCount = ref(1);
+            const userAnswer = ref('');
+            const totalScore = ref(0);
+            const correctCount = ref(0);
+            const feedback = ref(null);
+            const timer = ref(30);
+            const shuffledOptions = ref([]);
+            let timerInterval = null;
+
+            const currentQuestion = computed(() => activePool.value[currentIdx.value]);
+            const visibleClues = computed(() => currentQuestion.value?.clues.slice(0, visibleCluesCount.value) || []);
+            const timerClass = computed(() => {
+                if (timer.value <= 5) return 'bg-red-500';
+                if (timer.value <= 15) return 'bg-yellow-500';
+                return 'bg-green-500';
+            });
+
+            const performanceRating = computed(() => {
+                const ratio = correctCount.value / activePool.value.length;
+                if (ratio === 1) return "🥇 絕世神馬 (滿分！)";
+                if (ratio >= 0.8) return "🌟 萬馬之王 (極其優秀)";
+                return "💪 潛力黑馬 (加油再試試)";
+            });
+
+            const selectMode = (m) => {
+                mode.value = m;
+                startCurrentMode();
+            };
+
+            const startCurrentMode = () => {
+                SoundManager.init();
+                if (mode.value === 'idioms') {
+                    // 成語隨機抽 10 題
+                    activePool.value = [...horseIdiomsGame].sort(() => Math.random() - 0.5).slice(0, 10);
+                } else {
+                    // 名稱篇使用更新後的 8 題
+                    activePool.value = [...horseNameTrivia];
+                }
+                currentIdx.value = 0;
+                totalScore.value = 0;
+                correctCount.value = 0;
+                gameState.value = 'playing';
+                initQuestion();
+            };
+
+            const initQuestion = () => {
+                userAnswer.value = '';
+                visibleCluesCount.value = 1;
+                shuffledOptions.value = [...currentQuestion.value.options].sort(() => Math.random() - 0.5);
+                startTimer();
+            };
+
+            const startTimer = () => {
+                timer.value = 30;
+                clearInterval(timerInterval);
+                timerInterval = setInterval(() => {
+                    timer.value--;
+                    if (timer.value <= 0) { clearInterval(timerInterval); checkAnswer(); }
+                }, 1000);
+            };
+
+            const showNextClue = () => {
+                if (visibleCluesCount.value < currentQuestion.value.clues.length) {
+                    visibleCluesCount.value++;
+                    totalScore.value = Math.max(0, totalScore.value - 10); // 增加線索扣 10 分
+                    SoundManager.play(800, 'sine', 0.05);
+                }
+            };
+
+            const selectOption = (opt) => { userAnswer.value = opt; checkAnswer(); };
+
+            const checkAnswer = () => {
+                if (userAnswer.value.trim() === currentQuestion.value.answer) {
+                    clearInterval(timerInterval);
+                    SoundManager.play(600, 'sine', 0.1);
+                    feedback.value = 'correct';
+                    correctCount.value++;
+                    const bonus = timer.value > 20 ? 50 : 30;
+                    totalScore.value += Math.max(10, bonus + (currentQuestion.value.clues.length - visibleCluesCount.value) * 10);
+                    confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+                } else if (userAnswer.value !== '') {
+                    totalScore.value = Math.max(0, totalScore.value - 20); // 答錯扣 20 分
+                    SoundManager.play(150, 'square', 0.2);
+                    feedback.value = 'wrong';
+                }
+            };
+
+            const nextQuestion = () => {
+                feedback.value = null;
+                if (currentIdx.value < activePool.value.length - 1) {
+                    currentIdx.value++;
+                    initQuestion();
+                } else {
+                    gameState.value = 'end';
+                }
+            };
+
+            const exitGame = () => {
+                clearInterval(timerInterval);
+                gameState.value = 'menu';
+            };
+
+            return {
+                gameState, mode, activePool, currentIdx, visibleCluesCount, userAnswer, totalScore, correctCount, feedback, timer, shuffledOptions,
+                currentQuestion, visibleClues, timerClass, performanceRating,
+                selectMode, startCurrentMode, exitGame, showNextClue, selectOption, checkAnswer, nextQuestion
+            };
+        }
+    }).mount('#app');
+</script>
+</body>
+</html>

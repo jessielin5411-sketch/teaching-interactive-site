@@ -1,0 +1,444 @@
+
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新春冷知識大比拼 (直式注音版)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f8f4eb;
+        }
+        .red-gradient {
+            background: linear-gradient(135deg, #d42426 0%, #a01a1c 100%);
+        }
+        .gold-border {
+            border: 3px solid #d4af37;
+        }
+        .option-btn {
+            transition: all 0.2s ease;
+        }
+        .option-btn:active {
+            transform: scale(0.95);
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .bounce {
+            animation: bounce 2s infinite;
+        }
+        
+        /* 台灣正統直式注音排版：定位於國字右側 */
+        ruby {
+            display: inline-flex;
+            flex-direction: row;
+            align-items: center;
+            vertical-align: middle;
+            margin-right: 0.48em; /* 完美的呼吸字距 */
+            position: relative;
+        }
+        
+        rt.zhuyin-rt {
+            display: inline-flex;
+            flex-direction: row;
+            align-items: center; /* 將聲調垂直居中置於注音右側 */
+            justify-content: center;
+            position: absolute;
+            left: calc(100% + 0.12em); /* 緊貼國字右側 */
+            top: 50%;
+            /* 使用 scale(0.62) 縮小注音，並將 Origin 設為 left，
+               這樣可以強制繞過所有瀏覽器的 12px 最小字型限制，
+               確保在任何裝置上注音都精緻小巧、絕不重疊！
+            */
+            transform: translateY(-50%) scale(0.62); 
+            transform-origin: left center;
+            font-size: 0.55em; /* 基礎比例設定 */
+            color: #b91c1c; /* 喜慶的紅色注音 */
+            line-height: 1;
+            pointer-events: none;
+            user-select: none;
+            white-space: nowrap;
+        }
+        
+        /* 注音拼音主體 (ㄅ-ㄦ) */
+        .zhuyin-base {
+            display: inline-block;
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+            letter-spacing: -0.1em; /* 讓注音上下靠緊 */
+            line-height: 0.95;
+        }
+        
+        /* 聲調符號 (ˊ ˇ ˋ) 擺在右邊中間 */
+        .zhuyin-tone {
+            display: inline-block;
+            font-size: 0.9em;
+            font-weight: bold;
+            margin-left: -0.05em; /* 稍微往注音靠攏 */
+            line-height: 1;
+        }
+        
+        /* 輕聲 (˙) 擺在注音的正上方 */
+        .zhuyin-tone.tone-light {
+            position: absolute;
+            top: -0.55em; /* 置於第一個注音符號上方 */
+            left: 50%;
+            transform: translateX(-50%);
+            margin-left: 0;
+            font-size: 0.8em;
+        }
+        
+        /* 當關閉注音時，隱藏 rt 標籤並還原字距 */
+        .no-zhuyin rt.zhuyin-rt {
+            display: none !important;
+        }
+        .no-zhuyin ruby {
+            margin-right: 0 !important;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+    <a href="../index.html" aria-label="返回綜合小遊戲" style="position:fixed;z-index:50;top:16px;left:16px;padding:10px 16px;border-radius:999px;color:#fff;background:#991b1b;box-shadow:0 4px 0 rgba(0,0,0,.18);font-weight:800;text-decoration:none;">← 返回綜合小遊戲</a>
+
+    <!-- 遊戲主容器 (預設開啟注音，可動態加入 no-zhuyin 類別) -->
+    <div id="game-container" class="w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden relative border-4 border-[#d4af37] flex flex-col min-h-[580px]">
+        
+        <!-- 右上角裝飾福字 -->
+        <div class="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
+            <svg width="100" height="100" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="40" fill="#d42426" />
+                <text x="50" y="65" font-size="40" text-anchor="middle" fill="white">福</text>
+            </svg>
+        </div>
+
+        <!-- 頂部功能列 (包含注音開關) -->
+        <div class="w-full bg-stone-100 px-4 py-2 flex justify-between items-center text-sm border-b border-stone-200 z-10">
+            <div class="flex items-center gap-1 text-stone-600 font-medium">
+                <span>🧧 家族同樂直式注音版</span>
+            </div>
+            <!-- 注音切換開關 -->
+            <button onclick="toggleZhuyin()" id="zhuyin-toggle-btn" class="flex items-center gap-2 bg-[#d42426] text-white px-3 py-1 rounded-full text-xs font-bold hover:brightness-110 shadow-sm transition-all">
+                <span>注音：開 (ㄅㄆㄇ)</span>
+            </button>
+        </div>
+
+        <!-- 歡迎頁面 -->
+        <div id="start-screen" class="p-8 text-center flex-1 flex flex-col justify-center items-center">
+            <div class="text-6xl mb-6 bounce">🧨</div>
+            <!-- 首頁標題：保持簡潔、提供注音 -->
+            <h1 class="text-3xl font-bold text-[#d42426] mb-4 tracking-wider" id="start-title">
+                新春冷知識大比拼
+            </h1>
+            <p class="text-gray-600 mb-8 leading-relaxed text-sm sm:text-base" id="start-desc">
+                <!-- 動態注入含注音說明 -->
+            </p>
+            <button onclick="startGame()" class="red-gradient text-white font-bold py-4 px-10 rounded-full text-xl shadow-lg hover:brightness-110 transition-all">
+                開始挑戰
+            </button>
+            <p class="mt-6 text-sm text-gray-400">#全家總動員 #新年快樂</p>
+        </div>
+
+        <!-- 遊戲進行頁面 -->
+        <div id="quiz-screen" class="hidden flex-1 flex flex-col">
+            <!-- 頂部資訊欄 -->
+            <div class="red-gradient p-4 text-white flex justify-between items-center">
+                <div class="flex flex-col">
+                    <span class="text-xs opacity-80">得分</span>
+                    <span id="score" class="text-xl font-bold">0</span>
+                </div>
+                <div class="text-center">
+                    <div id="timer-circle" class="w-12 h-12 rounded-full border-4 border-white flex items-center justify-center font-bold text-lg">
+                        15
+                    </div>
+                </div>
+                <div class="flex flex-col items-end">
+                    <span class="text-xs opacity-80">進度</span>
+                    <span id="progress" class="text-xl font-bold">1/10</span>
+                </div>
+            </div>
+
+            <!-- 問題區域 -->
+            <div class="p-6 flex-1 flex flex-col justify-between">
+                <div>
+                    <!-- 使用 leading-loose 寬鬆行高避免直式注音與上下行重疊 -->
+                    <div id="question-text" class="text-2xl font-bold text-gray-800 mb-6 min-h-[120px] leading-loose">
+                        加載中...
+                    </div>
+                    <div id="options-container" class="space-y-4">
+                        <!-- 選項按鈕會動態生成 -->
+                    </div>
+                </div>
+                
+                <!-- 提示回饋 -->
+                <div id="feedback" class="h-12 mt-4 flex items-center justify-center font-bold transition-all opacity-0 text-lg">
+                    <!-- 正確或錯誤 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 結果頁面 -->
+        <div id="result-screen" class="hidden p-8 text-center flex-1 flex flex-col justify-center items-center">
+            <div id="result-icon" class="text-6xl mb-4">🎊</div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">挑戰完成！</h2>
+            <div class="bg-gray-100 rounded-2xl p-6 mb-6 w-full">
+                <p class="text-gray-600">最終得分</p>
+                <p id="final-score" class="text-5xl font-black text-[#d42426]">0</p>
+            </div>
+            <p id="result-comment" class="text-lg text-gray-700 mb-8 font-medium leading-loose"></p>
+            <button onclick="resetGame()" class="bg-gray-800 text-white font-bold py-3 px-8 rounded-full hover:bg-gray-700 transition-all">
+                再玩一次
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        // 台灣注音對照題庫資料格式：字{ㄗˋ}
+        // 修正了注音聲調，並將輕聲寫為「˙ㄉㄜ」、「˙ㄇㄚ」等
+        const questions = [
+            {
+                q: "傳{ㄔㄨㄢˊ}統{ㄊㄨㄥˇ}上{ㄕㄤˋ}，哪{ㄋㄚˇ}一{ㄧˋ}天{ㄊㄧㄢ}被{ㄅㄟˋ}稱{ㄔㄥ}為{ㄨㄟˊ}「破{ㄆㄛˋ}五{ㄨˇ}」，許{ㄒㄩˇ}多{ㄉㄨㄛ}禁{ㄐㄧㄣ}忌{ㄐㄧˋ}在{ㄗㄞˋ}當{ㄉㄤ}天{ㄊㄧㄢ}會{ㄏㄨㄟˋ}解{ㄐㄧㄝˇ}除{ㄔㄨˊ}？",
+                o: ["初{ㄔㄨ}一{ㄧ}", "初{ㄔㄨ}三{ㄙㄢ}", "初{ㄔㄨ}五{ㄨˇ}", "初{ㄔㄨ}七{ㄑㄧ}"],
+                a: 2
+            },
+            {
+                q: "為{ㄨㄟˋ}什{ㄕㄣˊ}麼{ㄇㄜ˙}過{ㄍㄨㄛˋ}年{ㄋㄧㄢˊ}要{ㄧㄠˋ}放{ㄈㄤˋ}鞭{ㄅㄧㄢ}炮{ㄆㄠˋ}？相{ㄒㄧㄤ}傳{ㄔㄨㄢˊ}是{ㄕˋ}為{ㄨㄟˋ}了{ㄌㄜ˙}驅{ㄑㄩ}趕{ㄍㄢˇ}哪{ㄋㄚˇ}種{ㄓㄨㄥˇ}怪{ㄍㄨㄞˋ}獸{ㄕㄡˋ}？",
+                o: ["年{ㄋㄧㄢˊ}獸{ㄕㄡˋ}", "麒{ㄑㄧˊ}麟{ㄌㄧㄣˊ}", "饕{ㄊㄠ}餮{ㄊㄧㄝˋ}", "檮{ㄊㄠˊ}杌{ㄨˋ}"],
+                a: 0
+            },
+            {
+                q: "過{ㄍㄨㄛˋ}年{ㄋㄧㄢˊ}吃{ㄔ}長{ㄔㄤˊ}年{ㄋㄧㄢˊ}菜{ㄘㄞˋ}時{ㄕˊ}，有{ㄧㄡˇ}什{ㄕㄣˊ}麼{ㄇㄜ˙}特{ㄊㄜˋ}別{ㄅㄧㄝˊ}的{ㄉㄜ˙}規{ㄍㄨㄟ}矩{ㄐㄩˇ}？",
+                o: ["要{ㄧㄠˋ}切{ㄑㄧㄝ}很{ㄏㄣˇ}碎{ㄙㄨㄟˋ}", "不{ㄅㄨˋ}能{ㄋㄥˊ}咬{ㄧㄠˇ}斷{ㄉㄨㄢˋ}", "一{ㄧˊ}定{ㄉㄧㄥˋ}要{ㄧㄠˋ}配{ㄆㄟˋ}飯{ㄈㄢˋ}", "不{ㄅㄨˋ}能{ㄋㄥˊ}配{ㄆㄟˋ}肉{ㄖㄡˋ}"],
+                a: 1
+            },
+            {
+                q: "大{ㄉㄚˋ}年{ㄋㄧㄢˊ}初{ㄔㄨ}一{ㄧ}的{ㄉㄜ˙}禁{ㄐㄧㄣ}忌{ㄐㄧˋ}中{ㄓㄨㄥ}，哪{ㄋㄚˇ}一{ㄧˊ}項{ㄒㄧㄤˋ}最{ㄗㄨㄟˋ}常{ㄔㄤˊ}被{ㄅㄟˋ}長{ㄓㄤˇ}輩{ㄅㄟˋ}提{ㄊㄧˊ}起{ㄑㄧˇ}？",
+                o: ["不{ㄅㄨˋ}能{ㄋㄥˊ}吃{ㄔ}魚{ㄩˊ}", "不{ㄅㄨˋ}能{ㄋㄥˊ}睡{ㄕㄨㄟˋ}覺{ㄐㄧㄠˋ}", "不{ㄅㄨˋ}能{ㄋㄥˊ}掃{ㄙㄠˇ}地{ㄉㄧˋ}倒{ㄉㄠˋ}垃{ㄌㄜˋ}圾{ㄙㄜˋ}", "不{ㄅㄨˋ}能{ㄋㄥˊ}看{ㄎㄢˋ}電{ㄉㄧㄢˋ}視{ㄕˋ}"],
+                a: 2
+            },
+            {
+                q: "「壓{ㄧㄚ}歲{ㄙㄨㄟˋ}錢{ㄑㄧㄢˊ}」最{ㄗㄨㄟˋ}初{ㄔㄨ}的{ㄉㄜ˙}目{ㄇㄨˋ}的{ㄉㄧˋ}是{ㄕˋ}為{ㄨㄟˋ}了{ㄌㄜ˙}壓{ㄧㄚ}住{ㄓㄨˋ}什{ㄕㄣˊ}麼{ㄇㄜ˙}？",
+                o: ["貧{ㄆㄧㄣˊ}窮{ㄑㄩㄥˊ}", "邪{ㄒㄧㄝˊ}祟{ㄙㄨㄟˋ}", "體{ㄊㄧˇ}重{ㄓㄨㄥˋ}", "壞{ㄏㄨㄞˋ}脾{ㄆㄧˊ}氣{ㄑㄧˋ}"],
+                a: 1
+            },
+            {
+                q: "除{ㄔㄨˊ}夕{ㄒㄧˋ}夜{ㄧㄝˋ}的{ㄉㄜ˙}「圍{ㄨㄟˊ}爐{ㄌㄨˊ}」中{ㄓㄨㄥ}，哪{ㄋㄚˇ}一{ㄧˋ}種{ㄓㄨㄥˇ}食{ㄕˊ}材{ㄘㄞˊ}象{ㄒㄧㄤˋ}徵{ㄓㄥ}「團{ㄊㄨㄢˊ}圓{ㄩㄢˊ}」？",
+                o: ["魚{ㄩˊ}肉{ㄖㄡˋ}", "長{ㄔㄤˊ}年{ㄋㄧㄢˊ}菜{ㄘㄞˋ}", "丸{ㄨㄢˊ}子{ㄗ˙}", "年{ㄋㄧㄢˊ}糕{ㄍㄠ}"],
+                a: 2
+            },
+            {
+                q: "學{ㄒㄩㄝˊ}習{ㄒㄧˊ}習{ㄒㄧˊ}習{ㄒㄧˊ}俗{ㄙㄨˊ}話{ㄏㄨㄚˋ}說{ㄕㄨㄛ}「初{ㄔㄨ}一{ㄧ}早{ㄗㄠˇ}、初{ㄔㄨ}二{ㄦˋ}早{ㄗㄠˇ}、初{ㄔ}三{ㄙㄢ}...」接{ㄐㄧㄝ}下{ㄒㄧㄚˋ}來{ㄌㄞˊ}是{ㄕˋ}什{ㄕㄣˊ}麼{ㄇㄜ˙}？",
+                o: ["初{ㄔㄨ}三{ㄙㄢ}好{ㄏㄠˇ}", "初{ㄔㄨ}三{ㄙㄢ}睏{ㄎㄨㄣˋ}到{ㄉㄠˋ}飽{ㄅㄠˇ}", "初{ㄔㄨ}三{ㄙㄢ}拜{ㄅㄞˋ}早{ㄗㄠˇ}年{ㄋㄧㄢˊ}", "初{ㄔㄨ}三{ㄙㄢ}去{ㄑㄩˋ}郊{ㄐㄧㄠ}遊{ㄧㄡˊ}"],
+                a: 1
+            },
+            {
+                q: "春{ㄔㄨㄣ}節{ㄐㄧㄝˊ}期{ㄑㄧˊ}間{ㄐㄧㄢ}，將{ㄐㄧㄤ}「福{ㄈㄨˊ}」字{ㄗˋ}倒{ㄉㄠˋ}著{ㄓㄜ˙}貼{ㄊㄧㄝ}，取{ㄑㄩˇ}其{ㄑㄧˊ}諧{ㄒㄧㄝˊ}音{ㄧㄣ}象{ㄒㄧㄤˋ}徵{ㄓㄥ}什{ㄕㄣˊ}麼{ㄇㄜ˙}？",
+                o: ["福{ㄈㄨˊ}氣{ㄑㄧˋ}跑{ㄆㄠˇ}了{ㄌㄜ˙}", "福{ㄈㄨˊ}氣{ㄑㄧˋ}到{ㄉㄠˋ}", "福{ㄈㄨˊ}星{ㄒㄧㄥ}高{ㄍㄠ}照{ㄓㄠˋ}", "福{ㄈㄨˊ}如{ㄖㄨˊ}東{ㄉㄨㄥ}海{ㄏㄞˇ}"],
+                a: 1
+            },
+            {
+                q: "農{ㄋㄨㄥˊ}曆{ㄌㄧˋ}正{ㄓㄥ}月{ㄩㄝˋ}初{ㄔㄨ}七{ㄑㄧ}被{ㄅㄟˋ}稱{ㄔㄥ}為{ㄨㄟˊ}什{ㄕㄣˊ}麼{ㄇㄜ˙}日{ㄖˋ}子{ㄗ˙}？",
+                o: ["老{ㄌㄠˇ}鼠{ㄕㄨˇ}娶{ㄑㄩˇ}親{ㄑㄧㄣ}", "財{ㄘㄞˊ}神{ㄕㄣˊ}生{ㄕㄥ}日{ㄖㄧˋ}", "人{ㄖㄣˊ}日{ㄖˋ} (人{ㄖㄣˊ}的{ㄉㄜ˙}生{ㄕㄥ}日{ㄖˋ})", "天{ㄊㄧㄢ}公{ㄍㄨㄥ}生{ㄕㄥ}"],
+                a: 2
+            },
+            {
+                q: "過{ㄍㄨㄛ}年{ㄋㄧㄢˊ}吃{ㄔ}年{ㄋㄧㄢˊ}糕{ㄍㄠ}，象{ㄒㄧㄤˋ}徵{ㄓㄥ}著{ㄓㄜ˙}什{ㄕㄣˊ}麼{ㄇㄜ˙}吉{ㄐㄧˊ}祥{ㄒㄧˊ}話{ㄏㄨㄚˋ}？",
+                o: ["步{ㄅㄨˋ}步{ㄅㄨˋ}高{ㄍㄠ}升{ㄕㄥ}", "招{ㄓㄠ}財{ㄘㄞˊ}進{ㄐㄧㄣˋ}寶{ㄅㄠˇ}", "大{ㄉㄚˋ}吉{ㄐㄧˊ}大{ㄉㄚˋ}利{ㄌㄧˋ}", "年{ㄋㄧㄢˊ}年{ㄋㄧㄢˊ}有{ㄧㄡˇ}餘{ㄩˊ}"],
+                a: 0
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let timeLeft = 15;
+        let timer = null;
+        let canAnswer = true;
+        let showZhuyin = true; // 預設開啟注音
+
+        const gameContainer = document.getElementById('game-container');
+        const zhuyinToggleBtn = document.getElementById('zhuyin-toggle-btn');
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultScreen = document.getElementById('result-screen');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const feedback = document.getElementById('feedback');
+        const timerCircle = document.getElementById('timer-circle');
+
+        // 將拼音與聲調切分，例如 "ㄔㄨㄢˊ" 切分為 { base: "ㄔㄨㄢ", tone: "ˊ" }
+        function splitZhuyin(zhuyinStr) {
+            const match = zhuyinStr.match(/^([ㄅㄆㄇㄈㄉㄊㄋㄌㄍㄎㄏㄐㄑㄒㄓㄔㄕㄖㄗㄘㄙㄚㄛㄜㄝㄞㄟㄠㄡㄢㄣㄤㄥㄦㄧㄨㄩ]+)([ˊˇˋ˙]?)$/);
+            if (match) {
+                return { base: match[1], tone: match[2] };
+            }
+            return { base: zhuyinStr, tone: '' };
+        }
+
+        // 解析包含 "字{ㄗˋ}" 格式的文本，並根據台灣標準注音排版渲染為 HTML
+        // 【修正重點】正則表達式排除括號 `<` 與 `>`，避免 HTML 標籤（如 <br>）被吞進 ruby 中
+        function parseZhuyin(text) {
+            return text.replace(/([^\s{}()（）「」『』,，。！？<>]+)\{([^}]+)\}/g, (match, hanzi, zhuyin) => {
+                const parts = splitZhuyin(zhuyin);
+                let toneHtml = '';
+                if (parts.tone === '˙') {
+                    // 輕聲置於上方
+                    toneHtml = `<span class="zhuyin-tone tone-light">${parts.tone}</span>`;
+                } else if (parts.tone) {
+                    // 其他聲調置於右側中間
+                    toneHtml = `<span class="zhuyin-tone">${parts.tone}</span>`;
+                }
+                
+                return `<ruby>${hanzi}<rt class="zhuyin-rt"><span class="zhuyin-base">${parts.base}</span>${toneHtml}</rt></ruby>`;
+            });
+        }
+
+        // 初始化歡迎介面文字（大標題純文字，說明帶注音）
+        function initWelcomeScreen() {
+            document.getElementById('start-desc').innerHTML = parseZhuyin("測{ㄘㄜˋ}試{ㄕˋ}你{ㄋㄧˇ}對{ㄉㄨㄟˋ}農{ㄋㄨㄥˊ}曆{ㄌㄧˋ}新{ㄒㄧㄣ}年{ㄋㄧㄢˊ}的{ㄉㄜ˙}了{ㄌㄧㄠˇ}解{ㄐㄧㄝˇ}程{ㄔㄥˊ}度{ㄉㄨˋ}！<br>準{ㄓㄨㄣˇ}備{ㄅㄟˋ}好{ㄏㄠˇ}接{ㄐㄧㄝ}受{ㄕㄡˋ}挑{ㄊㄧㄠˇ}戰{ㄓㄢˋ}了{ㄌㄜ˙}嗎{ㄇㄚ˙}？");
+        }
+
+        // 切換注音顯示狀態
+        function toggleZhuyin() {
+            showZhuyin = !showZhuyin;
+            if (showZhuyin) {
+                gameContainer.classList.remove('no-zhuyin');
+                zhuyinToggleBtn.innerHTML = "<span>注音：開 (ㄅㄆㄇ)</span>";
+                zhuyinToggleBtn.className = "flex items-center gap-2 bg-[#d42426] text-white px-3 py-1 rounded-full text-xs font-bold hover:brightness-110 shadow-sm transition-all";
+            } else {
+                gameContainer.classList.add('no-zhuyin');
+                zhuyinToggleBtn.innerHTML = "<span>注音：關 (國字)</span>";
+                zhuyinToggleBtn.className = "flex items-center gap-2 bg-stone-400 text-white px-3 py-1 rounded-full text-xs font-bold hover:brightness-110 shadow-sm transition-all";
+            }
+        }
+
+        function startGame() {
+            startScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+            resultScreen.classList.add('hidden');
+            currentQuestion = 0;
+            score = 0;
+            showQuestion();
+        }
+
+        function showQuestion() {
+            canAnswer = true;
+            timeLeft = 15;
+            feedback.style.opacity = '0';
+            updateTimerDisplay();
+            
+            const q = questions[currentQuestion];
+            document.getElementById('progress').innerText = `${currentQuestion + 1}/${questions.length}`;
+            document.getElementById('score').innerText = score;
+            
+            // 渲染問題（直式注音）
+            questionText.innerHTML = parseZhuyin(q.q);
+            
+            optionsContainer.innerHTML = '';
+            q.o.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = "option-btn w-full text-left p-4 rounded-xl border-2 border-gray-100 hover:border-[#d4af37] hover:bg-orange-50 font-bold text-gray-700 transition-all flex justify-between items-center group leading-loose text-lg";
+                // 渲染選項（直式注音）
+                btn.innerHTML = `<span>${parseZhuyin(opt)}</span><span class="opacity-0 group-hover:opacity-100 text-xl">🧧</span>`;
+                btn.onclick = () => handleAnswer(index);
+                optionsContainer.appendChild(btn);
+            });
+
+            startTimer();
+        }
+
+        function startTimer() {
+            clearInterval(timer);
+            timer = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    handleAnswer(-1); // 時間到
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            timerCircle.innerText = timeLeft;
+            if (timeLeft <= 5) {
+                timerCircle.classList.add('text-red-500', 'border-red-500');
+            } else {
+                timerCircle.classList.remove('text-red-500', 'border-red-500');
+            }
+        }
+
+        function handleAnswer(selectedIndex) {
+            if (!canAnswer) return;
+            canAnswer = false;
+            clearInterval(timer);
+
+            const correctIndex = questions[currentQuestion].a;
+            const buttons = optionsContainer.querySelectorAll('button');
+
+            if (selectedIndex === correctIndex) {
+                // 答對
+                score += (10 + timeLeft);
+                buttons[selectedIndex].classList.add('bg-green-100', 'border-green-500', 'text-green-800');
+                showFeedback(parseZhuyin("答{ㄉㄚˊ}對{ㄉㄨㄟˋ}了{ㄌㄜ˙}！恭{ㄍㄨㄥ}喜{ㄒㄧˇ}發{ㄈㄚ}財{ㄘㄞˊ} 🧧"), "text-green-600");
+            } else {
+                // 答錯
+                if (selectedIndex !== -1) {
+                    buttons[selectedIndex].classList.add('bg-red-100', 'border-red-500', 'text-red-800');
+                }
+                buttons[correctIndex].classList.add('bg-green-50', 'border-green-300');
+                showFeedback(selectedIndex === -1 ? parseZhuyin("時{ㄕˊ}間{ㄐㄧㄢ}到{ㄉㄠˋ}！正{ㄓˋ}確{ㄑㄩㄝˋ}答{ㄉㄚˊ}案{ㄢˋ}是{ㄕˋ}...") : parseZhuyin("哎{ㄞ}呀{ㄧㄚ}，答{ㄉㄚˊ}錯{ㄘㄨㄛˋ}了{ㄌㄜ˙}！"), "text-red-600");
+            }
+
+            setTimeout(() => {
+                currentQuestion++;
+                if (currentQuestion < questions.length) {
+                    showQuestion();
+                } else {
+                    showResult();
+                }
+            }, 2500); // 提供充足時間閱讀直式注音回饋
+        }
+
+        function showFeedback(htmlText, colorClass) {
+            feedback.innerHTML = htmlText;
+            feedback.className = `h-12 mt-4 flex items-center justify-center font-bold transition-all opacity-100 ${colorClass}`;
+        }
+
+        function showResult() {
+            quizScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+            document.getElementById('final-score').innerText = score;
+            
+            let comment = "";
+            let icon = "";
+            if (score >= 200) {
+                comment = "你{ㄋㄧˇ}簡{ㄐㄧㄢˇ}直{ㄓˊ}是{ㄕˋ}春{ㄔㄨㄣ}節{ㄐㄧㄝˊ}文{ㄨㄣˊ}化{ㄏㄨㄚˋ}大{ㄉㄚˋ}師{ㄕ}！全{ㄑㄩㄢˊ}家{ㄐㄧㄚ}人{ㄖㄣˊ}都{ㄉㄡ}要{ㄧㄠˋ}聽{ㄊㄧㄥ}你{ㄋㄧˇ}的{ㄉㄜ˙}！";
+                icon = "👑";
+            } else if (score >= 150) {
+                comment = "非{ㄈㄟ}常{ㄔㄤˊ}厲{ㄌㄧˋ}害{ㄏㄞˋ}！今{ㄐㄧㄣ}年{ㄋㄧˊ}的{ㄉㄜ˙}紅{ㄏㄨㄥˊ}包{ㄅㄠ}一{ㄧ}定{ㄉㄧˋ}特{ㄊㄜˋ}別{ㄅㄧㄝˊ}厚{ㄏㄡˋ}！";
+                icon = "💰";
+            } else if (score >= 100) {
+                comment = "表{ㄅㄧㄠˇ}現{ㄒㄧㄢˋ}不{ㄅㄨˊ}錯{ㄘㄨㄛˋ}喔{ㄛ}！對{ㄉㄨˋ}傳{ㄔㄨㄢˊ}統{ㄊㄨㄥˇ}文{ㄨㄣˊ}化{ㄏㄨㄚˋ}很{ㄏㄣˇ}有{ㄧㄡˇ}研{ㄧㄢˊ}究{ㄐㄧㄡˋ}。";
+                icon = "🏮";
+            } else {
+                comment = "再{ㄗㄞˋ}接{ㄐㄧㄝ}再{ㄗㄞˋ}厲{ㄌㄧˋ}，多{ㄉㄨㄛ}跟{ㄍㄣ}長{ㄓㄤˇ}輩{ㄅㄟˋ}聊{ㄌㄧㄠˊ}天{ㄊㄧㄢ}學{ㄒㄩㄝˊ}習{ㄒㄧˊ}新{ㄒㄧㄣ}春{ㄔㄨㄣ}冷{ㄌㄥˇ}知{ㄓ}識{ㄕ}！";
+                icon = "🍊";
+            }
+            document.getElementById('result-comment').innerHTML = parseZhuyin(comment);
+            document.getElementById('result-icon').innerText = icon;
+        }
+
+        function resetGame() {
+            startGame();
+        }
+
+        window.onload = function() {
+            initWelcomeScreen();
+        }
+    </script>
+</body>
+</html>
