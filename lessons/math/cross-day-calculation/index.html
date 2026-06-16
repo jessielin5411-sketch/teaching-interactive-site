@@ -42,6 +42,86 @@ const quizData = [{
   correctIndex: 2,
   steps: '5/1 剩下的時間：24 - 20 = 4小時\n還需航行：40 - 4 = 36小時\n5/2 航行一整天：扣除 24小時\n還需航行：36 - 24 = 12小時\n所以到達時間是：5月3日 12 時',
   hint: '💡 提示：先把第一天剩下的時間扣掉，接著發現航行時間還超過一天 (24小時)，所以還要再扣掉第二天的一整天喔！'
+}, {
+  id: 6,
+  type: '求經過時間 (雙日)',
+  question: '小美第一天 21 時開始看流星，第二天 3 時結束。她總共觀察了幾小時？',
+  options: ['4 小時', '5 小時', '6 小時', '7 小時'],
+  correctIndex: 2,
+  steps: '第一天經過：24 - 21 = 3小時\n第二天經過：3 - 0 = 3小時\n總計：3 + 3 = 6小時',
+  hint: '💡 提示：先算第一天 21 時到 24 時，再加第二天 0 時到 3 時。'
+}, {
+  id: 7,
+  type: '求經過時間 (雙日)',
+  question: '校隊第一天 18 時出發參加比賽，第二天 9 時回到學校。請問外出共幾小時？',
+  options: ['13 小時', '14 小時', '15 小時', '16 小時'],
+  correctIndex: 2,
+  steps: '第一天經過：24 - 18 = 6小時\n第二天經過：9 - 0 = 9小時\n總計：6 + 9 = 15小時',
+  hint: '💡 提示：跨過午夜時，可以先把第一天剩下的時間算出來。'
+}, {
+  id: 8,
+  type: '求經過時間 (跨三日)',
+  question: '小隊從星期一 22 時開始露營，到星期三 7 時結束。請問共經過幾小時？',
+  options: ['31 小時', '32 小時', '33 小時', '34 小時'],
+  correctIndex: 2,
+  steps: '星期一經過：24 - 22 = 2小時\n星期二一整天：24小時\n星期三經過：7小時\n總計：2 + 24 + 7 = 33小時',
+  hint: '💡 提示：中間完整的一天要算 24 小時。'
+}, {
+  id: 9,
+  type: '往後推算求結束 (雙日)',
+  question: '科學營第一天 13 時開始，活動持續 16 小時。請問活動何時結束？',
+  options: ['第一天 23時', '第二天 3時', '第二天 5時', '第二天 7時'],
+  correctIndex: 2,
+  steps: '第一天剩下：24 - 13 = 11小時\n還剩：16 - 11 = 5小時\n所以結束在第二天 5時',
+  hint: '💡 提示：先用 24 減開始時間，看看第一天可用掉幾小時。'
+}, {
+  id: 10,
+  type: '往後推算求結束 (雙日)',
+  question: '烤箱第一天 19 時開始低溫烘烤，需要 11 小時。請問幾時完成？',
+  options: ['第一天 22時', '第二天 4時', '第二天 6時', '第二天 8時'],
+  correctIndex: 2,
+  steps: '第一天剩下：24 - 19 = 5小時\n還剩：11 - 5 = 6小時\n所以完成在第二天 6時',
+  hint: '💡 提示：第一天先走到午夜 24 時，再把剩下的時間放到第二天。'
+}, {
+  id: 11,
+  type: '往後推算求結束 (跨三日)',
+  question: '貨車第一天 16 時出發，行駛了 35 小時才抵達。請問抵達時間是？',
+  options: ['第二天 21時', '第三天 3時', '第三天 5時', '第三天 8時'],
+  correctIndex: 1,
+  steps: '第一天剩下：24 - 16 = 8小時\n還剩：35 - 8 = 27小時\n第二天一整天扣 24小時，還剩 3小時\n所以第三天 3時抵達',
+  hint: '💡 提示：扣完第一天後，如果還超過 24 小時，就再扣掉一整天。'
+}, {
+  id: 12,
+  type: '往前推算求起點 (雙日)',
+  question: '表演道具要準備 9 小時，第二天 8 時要完成。請問最晚要在何時開始？',
+  options: ['第一天 21時', '第一天 23時', '第二天 1時', '第二天 3時'],
+  correctIndex: 1,
+  steps: '第二天 8時往前推 8小時到第二天 0時\n還差：9 - 8 = 1小時\n從第一天 24時往前 1小時，是第一天 23時',
+  hint: '💡 提示：先看第二天從 0 時到 8 時有幾小時，不夠的再往第一天推。'
+}, {
+  id: 13,
+  type: '往前推算求起點 (雙日)',
+  question: '麵團需要發酵 18 小時，第二天 11 時要使用。請問要在何時開始發酵？',
+  options: ['第一天 15時', '第一天 17時', '第一天 19時', '第一天 21時'],
+  correctIndex: 1,
+  steps: '第二天已經過：11小時\n還差：18 - 11 = 7小時\n第一天 24 - 7 = 17時\n所以第一天 17時開始',
+  hint: '💡 提示：總時間比第二天 0 到 11 時還長，所以要回到第一天。'
+}, {
+  id: 14,
+  type: '往前推算求起點 (跨三日)',
+  question: '連續觀測需要 38 小時，第三天 6 時結束。請問從什麼時候開始？',
+  options: ['第一天 14時', '第一天 16時', '第二天 16時', '第二天 20時'],
+  correctIndex: 1,
+  steps: '第三天已過：6小時\n還差：38 - 6 = 32小時\n第二天一整天扣 24小時，還差 8小時\n第一天 24 - 8 = 16時\n所以第一天 16時開始',
+  hint: '💡 提示：先扣第三天，再扣第二天完整 24 小時，最後回到第一天。'
+}, {
+  id: 15,
+  type: '求經過時間 (雙日)',
+  question: '小杰第一天 14 時進圖書館，第二天 2 時離開。請問他待了幾小時？',
+  options: ['10 小時', '11 小時', '12 小時', '13 小時'],
+  correctIndex: 2,
+  steps: '第一天經過：24 - 14 = 10小時\n第二天經過：2小時\n總計：10 + 2 = 12小時',
+  hint: '💡 提示：跨日題先算到午夜，再算第二天從 0 時開始的時間。'
 }];
 const playSound = type => {
   try {
@@ -590,10 +670,33 @@ function TeachingTool() {
 }
 function QuizTool() {
   const [gameState, setGameState] = useState('start');
+  const [roundQuestions, setRoundQuestions] = useState([]);
   const [currentQIndex, setCurrentQIndex] = useState(0);
   const [feedback, setFeedback] = useState(null);
   const [studentName, setStudentName] = useState('');
-  const currentQ = quizData[currentQIndex];
+  const [wrongCount, setWrongCount] = useState(0);
+  const maxWrong = 3;
+  const roundSize = 5;
+  const shuffleArray = items => [...items].sort(() => Math.random() - 0.5);
+  const prepareRound = () => {
+    const pickedQuestions = shuffleArray(quizData).slice(0, roundSize).map(question => {
+      const shuffledOptions = shuffleArray(question.options.map((text, index) => ({
+        text,
+        originalIndex: index
+      })));
+      return {
+        ...question,
+        options: shuffledOptions.map(option => option.text),
+        correctIndex: shuffledOptions.findIndex(option => option.originalIndex === question.correctIndex)
+      };
+    });
+    setRoundQuestions(pickedQuestions);
+    setCurrentQIndex(0);
+    setWrongCount(0);
+    setFeedback(null);
+    setGameState('playing');
+  };
+  const currentQ = roundQuestions[currentQIndex];
   const handleAnswer = index => {
     if (feedback?.status === 'correct') return;
     if (index === currentQ.correctIndex) {
@@ -604,21 +707,30 @@ function QuizTool() {
       });
     } else {
       playSound('wrong');
+      const nextWrongCount = wrongCount + 1;
+      setWrongCount(nextWrongCount);
+      if (nextWrongCount >= maxWrong) {
+        setGameState('failed');
+        setFeedback(null);
+        return;
+      }
       setFeedback({
         status: 'wrong',
-        msg: '💦 哎呀，不對喔！看看提示再試一次吧。',
+        msg: `💦 哎呀，不對喔！剩下 ${maxWrong - nextWrongCount} 次機會，看看提示再試一次吧。`,
         selectedIndex: index
       });
     }
   };
   const nextQuestion = () => {
     setFeedback(null);
-    if (currentQIndex < quizData.length - 1) setCurrentQIndex(prev => prev + 1);else setGameState('name_entry');
+    if (currentQIndex < roundQuestions.length - 1) setCurrentQIndex(prev => prev + 1);else setGameState('name_entry');
   };
   const restartQuiz = () => {
     setGameState('start');
+    setRoundQuestions([]);
     setCurrentQIndex(0);
     setStudentName('');
+    setWrongCount(0);
     setFeedback(null);
   };
   if (gameState === 'start') {
@@ -638,12 +750,28 @@ function QuizTool() {
       className: "text-3xl font-black text-sky-600 mb-4"
     }, "闖關挑戰賽"), React.createElement("p", {
       className: "text-slate-500 mb-8 font-bold text-lg leading-relaxed"
-    }, "這是一場跨越日夜的時間推算挑戰！", React.createElement("br", null), "只要連續答對 5 題，", React.createElement("br", null), "就能獲得最高榮譽證書 🎓", React.createElement("br", null), React.createElement("span", {
+    }, "這是一場跨越日夜的時間推算挑戰！", React.createElement("br", null), "每次會從 15 題中隨機抽 5 題，", React.createElement("br", null), "答錯滿 3 次就要重新挑戰。", React.createElement("br", null), React.createElement("span", {
       className: "text-amber-500"
     }, "拿出你的魔法筆，一起動動腦吧！")), React.createElement("button", {
-      onClick: () => setGameState('playing'),
+      onClick: prepareRound,
       className: "w-full py-4 rounded-2xl bg-gradient-to-r from-sky-400 to-indigo-500 hover:from-sky-500 hover:to-indigo-600 text-white font-black text-xl transition-all shadow-[0_6px_0_#4338ca] hover:shadow-[0_4px_0_#4338ca] hover:translate-y-1 active:shadow-none active:translate-y-2"
     }, "🚀 開始挑戰！")));
+  }
+  if (gameState === 'failed') {
+    return React.createElement("div", {
+      className: "py-12 px-4 flex items-center justify-center animate-fade-in-up"
+    }, React.createElement("div", {
+      className: "max-w-md w-full bg-white rounded-[3rem] shadow-2xl p-10 border-8 border-red-100 text-center relative"
+    }, React.createElement("div", {
+      className: "text-7xl mb-5"
+    }, "💔"), React.createElement("h2", {
+      className: "text-3xl font-black text-red-500 mb-4"
+    }, "血量用完了！"), React.createElement("p", {
+      className: "text-slate-500 mb-8 font-bold text-lg leading-relaxed"
+    }, "這次答錯已達 3 題。", React.createElement("br", null), "休息一下，重新抽題再挑戰一次吧！"), React.createElement("button", {
+      onClick: prepareRound,
+      className: "w-full py-4 rounded-2xl bg-gradient-to-r from-red-400 to-pink-500 hover:from-red-500 hover:to-pink-600 text-white font-black text-xl transition-all shadow-[0_6px_0_#be123c] hover:shadow-[0_4px_0_#be123c] hover:translate-y-1 active:shadow-none active:translate-y-2"
+    }, "🔄 重新挑戰")));
   }
   if (gameState === 'name_entry') {
     return React.createElement("div", {
@@ -737,10 +865,12 @@ function QuizTool() {
   }, React.createElement("div", {
     className: "flex justify-between text-base font-black text-indigo-400 mb-2 px-2"
   }, React.createElement("span", null, "🎯 挑戰進度"), React.createElement("span", {
+    className: "bg-red-100 px-3 py-1 rounded-full text-red-600"
+  }, "❤️ 剩餘血量 ", maxWrong - wrongCount, " / ", maxWrong), React.createElement("span", {
     className: "bg-indigo-100 px-3 py-1 rounded-full text-indigo-600"
-  }, "第 ", currentQIndex + 1, " / ", quizData.length, " 關")), React.createElement("div", {
+  }, "第 ", currentQIndex + 1, " / ", roundQuestions.length, " 關")), React.createElement("div", {
     className: "h-4 w-full bg-indigo-100 rounded-full overflow-hidden flex border-2 border-indigo-50"
-  }, quizData.map((_, idx) => React.createElement("div", {
+  }, roundQuestions.map((_, idx) => React.createElement("div", {
     key: idx,
     className: `h-full flex-1 border-r-2 border-white transition-all duration-500 ${idx < currentQIndex ? 'bg-sky-400' : idx === currentQIndex ? 'bg-amber-400 animate-pulse' : 'bg-transparent'}`
   })))), React.createElement("div", {
