@@ -459,7 +459,7 @@ function TeachingTool() {
         width: `${segmentWidth / maxTimelineHours * 100}%`
       }
     });
-  }), React.createElement("div", {
+  }), calcMode !== 'find-start' && React.createElement("div", {
     className: "absolute -top-12 z-40 flex flex-col items-center pointer-events-none",
     style: {
       left: `${startHour / maxTimelineHours * 100}%`,
@@ -473,7 +473,7 @@ function TeachingTool() {
     style: {
       boxShadow: '0 0 0 2px rgba(255,255,255,.85)'
     }
-  })), React.createElement("div", {
+  })), calcMode !== 'find-end' && React.createElement("div", {
     className: "absolute -top-12 z-40 flex flex-col items-center pointer-events-none",
     style: {
       left: `${endHour / maxTimelineHours * 100}%`,
@@ -486,6 +486,20 @@ function TeachingTool() {
     className: "w-0 flex-1 border-dashed border-pink-600",
     style: {
       borderLeftWidth: '4px'
+    }
+  })), calcMode !== 'find-duration' && React.createElement("div", {
+    className: "absolute -top-12 z-40 flex flex-col items-center pointer-events-none",
+    style: {
+      left: `${(startHour + totalDuration / 2) / maxTimelineHours * 100}%`,
+      bottom: '0',
+      transform: 'translateX(-50%)'
+    }
+  }, React.createElement("div", {
+    className: "bg-emerald-600 text-white text-sm sm:text-base font-black px-3 py-1 rounded-full shadow-md border border-white whitespace-nowrap"
+  }, "⏱ 共花 ", totalDuration, " 小時"), React.createElement("div", {
+    className: "w-1.5 flex-1 bg-emerald-600 rounded-full",
+    style: {
+      boxShadow: '0 0 0 2px rgba(255,255,255,.85)'
     }
   })), Array.from({
     length: maxTimelineHours + 1
