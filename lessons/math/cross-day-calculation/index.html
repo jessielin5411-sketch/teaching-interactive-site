@@ -365,7 +365,7 @@ function TeachingTool() {
   return React.createElement("div", {
     className: "py-6 px-4 w-full animate-fade-in-up"
   }, React.createElement("div", {
-    className: "max-w-5xl mx-auto space-y-6"
+    className: "max-w-6xl mx-auto flex flex-col gap-6"
   }, React.createElement("div", {
     className: "flex flex-col md:flex-row justify-between items-center bg-white p-6 rounded-[2rem] shadow-lg border-4 border-sky-100"
   }, React.createElement("div", null, React.createElement("h2", {
@@ -408,7 +408,7 @@ function TeachingTool() {
     onClick: () => loadExample(ex),
     className: `px-4 py-2 rounded-2xl text-sm font-bold transition-transform active:scale-95 border-2 shadow-sm ${calcMode === ex.type ? 'bg-pink-400 text-white border-pink-500' : 'bg-white text-slate-600 border-slate-200 hover:bg-pink-50 hover:border-pink-300 hover:text-pink-600'}`
   }, ex.name))))), React.createElement("div", {
-    className: "bg-white p-6 sm:p-8 rounded-[2rem] shadow-lg border-4 border-emerald-100"
+    className: "order-2 bg-white p-6 sm:p-8 rounded-[2rem] shadow-lg border-4 border-emerald-100"
   }, React.createElement("div", {
     className: "relative w-full h-44 select-none mt-8 mb-6"
   }, React.createElement("div", {
@@ -507,9 +507,9 @@ function TeachingTool() {
       className: `mt-3 text-xs sm:text-sm font-black whitespace-nowrap ${i > 0 && i % 24 === 0 && i < maxTimelineHours ? 'bg-slate-900 text-white px-3 py-1.5 rounded-xl z-20 shadow-md mt-1 border-2 border-white' : isMajor ? 'text-slate-900 bg-white/80 px-2 py-1 rounded-lg shadow-sm' : 'text-slate-700 bg-white/60 px-1.5 py-0.5 rounded-md'}`
     }, isMajor ? formatAxisLabel(i) : is12HourFormat ? i % 12 || 12 : i % 24));
   })))), React.createElement("div", {
-    className: "grid grid-cols-1 lg:grid-cols-5 gap-6"
+    className: "contents"
   }, React.createElement("div", {
-    className: "lg:col-span-3 space-y-4 flex flex-col justify-center"
+    className: "order-1 grid grid-cols-1 lg:grid-cols-2 gap-4"
   }, calcMode === 'find-duration' && React.createElement(React.Fragment, null, React.createElement("div", {
     className: "bg-sky-50 p-6 rounded-[2rem] shadow-sm border-4 border-sky-200"
   }, React.createElement("label", {
@@ -559,7 +559,7 @@ function TeachingTool() {
   }, "⬅️ 往左推算：之前經過幾小時？"), React.createElement("span", {
     className: "font-black text-white bg-emerald-500 px-3 py-1.5 rounded-xl shadow-sm text-xl"
   }, totalDuration, " 小時")), renderDurationNumberInput('backward')))), React.createElement("div", {
-    className: "magic-notebook lg:col-span-2 bg-[#0d9488] text-white p-6 sm:p-8 rounded-[2rem] shadow-xl relative overflow-hidden flex flex-col border-8 border-[#115e59]"
+    className: "order-3 magic-notebook bg-[#0d9488] text-white p-6 sm:p-8 rounded-[2rem] shadow-xl relative overflow-hidden flex flex-col border-8 border-[#115e59]"
   }, React.createElement("div", {
     className: "absolute top-2 left-4 bottom-2 w-1 border-l-2 border-dashed border-teal-500/50"
   }), React.createElement("div", {
