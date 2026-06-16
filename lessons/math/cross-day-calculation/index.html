@@ -459,28 +459,28 @@ function TeachingTool() {
         width: `${segmentWidth / maxTimelineHours * 100}%`
       }
     });
-  }), calcMode !== 'find-start' && React.createElement("div", {
+  }), React.createElement("div", {
     className: "absolute -top-12 z-40 flex flex-col items-center pointer-events-none",
     style: {
       left: `${startHour / maxTimelineHours * 100}%`,
       bottom: '0',
       transform: 'translateX(-50%)'
     }
-  }, React.createElement("div", {
+  }, calcMode !== 'find-start' && React.createElement("div", {
     className: "bg-sky-700 text-white text-sm sm:text-base font-black px-3 py-1 rounded-full shadow-md border border-white whitespace-nowrap"
   }, "🏁 ", startObj.dayName, " ", formatTimeText(startObj.hour)), React.createElement("div", {
     className: "w-1.5 flex-1 bg-sky-700 rounded-full",
     style: {
       boxShadow: '0 0 0 2px rgba(255,255,255,.85)'
     }
-  })), calcMode !== 'find-end' && React.createElement("div", {
+  })), React.createElement("div", {
     className: "absolute -top-12 z-40 flex flex-col items-center pointer-events-none",
     style: {
       left: `${endHour / maxTimelineHours * 100}%`,
       bottom: '0',
       transform: 'translateX(-50%)'
     }
-  }, React.createElement("div", {
+  }, calcMode !== 'find-end' && React.createElement("div", {
     className: "bg-pink-600 text-white text-sm sm:text-base font-black px-3 py-1 rounded-full shadow-md border border-white whitespace-nowrap"
   }, "🛑 ", endObj.dayName, " ", formatTimeText(endObj.hour)), React.createElement("div", {
     className: "w-0 flex-1 border-dashed border-pink-600",
@@ -491,17 +491,11 @@ function TeachingTool() {
     className: "absolute -top-12 z-40 flex flex-col items-center pointer-events-none",
     style: {
       left: `${(startHour + totalDuration / 2) / maxTimelineHours * 100}%`,
-      bottom: '0',
       transform: 'translateX(-50%)'
     }
   }, React.createElement("div", {
     className: "bg-emerald-600 text-white text-sm sm:text-base font-black px-3 py-1 rounded-full shadow-md border border-white whitespace-nowrap"
-  }, "⏱ 共花 ", totalDuration, " 小時"), React.createElement("div", {
-    className: "w-1.5 flex-1 bg-emerald-600 rounded-full",
-    style: {
-      boxShadow: '0 0 0 2px rgba(255,255,255,.85)'
-    }
-  })), Array.from({
+  }, "⏱ 共花 ", totalDuration, " 小時")), Array.from({
     length: maxTimelineHours + 1
   }).map((_, i) => {
     const isMajor = i % 24 === 0 || i % 24 === 12;
