@@ -441,12 +441,24 @@ function TeachingTool() {
     className: "absolute left-2/3 top-2 bottom-2 border-l-8 border-dashed border-white/90 z-0 transition-all drop-shadow-md"
   })), React.createElement("div", {
     className: "absolute top-1/2 left-4 right-4 h-10 bg-slate-300 rounded-full -translate-y-1/2 z-10 shadow-inner border-4 border-white ring-4 ring-slate-400/40"
-  }, React.createElement("div", {
-    className: `absolute h-full rounded-full transition-all duration-300 shadow-lg border-4 border-white ${calcMode === 'find-duration' ? 'bg-gradient-to-r from-sky-500 to-indigo-700' : calcMode === 'find-end' ? 'bg-gradient-to-r from-yellow-400 to-orange-600' : 'bg-gradient-to-r from-emerald-500 to-teal-700'}`,
-    style: {
-      left: `${startHour / maxTimelineHours * 100}%`,
-      width: `${totalDuration / maxTimelineHours * 100}%`
-    }
+  }, Array.from({
+    length: timelineDays
+  }).map((_, dayIndex) => {
+    const dayStart = dayIndex * 24;
+    const dayEnd = (dayIndex + 1) * 24;
+    const segmentStart = Math.max(startHour, dayStart);
+    const segmentEnd = Math.min(endHour, dayEnd);
+    const segmentWidth = segmentEnd - segmentStart;
+    const colors = ['bg-sky-600', 'bg-amber-500', 'bg-violet-600'];
+    if (segmentWidth <= 0) return null;
+    return React.createElement("div", {
+      key: dayIndex,
+      className: `absolute h-full transition-all duration-300 shadow-lg border-y-4 border-white ${colors[dayIndex]} ${segmentStart === startHour ? 'rounded-l-full border-l-4' : ''} ${segmentEnd === endHour ? 'rounded-r-full border-r-4' : ''}`,
+      style: {
+        left: `${segmentStart / maxTimelineHours * 100}%`,
+        width: `${segmentWidth / maxTimelineHours * 100}%`
+      }
+    });
   }), React.createElement("div", {
     className: "absolute -top-12 z-40 flex flex-col items-center pointer-events-none",
     style: {
