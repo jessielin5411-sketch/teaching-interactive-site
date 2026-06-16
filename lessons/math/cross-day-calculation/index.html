@@ -1,57 +1,49 @@
-<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>跨日計算教學</title><script src="https://cdn.tailwindcss.com"></script><script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script><script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script><script src="https://unpkg.com/@babel/standalone/babel.min.js"></script><style>.magic-notebook{font-size:1.35rem}.magic-notebook .text-base{font-size:1.35rem!important}.magic-notebook .text-lg{font-size:1.5rem!important}.magic-notebook .text-xl{font-size:1.7rem!important}.magic-notebook .text-2xl{font-size:2rem!important}.magic-notebook .text-3xl{font-size:2.45rem!important}@media(max-width:640px){.magic-notebook{font-size:1.2rem}.magic-notebook .text-xl{font-size:1.45rem!important}.magic-notebook .text-2xl{font-size:1.75rem!important}.magic-notebook .text-3xl{font-size:2.1rem!important}}</style></head><body><div id="root"></div><script type="text/babel" data-plugins="transform-react-jsx">
-const { useState } = React;
-// ==========================================
-// 測驗模組資料與設定
-// ==========================================
-const quizData = [
-  {
-    id: 1,
-    type: '求經過時間 (雙日)',
-    question: '小安晚上 20 時搭夜車出發，隔天早上 6 時抵達目的地。請問小安搭了幾小時的車？',
-    options: ['8 小時', '10 小時', '12 小時', '14 小時'],
-    correctIndex: 1,
-    steps: '第一天經過：24時 - 20時 = 4小時\n第二天經過：6時 - 0時 = 6小時\n總計：4 + 6 = 10小時',
-    hint: '💡 提示：先算算看第一天晚上 20 時到午夜 24 時經過了多久？再加上第二天的時間喔！'
-  },
-  {
-    id: 2,
-    type: '往後推算求結束 (雙日)',
-    question: '便利商店停電維修，從今天早上 8 時開始，預計需要 28 小時。請問預計什麼時候會恢復供電？',
-    options: ['今天 20 時', '明天 8 時', '明天 12 時', '明天 16 時'],
-    correctIndex: 2,
-    steps: '今天剩下的時間：24 - 8 = 16小時\n明天還要繼續停電：28 - 16 = 12小時\n所以恢復時間是：明天 12 時',
-    hint: '💡 提示：停電的 28 小時中，先把今天剩下的時間 (24-8) 扣掉，看看還剩下幾小時會跨到明天？'
-  },
-  {
-    id: 3,
-    type: '往前推算求起點 (雙日)',
-    question: '麵包店長條吐司需要發酵與烘烤共 14 小時。如果想要在明天早上 10 時準時出爐，師傅最晚要在今天幾時開始製作？',
-    options: ['今天 18 時', '今天 20 時', '今天 22 時', '明天 6 時'],
-    correctIndex: 1,
-    steps: '明天用掉的時間：10小時\n還差幾小時要從今天扣：14 - 10 = 4小時\n從今天的午夜往前推：24 - 4 = 20時\n所以最晚要：今天 20 時開始',
-    hint: '💡 提示：從明天早上 10 時往前推算，先扣掉明天的 10 小時，發現還不夠，剩下的時間要從今天的 24 時繼續往前扣！'
-  },
-  {
-    id: 4,
-    type: '求經過時間 (跨三日)',
-    question: '登山隊從 10月1日早上 6 時出發入山，直到 10月3日下午 15 時才回到平地。請問他們在山中總共待了幾小時？',
-    options: ['48 小時', '54 小時', '57 小時', '63 小時'],
-    correctIndex: 2,
-    steps: '第一天 (10/1) 經過：24 - 6 = 18小時\n第二天 (10/2) 經過：一整天 = 24小時\n第三天 (10/3) 經過：15 - 0 = 15小時\n總計：18 + 24 + 15 = 57小時',
-    hint: '💡 提示：這題跨了三天喔！第一天經過幾小時？第二天是完整的一天 (24小時)，第三天經過幾小時？把它們全部加起來！'
-  },
-  {
-    id: 5,
-    type: '往後推算求結束 (跨三日)',
-    question: '跨國貨輪從 5月1日晚上 20 時出發，航行了 40 小時後到達港口。請問到達時間是幾月幾日幾時？',
-    options: ['5月2日 20時', '5月3日 8時', '5月3日 12時', '5月4日 12時'],
-    correctIndex: 2,
-    steps: '5/1 剩下的時間：24 - 20 = 4小時\n還需航行：40 - 4 = 36小時\n5/2 航行一整天：扣除 24小時\n還需航行：36 - 24 = 12小時\n所以到達時間是：5月3日 12 時',
-    hint: '💡 提示：先把第一天剩下的時間扣掉，接著發現航行時間還超過一天 (24小時)，所以還要再扣掉第二天的一整天喔！'
-  }
-];
-
-const playSound = (type) => {
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>跨日計算教學</title><script src="https://cdn.tailwindcss.com"></script><script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script><script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script><style>.magic-notebook{font-size:1.35rem}.magic-notebook .text-base{font-size:1.35rem!important}.magic-notebook .text-lg{font-size:1.5rem!important}.magic-notebook .text-xl{font-size:1.7rem!important}.magic-notebook .text-2xl{font-size:2rem!important}.magic-notebook .text-3xl{font-size:2.45rem!important}@media(max-width:640px){.magic-notebook{font-size:1.2rem}.magic-notebook .text-xl{font-size:1.45rem!important}.magic-notebook .text-2xl{font-size:1.75rem!important}.magic-notebook .text-3xl{font-size:2.1rem!important}}</style></head><body><div id="root"></div><script>
+const {
+  useState
+} = React;
+const quizData = [{
+  id: 1,
+  type: '求經過時間 (雙日)',
+  question: '小安晚上 20 時搭夜車出發，隔天早上 6 時抵達目的地。請問小安搭了幾小時的車？',
+  options: ['8 小時', '10 小時', '12 小時', '14 小時'],
+  correctIndex: 1,
+  steps: '第一天經過：24時 - 20時 = 4小時\n第二天經過：6時 - 0時 = 6小時\n總計：4 + 6 = 10小時',
+  hint: '💡 提示：先算算看第一天晚上 20 時到午夜 24 時經過了多久？再加上第二天的時間喔！'
+}, {
+  id: 2,
+  type: '往後推算求結束 (雙日)',
+  question: '便利商店停電維修，從今天早上 8 時開始，預計需要 28 小時。請問預計什麼時候會恢復供電？',
+  options: ['今天 20 時', '明天 8 時', '明天 12 時', '明天 16 時'],
+  correctIndex: 2,
+  steps: '今天剩下的時間：24 - 8 = 16小時\n明天還要繼續停電：28 - 16 = 12小時\n所以恢復時間是：明天 12 時',
+  hint: '💡 提示：停電的 28 小時中，先把今天剩下的時間 (24-8) 扣掉，看看還剩下幾小時會跨到明天？'
+}, {
+  id: 3,
+  type: '往前推算求起點 (雙日)',
+  question: '麵包店長條吐司需要發酵與烘烤共 14 小時。如果想要在明天早上 10 時準時出爐，師傅最晚要在今天幾時開始製作？',
+  options: ['今天 18 時', '今天 20 時', '今天 22 時', '明天 6 時'],
+  correctIndex: 1,
+  steps: '明天用掉的時間：10小時\n還差幾小時要從今天扣：14 - 10 = 4小時\n從今天的午夜往前推：24 - 4 = 20時\n所以最晚要：今天 20 時開始',
+  hint: '💡 提示：從明天早上 10 時往前推算，先扣掉明天的 10 小時，發現還不夠，剩下的時間要從今天的 24 時繼續往前扣！'
+}, {
+  id: 4,
+  type: '求經過時間 (跨三日)',
+  question: '登山隊從 10月1日早上 6 時出發入山，直到 10月3日下午 15 時才回到平地。請問他們在山中總共待了幾小時？',
+  options: ['48 小時', '54 小時', '57 小時', '63 小時'],
+  correctIndex: 2,
+  steps: '第一天 (10/1) 經過：24 - 6 = 18小時\n第二天 (10/2) 經過：一整天 = 24小時\n第三天 (10/3) 經過：15 - 0 = 15小時\n總計：18 + 24 + 15 = 57小時',
+  hint: '💡 提示：這題跨了三天喔！第一天經過幾小時？第二天是完整的一天 (24小時)，第三天經過幾小時？把它們全部加起來！'
+}, {
+  id: 5,
+  type: '往後推算求結束 (跨三日)',
+  question: '跨國貨輪從 5月1日晚上 20 時出發，航行了 40 小時後到達港口。請問到達時間是幾月幾日幾時？',
+  options: ['5月2日 20時', '5月3日 8時', '5月3日 12時', '5月4日 12時'],
+  correctIndex: 2,
+  steps: '5/1 剩下的時間：24 - 20 = 4小時\n還需航行：40 - 4 = 36小時\n5/2 航行一整天：扣除 24小時\n還需航行：36 - 24 = 12小時\n所以到達時間是：5月3日 12 時',
+  hint: '💡 提示：先把第一天剩下的時間扣掉，接著發現航行時間還超過一天 (24小時)，所以還要再扣掉第二天的一整天喔！'
+}];
+const playSound = type => {
   try {
     const AudioContext = window.AudioContext || window.webkitAudioContext;
     if (!AudioContext) return;
@@ -60,12 +52,11 @@ const playSound = (type) => {
     const gain = ctx.createGain();
     osc.connect(gain);
     gain.connect(ctx.destination);
-
     if (type === 'correct') {
       osc.type = 'sine';
-      osc.frequency.setValueAtTime(523.25, ctx.currentTime); 
-      osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.1); 
-      osc.frequency.setValueAtTime(783.99, ctx.currentTime + 0.2); 
+      osc.frequency.setValueAtTime(523.25, ctx.currentTime);
+      osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.1);
+      osc.frequency.setValueAtTime(783.99, ctx.currentTime + 0.2);
       gain.gain.setValueAtTime(0.2, ctx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
       osc.start(ctx.currentTime);
@@ -83,33 +74,58 @@ const playSound = (type) => {
     console.log("Audio play failed:", e);
   }
 };
-
-// ==========================================
-// 模組一：互動教學區組件
-// ==========================================
 function TeachingTool() {
   const [calcMode, setCalcMode] = useState('find-duration');
   const [timelineDays, setTimelineDays] = useState(2);
   const maxTimelineHours = timelineDays * 24;
-  const [startHour, setStartHour] = useState(15); 
-  const [endHour, setEndHour] = useState(34);     
+  const [startHour, setStartHour] = useState(15);
+  const [endHour, setEndHour] = useState(34);
   const [is12HourFormat, setIs12HourFormat] = useState(false);
-
-  const examples = [
-    { id: 1, type: 'find-duration', name: '🏨 小甲住飯店', start: 15, end: 34, desc: '已知起訖求經過' },
-    { id: 2, type: 'find-duration', name: '🐋 多多賞鯨 (跨三日)', start: 6, end: 63, desc: '已知起訖求經過' },
-    { id: 3, type: 'find-end', name: '🛒 賣場特賣 (往後推)', start: 9, duration: 30, end: 39, desc: '起點 + 經過 = 結束' },
-    { id: 4, type: 'find-start', name: '🏥 醫院急診 (往前推)', start: 6, duration: 28, end: 34, desc: '結束 - 經過 = 起點' },
-    { id: 5, type: 'find-start', name: '😴 多多睡覺 (往前推)', start: 20, duration: 11, end: 31, desc: '結束 - 經過 = 起點' },
-  ];
-
-  const loadExample = (ex) => {
+  const examples = [{
+    id: 1,
+    type: 'find-duration',
+    name: '🏨 小甲住飯店',
+    start: 15,
+    end: 34,
+    desc: '已知起訖求經過'
+  }, {
+    id: 2,
+    type: 'find-duration',
+    name: '🐋 多多賞鯨 (跨三日)',
+    start: 6,
+    end: 63,
+    desc: '已知起訖求經過'
+  }, {
+    id: 3,
+    type: 'find-end',
+    name: '🛒 賣場特賣 (往後推)',
+    start: 9,
+    duration: 30,
+    end: 39,
+    desc: '起點 + 經過 = 結束'
+  }, {
+    id: 4,
+    type: 'find-start',
+    name: '🏥 醫院急診 (往前推)',
+    start: 6,
+    duration: 28,
+    end: 34,
+    desc: '結束 - 經過 = 起點'
+  }, {
+    id: 5,
+    type: 'find-start',
+    name: '😴 多多睡覺 (往前推)',
+    start: 20,
+    duration: 11,
+    end: 31,
+    desc: '結束 - 經過 = 起點'
+  }];
+  const loadExample = ex => {
     setCalcMode(ex.type);
     setTimelineDays(ex.end > 48 || ex.start > 48 ? 3 : 2);
     setStartHour(ex.start);
     setEndHour(ex.end);
   };
-
   const toggleTimelineDays = () => {
     if (timelineDays === 3) {
       setTimelineDays(2);
@@ -119,635 +135,694 @@ function TeachingTool() {
       setTimelineDays(3);
     }
   };
-
-  const handleStartChange = (val) => setStartHour(Math.min(val, endHour));
-  const handleEndChange = (val) => setEndHour(Math.max(val, startHour));
-  const handleForwardDurationChange = (duration) => setEndHour(Math.min(maxTimelineHours, startHour + duration));
-  const handleBackwardDurationChange = (duration) => setStartHour(Math.max(0, endHour - duration));
-
+  const handleStartChange = val => setStartHour(Math.min(val, endHour));
+  const handleEndChange = val => setEndHour(Math.max(val, startHour));
+  const handleForwardDurationChange = duration => setEndHour(Math.min(maxTimelineHours, startHour + duration));
+  const handleBackwardDurationChange = duration => setStartHour(Math.max(0, endHour - duration));
   const totalDuration = endHour - startHour;
-
-  const getRelativeTime = (absoluteHour) => {
-    if (absoluteHour === 72) return { day: 3, hour: 24, dayName: '第三天', dayNum: 3 };
-    if (absoluteHour === 48 && timelineDays === 2) return { day: 2, hour: 24, dayName: '第二天', dayNum: 2 };
+  const getRelativeTime = absoluteHour => {
+    if (absoluteHour === 72) return {
+      day: 3,
+      hour: 24,
+      dayName: '第三天',
+      dayNum: 3
+    };
+    if (absoluteHour === 48 && timelineDays === 2) return {
+      day: 2,
+      hour: 24,
+      dayName: '第二天',
+      dayNum: 2
+    };
     const day = Math.floor(absoluteHour / 24) + 1;
     const hour = absoluteHour % 24;
     const dayNames = ['第一天', '第二天', '第三天'];
-    return { day, hour, dayName: dayNames[day - 1], dayNum: day };
+    return {
+      day,
+      hour,
+      dayName: dayNames[day - 1],
+      dayNum: day
+    };
   };
-
-  const formatTimeText = (hour) => {
+  const formatTimeText = hour => {
     if (!is12HourFormat) return `${hour}時`;
     if (hour === 0 || hour === 24) return '午夜 12時';
     if (hour === 12) return '中午 12時';
     return hour > 12 ? `下午 ${hour - 12} 時` : `上午 ${hour} 時`;
   };
-
-  const formatAxisLabel = (absoluteHour) => {
-    const { hour } = getRelativeTime(absoluteHour);
+  const formatAxisLabel = absoluteHour => {
+    const {
+      hour
+    } = getRelativeTime(absoluteHour);
     if (absoluteHour > 0 && absoluteHour % 24 === 0 && absoluteHour < maxTimelineHours) {
       return is12HourFormat ? '午夜12時' : '24時/0時';
     }
     return formatTimeText(hour);
   };
-
   const startObj = getRelativeTime(startHour);
   const endObj = getRelativeTime(endHour);
-
   const updateTimeByNumber = (target, dayValue, hourValue) => {
     const day = Math.max(1, Math.min(timelineDays, Number(dayValue) || 1));
     const hour = Math.max(0, Math.min(24, Number(hourValue) || 0));
     const absoluteHour = Math.min(maxTimelineHours, (day - 1) * 24 + hour);
-    if (target === 'start') handleStartChange(absoluteHour);
-    else handleEndChange(absoluteHour);
+    if (target === 'start') handleStartChange(absoluteHour);else handleEndChange(absoluteHour);
   };
-
   const renderTimeNumberInput = (target, timeObj) => {
     const isStart = target === 'start';
     const inputClass = `w-24 sm:w-28 px-3 py-3 rounded-2xl border-4 bg-white text-center text-2xl font-black outline-none shadow-inner ${isStart ? 'border-sky-300 text-sky-700 focus:border-sky-500' : 'border-pink-300 text-pink-700 focus:border-pink-500'}`;
-    return (
-      <div className={`flex flex-wrap items-center justify-center gap-3 p-4 rounded-2xl border-2 border-dashed ${isStart ? 'bg-sky-100/70 border-sky-300' : 'bg-pink-100/70 border-pink-300'}`}>
-        <label className="flex items-center gap-2 font-black text-slate-700 text-lg">
-          第
-          <input type="number" min="1" max={timelineDays} value={timeObj.dayNum} onFocus={(e) => e.target.select()} onChange={(e) => updateTimeByNumber(target, e.target.value, timeObj.hour)} className={inputClass}/>
-          天
-        </label>
-        <label className="flex items-center gap-2 font-black text-slate-700 text-lg">
-          <input type="number" min="0" max="24" value={timeObj.hour} onFocus={(e) => e.target.select()} onChange={(e) => updateTimeByNumber(target, timeObj.dayNum, e.target.value)} className={inputClass}/>
-          時
-        </label>
-      </div>
-    );
+    return React.createElement("div", {
+      className: `flex flex-wrap items-center justify-center gap-3 p-4 rounded-2xl border-2 border-dashed ${isStart ? 'bg-sky-100/70 border-sky-300' : 'bg-pink-100/70 border-pink-300'}`
+    }, React.createElement("label", {
+      className: "flex items-center gap-2 font-black text-slate-700 text-lg"
+    }, "第", React.createElement("input", {
+      type: "number",
+      min: "1",
+      max: timelineDays,
+      value: timeObj.dayNum,
+      onFocus: e => e.target.select(),
+      onChange: e => updateTimeByNumber(target, e.target.value, timeObj.hour),
+      className: inputClass
+    }), "天"), React.createElement("label", {
+      className: "flex items-center gap-2 font-black text-slate-700 text-lg"
+    }, React.createElement("input", {
+      type: "number",
+      min: "0",
+      max: "24",
+      value: timeObj.hour,
+      onFocus: e => e.target.select(),
+      onChange: e => updateTimeByNumber(target, timeObj.dayNum, e.target.value),
+      className: inputClass
+    }), "時"));
   };
-
-  const renderDurationNumberInput = (direction) => {
+  const renderDurationNumberInput = direction => {
     const isForward = direction === 'forward';
     const maximum = isForward ? maxTimelineHours - startHour : endHour;
     const changeDuration = isForward ? handleForwardDurationChange : handleBackwardDurationChange;
-    return (
-      <div className={`flex items-center justify-center gap-3 p-4 rounded-2xl border-2 border-dashed ${isForward ? 'bg-amber-50 border-amber-400' : 'bg-emerald-50 border-emerald-400'}`}>
-        <input type="number" min="0" max={maximum} value={totalDuration} onFocus={(e) => e.target.select()} onChange={(e) => changeDuration(Math.max(0, Math.min(maximum, Number(e.target.value) || 0)))} className={`w-36 px-4 py-3 rounded-2xl border-4 bg-white text-center text-3xl font-black outline-none shadow-inner ${isForward ? 'border-amber-400 text-amber-700 focus:border-amber-600' : 'border-emerald-400 text-emerald-700 focus:border-emerald-600'}`}/>
-        <span className="text-xl font-black text-slate-700">小時</span>
-      </div>
-    );
+    return React.createElement("div", {
+      className: `flex items-center justify-center gap-3 p-4 rounded-2xl border-2 border-dashed ${isForward ? 'bg-amber-50 border-amber-400' : 'bg-emerald-50 border-emerald-400'}`
+    }, React.createElement("input", {
+      type: "number",
+      min: "0",
+      max: maximum,
+      value: totalDuration,
+      onFocus: e => e.target.select(),
+      onChange: e => changeDuration(Math.max(0, Math.min(maximum, Number(e.target.value) || 0))),
+      className: `w-36 px-4 py-3 rounded-2xl border-4 bg-white text-center text-3xl font-black outline-none shadow-inner ${isForward ? 'border-amber-400 text-amber-700 focus:border-amber-600' : 'border-emerald-400 text-emerald-700 focus:border-emerald-600'}`
+    }), React.createElement("span", {
+      className: "text-xl font-black text-slate-700"
+    }, "小時"));
   };
-
   const generateSolvingSteps = () => {
     if (calcMode === 'find-duration') {
-      return (
-        <div className="space-y-5 text-xl leading-relaxed">
-          <div className="text-sky-200 font-bold mb-2 border-b-2 border-sky-400/50 pb-2">✏️ 【求經過時間】分段相加法</div>
-          {startObj.dayNum === endObj.dayNum ? (
-            <div className="text-white">同一天內：<br/><span className="text-yellow-300 font-bold text-xl">{endObj.hour}</span> - <span className="text-pink-300 font-bold text-xl">{startObj.hour}</span> = <span className="text-white bg-sky-600 px-2 py-1 rounded-lg font-bold text-xl">{totalDuration} 小時</span></div>
-          ) : (
-            <>
-              <div className="text-white">
-                1. {startObj.dayName}經過了：<br/>
-                <span className="pl-4">24 - <span className="text-pink-300 font-bold">{startObj.hour}</span> = <span className="font-bold text-yellow-300">{24 - startObj.hour} 小時</span></span>
-              </div>
-              {endObj.dayNum - startObj.dayNum === 2 && (
-                <div className="text-white">
-                  2. 第二天經過了：<br/>
-                  <span className="pl-4">一整天 = <span className="font-bold text-yellow-300">24 小時</span></span>
-                </div>
-              )}
-              <div className="text-white">
-                {endObj.dayNum - startObj.dayNum === 2 ? '3.' : '2.'} {endObj.dayName}經過了：<br/>
-                <span className="pl-4"><span className="text-yellow-300 font-bold">{endObj.hour}</span> - 0 = <span className="font-bold text-yellow-300">{endObj.hour} 小時</span></span>
-              </div>
-              <div className="mt-4 pt-3 border-t-2 border-sky-400/50 text-white font-bold text-lg">
-                總計把它們加起來：<br/>
-                <span className="text-2xl text-yellow-300">{24 - startObj.hour} {endObj.dayNum - startObj.dayNum === 2 ? '+ 24 ' : ''}+ {endObj.hour} = {totalDuration} 小時</span>
-              </div>
-            </>
-          )}
-        </div>
-      );
+      return React.createElement("div", {
+        className: "space-y-5 text-xl leading-relaxed"
+      }, React.createElement("div", {
+        className: "text-sky-200 font-bold mb-2 border-b-2 border-sky-400/50 pb-2"
+      }, "✏️ 【求經過時間】分段相加法"), startObj.dayNum === endObj.dayNum ? React.createElement("div", {
+        className: "text-white"
+      }, "同一天內：", React.createElement("br", null), React.createElement("span", {
+        className: "text-yellow-300 font-bold text-xl"
+      }, endObj.hour), " - ", React.createElement("span", {
+        className: "text-pink-300 font-bold text-xl"
+      }, startObj.hour), " = ", React.createElement("span", {
+        className: "text-white bg-sky-600 px-2 py-1 rounded-lg font-bold text-xl"
+      }, totalDuration, " 小時")) : React.createElement(React.Fragment, null, React.createElement("div", {
+        className: "text-white"
+      }, "1. ", startObj.dayName, "經過了：", React.createElement("br", null), React.createElement("span", {
+        className: "pl-4"
+      }, "24 - ", React.createElement("span", {
+        className: "text-pink-300 font-bold"
+      }, startObj.hour), " = ", React.createElement("span", {
+        className: "font-bold text-yellow-300"
+      }, 24 - startObj.hour, " 小時"))), endObj.dayNum - startObj.dayNum === 2 && React.createElement("div", {
+        className: "text-white"
+      }, "2. 第二天經過了：", React.createElement("br", null), React.createElement("span", {
+        className: "pl-4"
+      }, "一整天 = ", React.createElement("span", {
+        className: "font-bold text-yellow-300"
+      }, "24 小時"))), React.createElement("div", {
+        className: "text-white"
+      }, endObj.dayNum - startObj.dayNum === 2 ? '3.' : '2.', " ", endObj.dayName, "經過了：", React.createElement("br", null), React.createElement("span", {
+        className: "pl-4"
+      }, React.createElement("span", {
+        className: "text-yellow-300 font-bold"
+      }, endObj.hour), " - 0 = ", React.createElement("span", {
+        className: "font-bold text-yellow-300"
+      }, endObj.hour, " 小時"))), React.createElement("div", {
+        className: "mt-4 pt-3 border-t-2 border-sky-400/50 text-white font-bold text-lg"
+      }, "總計把它們加起來：", React.createElement("br", null), React.createElement("span", {
+        className: "text-2xl text-yellow-300"
+      }, 24 - startObj.hour, " ", endObj.dayNum - startObj.dayNum === 2 ? '+ 24 ' : '', "+ ", endObj.hour, " = ", totalDuration, " 小時"))));
     }
-
     if (calcMode === 'find-end') {
       const leftInDay = 24 - startObj.hour;
-      return (
-        <div className="space-y-5 text-xl leading-relaxed">
-          <div className="text-amber-200 font-bold mb-2 border-b-2 border-amber-400/50 pb-2">➡️ 【往後推算求結束】用滿當日法</div>
-          {totalDuration <= leftInDay ? (
-            <div className="text-white">
-              經過時間還沒超過今天剩下的 ({leftInDay}小時)<br/>
-              <span className="text-sky-300 font-bold text-xl">{startObj.hour}</span> + <span className="text-amber-300 font-bold text-xl">{totalDuration}</span> = <span className="text-white bg-amber-500 px-2 py-1 rounded-lg font-bold text-xl">{endObj.hour} 時 ({endObj.dayName})</span>
-            </div>
-          ) : (
-            <>
-              <div className="text-white">
-                1. 先把{startObj.dayName}剩下的時間過完：<br/>
-                <span className="pl-4">24 - <span className="text-sky-300 font-bold">{startObj.hour}</span> = <span className="font-bold text-yellow-300">{leftInDay} 小時</span></span>
-              </div>
-              <div className="text-white">
-                2. 經過時間還剩下多少？<br/>
-                <span className="pl-4">總共 <span className="text-amber-300 font-bold">{totalDuration}</span> - 剛過完的 {leftInDay} = <span className="font-bold text-yellow-300">{totalDuration - leftInDay} 小時</span></span>
-              </div>
-              {totalDuration - leftInDay > 24 && (
-                <div className="text-white">
-                  3. 扣掉完整的一天 (24小時)：<br/>
-                  <span className="pl-4">{totalDuration - leftInDay} - 24 = <span className="font-bold text-yellow-300">{totalDuration - leftInDay - 24} 小時</span></span>
-                </div>
-              )}
-              <div className="mt-4 pt-3 border-t-2 border-amber-400/50">
-                <span className="text-white font-bold">所以最後會結束在：</span><br/>
-                <span className="font-bold text-amber-200 bg-amber-600/50 px-2 py-1 rounded mt-1 inline-block text-xl">✨ {endObj.dayName}的 {endObj.hour} 時 ✨</span>
-              </div>
-            </>
-          )}
-        </div>
-      );
+      return React.createElement("div", {
+        className: "space-y-5 text-xl leading-relaxed"
+      }, React.createElement("div", {
+        className: "text-amber-200 font-bold mb-2 border-b-2 border-amber-400/50 pb-2"
+      }, "➡️ 【往後推算求結束】用滿當日法"), totalDuration <= leftInDay ? React.createElement("div", {
+        className: "text-white"
+      }, "經過時間還沒超過今天剩下的 (", leftInDay, "小時)", React.createElement("br", null), React.createElement("span", {
+        className: "text-sky-300 font-bold text-xl"
+      }, startObj.hour), " + ", React.createElement("span", {
+        className: "text-amber-300 font-bold text-xl"
+      }, totalDuration), " = ", React.createElement("span", {
+        className: "text-white bg-amber-500 px-2 py-1 rounded-lg font-bold text-xl"
+      }, endObj.hour, " 時 (", endObj.dayName, ")")) : React.createElement(React.Fragment, null, React.createElement("div", {
+        className: "text-white"
+      }, "1. 先把", startObj.dayName, "剩下的時間過完：", React.createElement("br", null), React.createElement("span", {
+        className: "pl-4"
+      }, "24 - ", React.createElement("span", {
+        className: "text-sky-300 font-bold"
+      }, startObj.hour), " = ", React.createElement("span", {
+        className: "font-bold text-yellow-300"
+      }, leftInDay, " 小時"))), React.createElement("div", {
+        className: "text-white"
+      }, "2. 經過時間還剩下多少？", React.createElement("br", null), React.createElement("span", {
+        className: "pl-4"
+      }, "總共 ", React.createElement("span", {
+        className: "text-amber-300 font-bold"
+      }, totalDuration), " - 剛過完的 ", leftInDay, " = ", React.createElement("span", {
+        className: "font-bold text-yellow-300"
+      }, totalDuration - leftInDay, " 小時"))), totalDuration - leftInDay > 24 && React.createElement("div", {
+        className: "text-white"
+      }, "3. 扣掉完整的一天 (24小時)：", React.createElement("br", null), React.createElement("span", {
+        className: "pl-4"
+      }, totalDuration - leftInDay, " - 24 = ", React.createElement("span", {
+        className: "font-bold text-yellow-300"
+      }, totalDuration - leftInDay - 24, " 小時"))), React.createElement("div", {
+        className: "mt-4 pt-3 border-t-2 border-amber-400/50"
+      }, React.createElement("span", {
+        className: "text-white font-bold"
+      }, "所以最後會結束在："), React.createElement("br", null), React.createElement("span", {
+        className: "font-bold text-amber-200 bg-amber-600/50 px-2 py-1 rounded mt-1 inline-block text-xl"
+      }, "✨ ", endObj.dayName, "的 ", endObj.hour, " 時 ✨"))));
     }
-
     if (calcMode === 'find-start') {
       const passedInDay = endObj.hour === 0 ? 24 : endObj.hour;
-      return (
-        <div className="space-y-5 text-xl leading-relaxed">
-          <div className="text-emerald-200 font-bold mb-2 border-b-2 border-emerald-400/50 pb-2">⬅️ 【往前推算求起點】倒退扣除法</div>
-          {totalDuration <= passedInDay ? (
-            <div className="text-white">
-              經過時間小於{endObj.dayName}已經過的時間 ({passedInDay}小時)<br/>
-              <span className="text-pink-300 font-bold text-xl">{endObj.hour}</span> - <span className="text-emerald-300 font-bold text-xl">{totalDuration}</span> = <span className="text-white bg-emerald-600 px-2 py-1 rounded-lg font-bold text-xl">{startObj.hour} 時 ({startObj.dayName})</span>
-            </div>
-          ) : (
-            <>
-              <div className="text-white">
-                1. 先把{endObj.dayName}經歷過的時間扣掉：<br/>
-                <span className="pl-4">經過時間扣掉 <span className="text-pink-300 font-bold">{passedInDay} 小時</span></span>
-              </div>
-              <div className="text-white">
-                2. 算算看還差幾小時才推算完？<br/>
-                <span className="pl-4">總共 <span className="text-emerald-300 font-bold">{totalDuration}</span> - 已扣的 {passedInDay} = <span className="font-bold text-yellow-300">{totalDuration - passedInDay} 小時</span></span>
-              </div>
-              {totalDuration - passedInDay > 24 && (
-                <div className="text-white">
-                  3. 再往前跨越完整的一天 (24小時)：<br/>
-                  <span className="pl-4">{totalDuration - passedInDay} - 24 = <span className="font-bold text-yellow-300">{totalDuration - passedInDay - 24} 小時</span></span>
-                </div>
-              )}
-              <div className="mt-4 pt-3 border-t-2 border-emerald-400/50 text-white">
-                <span className="font-bold">從前一天的午夜 24時 繼續往前扣：</span><br/>
-                <span className="text-white">24 - {endObj.dayNum - startObj.dayNum === 2 ? totalDuration - passedInDay - 24 : totalDuration - passedInDay} = </span>
-                <span className="font-bold text-emerald-200 bg-emerald-600/50 px-2 py-1 rounded mt-1 inline-block text-xl">🚀 {startObj.dayName}的 {startObj.hour} 時</span>
-              </div>
-            </>
-          )}
-        </div>
-      );
+      return React.createElement("div", {
+        className: "space-y-5 text-xl leading-relaxed"
+      }, React.createElement("div", {
+        className: "text-emerald-200 font-bold mb-2 border-b-2 border-emerald-400/50 pb-2"
+      }, "⬅️ 【往前推算求起點】倒退扣除法"), totalDuration <= passedInDay ? React.createElement("div", {
+        className: "text-white"
+      }, "經過時間小於", endObj.dayName, "已經過的時間 (", passedInDay, "小時)", React.createElement("br", null), React.createElement("span", {
+        className: "text-pink-300 font-bold text-xl"
+      }, endObj.hour), " - ", React.createElement("span", {
+        className: "text-emerald-300 font-bold text-xl"
+      }, totalDuration), " = ", React.createElement("span", {
+        className: "text-white bg-emerald-600 px-2 py-1 rounded-lg font-bold text-xl"
+      }, startObj.hour, " 時 (", startObj.dayName, ")")) : React.createElement(React.Fragment, null, React.createElement("div", {
+        className: "text-white"
+      }, "1. 先把", endObj.dayName, "經歷過的時間扣掉：", React.createElement("br", null), React.createElement("span", {
+        className: "pl-4"
+      }, "經過時間扣掉 ", React.createElement("span", {
+        className: "text-pink-300 font-bold"
+      }, passedInDay, " 小時"))), React.createElement("div", {
+        className: "text-white"
+      }, "2. 算算看還差幾小時才推算完？", React.createElement("br", null), React.createElement("span", {
+        className: "pl-4"
+      }, "總共 ", React.createElement("span", {
+        className: "text-emerald-300 font-bold"
+      }, totalDuration), " - 已扣的 ", passedInDay, " = ", React.createElement("span", {
+        className: "font-bold text-yellow-300"
+      }, totalDuration - passedInDay, " 小時"))), totalDuration - passedInDay > 24 && React.createElement("div", {
+        className: "text-white"
+      }, "3. 再往前跨越完整的一天 (24小時)：", React.createElement("br", null), React.createElement("span", {
+        className: "pl-4"
+      }, totalDuration - passedInDay, " - 24 = ", React.createElement("span", {
+        className: "font-bold text-yellow-300"
+      }, totalDuration - passedInDay - 24, " 小時"))), React.createElement("div", {
+        className: "mt-4 pt-3 border-t-2 border-emerald-400/50 text-white"
+      }, React.createElement("span", {
+        className: "font-bold"
+      }, "從前一天的午夜 24時 繼續往前扣："), React.createElement("br", null), React.createElement("span", {
+        className: "text-white"
+      }, "24 - ", endObj.dayNum - startObj.dayNum === 2 ? totalDuration - passedInDay - 24 : totalDuration - passedInDay, " = "), React.createElement("span", {
+        className: "font-bold text-emerald-200 bg-emerald-600/50 px-2 py-1 rounded mt-1 inline-block text-xl"
+      }, "🚀 ", startObj.dayName, "的 ", startObj.hour, " 時"))));
     }
   };
-
-  return (
-    <div className="py-6 px-4 w-full animate-fade-in-up">
-      <div className="max-w-5xl mx-auto space-y-6">
-        
-        {/* 控制列 */}
-        <div className="flex flex-col md:flex-row justify-between items-center bg-white p-6 rounded-[2rem] shadow-lg border-4 border-sky-100">
-          <div>
-            <h2 className="text-2xl font-black text-sky-600 flex items-center gap-2 drop-shadow-sm">
-              <span className="text-3xl">🧭</span> 跨日時間探險操作板
-            </h2>
-          </div>
-          <div className="flex gap-3 mt-4 md:mt-0">
-            <button onClick={toggleTimelineDays} className="px-5 py-2.5 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 rounded-2xl text-sm flex items-center gap-2 font-bold transition-transform active:scale-95 shadow-sm">
-              👀 顯示 {timelineDays === 2 ? '三天版(72時)' : '雙日版(48時)'}
-            </button>
-            <button onClick={() => setIs12HourFormat(!is12HourFormat)} className="px-5 py-2.5 bg-yellow-100 hover:bg-yellow-200 text-yellow-700 rounded-2xl text-sm flex items-center gap-2 font-bold transition-transform active:scale-95 shadow-sm">
-              ⏰ 切換 {is12HourFormat ? '24小時制' : '12小時制'}
-            </button>
-          </div>
-        </div>
-
-        {/* 模式切換與範例區 */}
-        <div className="bg-white p-6 rounded-[2rem] shadow-lg border-4 border-pink-100 flex flex-col md:flex-row gap-6">
-          <div className="flex-1">
-            <h2 className="text-base font-black text-pink-400 mb-3 flex items-center gap-2">🕹️ 選擇探險模式</h2>
-            <div className="flex bg-slate-100 p-1.5 rounded-2xl gap-1">
-              <button onClick={() => setCalcMode('find-duration')} className={`flex-1 py-2.5 text-sm font-bold rounded-xl transition-all ${calcMode === 'find-duration' ? 'bg-sky-400 text-white shadow-md transform scale-105' : 'text-slate-500 hover:bg-slate-200'}`}>找經過時間</button>
-              <button onClick={() => setCalcMode('find-end')} className={`flex-1 py-2.5 text-sm font-bold rounded-xl transition-all ${calcMode === 'find-end' ? 'bg-amber-400 text-white shadow-md transform scale-105' : 'text-slate-500 hover:bg-slate-200'}`}>往後推算 ➡️</button>
-              <button onClick={() => setCalcMode('find-start')} className={`flex-1 py-2.5 text-sm font-bold rounded-xl transition-all ${calcMode === 'find-start' ? 'bg-emerald-400 text-white shadow-md transform scale-105' : 'text-slate-500 hover:bg-slate-200'}`}>⬅️ 往前推算</button>
-            </div>
-          </div>
-          <div className="flex-1 md:border-l-4 md:pl-6 border-pink-50 border-dashed">
-             <h2 className="text-base font-black text-pink-400 mb-3 flex items-center gap-2">📚 帶入課本任務</h2>
-             <div className="flex flex-wrap gap-2">
-              {examples.filter(ex => ex.type === calcMode || true).map((ex) => (
-                <button key={ex.id} onClick={() => loadExample(ex)} className={`px-4 py-2 rounded-2xl text-sm font-bold transition-transform active:scale-95 border-2 shadow-sm ${calcMode === ex.type ? 'bg-pink-400 text-white border-pink-500' : 'bg-white text-slate-600 border-slate-200 hover:bg-pink-50 hover:border-pink-300 hover:text-pink-600'}`}>
-                  {ex.name}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* 數線視覺區塊 */}
-        <div className="bg-white p-6 sm:p-8 rounded-[2rem] shadow-lg border-4 border-emerald-100">
-          <div className="relative w-full h-44 select-none mt-8 mb-6">
-            {/* 繽紛背景區塊 */}
-            <div className="absolute inset-0 flex rounded-3xl overflow-hidden opacity-90 transition-all duration-500 shadow-inner border-4 border-slate-200">
-              <div className="flex-1 bg-sky-200"></div>
-              <div className="flex-1 bg-lime-200"></div>
-              {timelineDays === 3 && <div className="flex-1 bg-orange-200 transition-all"></div>}
-            </div>
-            {/* 頂部文字標籤 */}
-            <div className="absolute -top-10 left-0 w-full flex text-lg font-black">
-              <div className="flex-1 text-center"><span className="inline-block bg-sky-600 text-white px-4 py-1.5 rounded-full shadow-md border-2 border-white">🌤️ 第一天</span></div>
-              <div className="flex-1 text-center"><span className="inline-block bg-lime-600 text-white px-4 py-1.5 rounded-full shadow-md border-2 border-white">☀️ 第二天</span></div>
-              {timelineDays === 3 && <div className="flex-1 text-center"><span className="inline-block bg-orange-500 text-white px-4 py-1.5 rounded-full shadow-md border-2 border-white">🌅 第三天</span></div>}
-            </div>
-            {/* 分隔線 */}
-            {timelineDays === 2 ? (
-              <div className="absolute left-1/2 top-2 bottom-2 border-l-8 border-dashed border-white/90 z-0 transition-all drop-shadow-md"></div>
-            ) : (
-              <><div className="absolute left-1/3 top-2 bottom-2 border-l-8 border-dashed border-white/90 z-0 transition-all drop-shadow-md"></div><div className="absolute left-2/3 top-2 bottom-2 border-l-8 border-dashed border-white/90 z-0 transition-all drop-shadow-md"></div></>
-            )}
-            {/* 數線軌道 */}
-            <div className="absolute top-1/2 left-4 right-4 h-10 bg-slate-300 rounded-full -translate-y-1/2 z-10 shadow-inner border-4 border-white ring-4 ring-slate-400/40">
-              <div className={`absolute h-full rounded-full transition-all duration-300 shadow-lg border-4 border-white ${calcMode === 'find-duration' ? 'bg-gradient-to-r from-sky-500 to-indigo-700' : calcMode === 'find-end' ? 'bg-gradient-to-r from-yellow-400 to-orange-600' : 'bg-gradient-to-r from-emerald-500 to-teal-700'}`} style={{ left: `${(startHour / maxTimelineHours) * 100}%`, width: `${(totalDuration / maxTimelineHours) * 100}%` }}></div>
-              <div className="absolute -top-12 z-40 flex flex-col items-center pointer-events-none" style={{ left: `${(startHour / maxTimelineHours) * 100}%`, bottom: '-3.25rem', transform: 'translateX(-50%)' }}>
-                <div className="bg-sky-700 text-white text-sm sm:text-base font-black px-3 py-1 rounded-full shadow-lg border-2 border-white">🏁 起點</div>
-                <div className="w-2.5 flex-1 bg-sky-700 rounded-full" style={{ boxShadow: '0 0 0 4px rgba(255,255,255,.85)' }}></div>
-                <div className="w-8 h-8 bg-white border-4 border-sky-700 rounded-full shadow-lg"></div>
-              </div>
-              <div className="absolute -top-12 z-40 flex flex-col items-center pointer-events-none" style={{ left: `${(endHour / maxTimelineHours) * 100}%`, bottom: '-3.25rem', transform: 'translateX(-50%)' }}>
-                <div className="bg-pink-600 text-white text-sm sm:text-base font-black px-3 py-1 rounded-full shadow-lg border-2 border-white">🛑 終點</div>
-                <div className="w-0 flex-1 border-dashed border-pink-600 drop-shadow-md" style={{ borderLeftWidth: '7px' }}></div>
-                <div className="w-9 h-9 bg-pink-600 border-4 border-white rotate-45 shadow-lg"></div>
-              </div>
-              {Array.from({ length: maxTimelineHours + 1 }).map((_, i) => {
-                const isMajor = i % 24 === 0 || i % 24 === 12;
-                const isEven = i % 2 === 0;
-                let tickClass = 'h-4 mt-3 w-1.5 bg-slate-500 rounded-full';
-                if (isMajor) tickClass = 'h-14 -mt-2 w-2.5 bg-slate-900 rounded-full shadow-lg border border-white';
-                else if (isEven) tickClass = 'h-8 mt-1 w-2 bg-slate-700 rounded-full shadow-sm';
-                return (
-                  <div key={i} className="absolute top-0 flex flex-col items-center" style={{ left: `${(i / maxTimelineHours) * 100}%`, transform: 'translateX(-50%)' }}>
-                    <div className={tickClass}></div>
-                    {isEven && (
-                      <div className={`mt-3 text-xs sm:text-sm font-black whitespace-nowrap ${(i > 0 && i % 24 === 0 && i < maxTimelineHours) ? 'bg-slate-900 text-white px-3 py-1.5 rounded-xl z-20 shadow-md mt-1 border-2 border-white' : isMajor ? 'text-slate-900 bg-white/80 px-2 py-1 rounded-lg shadow-sm' : 'text-slate-700 bg-white/60 px-1.5 py-0.5 rounded-md'}`}>
-                        {isMajor ? formatAxisLabel(i) : (is12HourFormat ? (i % 12 || 12) : (i % 24))}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-
-        {/* 下方滑桿與解題區 */}
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-          <div className="lg:col-span-3 space-y-4 flex flex-col justify-center">
-            
-            {/* 求經過時間 */}
-            {calcMode === 'find-duration' && (
-              <>
-                <div className="bg-sky-50 p-6 rounded-[2rem] shadow-sm border-4 border-sky-200">
-                  <label className="flex justify-between items-center mb-4">
-                    <span className="font-black text-sky-800 text-lg flex items-center gap-2">🏁 設定開始時間</span>
-                    <span className="font-black text-sky-700 bg-white border-2 border-sky-200 px-3 py-1.5 rounded-xl shadow-sm">{startObj.dayName} {formatTimeText(startObj.hour)}</span>
-                  </label>
-                  {renderTimeNumberInput('start', startObj)}
-                </div>
-                <div className="bg-pink-50 p-6 rounded-[2rem] shadow-sm border-4 border-pink-200">
-                  <label className="flex justify-between items-center mb-4">
-                    <span className="font-black text-pink-800 text-lg flex items-center gap-2">🛑 設定結束時間</span>
-                    <span className="font-black text-pink-700 bg-white border-2 border-pink-200 px-3 py-1.5 rounded-xl shadow-sm">{endObj.dayName} {formatTimeText(endObj.hour)}</span>
-                  </label>
-                  {renderTimeNumberInput('end', endObj)}
-                </div>
-              </>
-            )}
-
-            {/* 往後推算 */}
-            {calcMode === 'find-end' && (
-              <>
-                <div className="bg-sky-50 p-6 rounded-[2rem] shadow-sm border-4 border-sky-200">
-                  <label className="flex justify-between items-center mb-4">
-                    <span className="font-black text-sky-800 text-lg flex items-center gap-2">🏁 設定開始時間</span>
-                    <span className="font-black text-sky-700 bg-white border-2 border-sky-200 px-3 py-1.5 rounded-xl shadow-sm">{startObj.dayName} {formatTimeText(startObj.hour)}</span>
-                  </label>
-                  {renderTimeNumberInput('start', startObj)}
-                </div>
-                <div className="bg-amber-100 p-6 rounded-[2rem] shadow-md border-4 border-amber-300 transform hover:scale-[1.02] transition-transform">
-                  <label className="flex justify-between items-center mb-4">
-                    <span className="font-black text-amber-900 text-lg flex items-center gap-2">➡️ 往右推算：經過了幾小時？</span>
-                    <span className="font-black text-white bg-amber-500 px-3 py-1.5 rounded-xl shadow-sm text-xl">{totalDuration} 小時</span>
-                  </label>
-                  {renderDurationNumberInput('forward')}
-                </div>
-              </>
-            )}
-
-            {/* 往前推算 */}
-            {calcMode === 'find-start' && (
-              <>
-                <div className="bg-pink-50 p-6 rounded-[2rem] shadow-sm border-4 border-pink-200">
-                  <label className="flex justify-between items-center mb-4">
-                    <span className="font-black text-pink-800 text-lg flex items-center gap-2">🛑 設定結束時間</span>
-                    <span className="font-black text-pink-700 bg-white border-2 border-pink-200 px-3 py-1.5 rounded-xl shadow-sm">{endObj.dayName} {formatTimeText(endObj.hour)}</span>
-                  </label>
-                  {renderTimeNumberInput('end', endObj)}
-                </div>
-                <div className="bg-emerald-100 p-6 rounded-[2rem] shadow-md border-4 border-emerald-300 transform hover:scale-[1.02] transition-transform">
-                  <label className="flex justify-between items-center mb-4">
-                    <span className="font-black text-emerald-900 text-lg flex items-center gap-2">⬅️ 往左推算：之前經過幾小時？</span>
-                    <span className="font-black text-white bg-emerald-500 px-3 py-1.5 rounded-xl shadow-sm text-xl">{totalDuration} 小時</span>
-                  </label>
-                  {renderDurationNumberInput('backward')}
-                </div>
-              </>
-            )}
-          </div>
-
-          {/* 魔法筆記本 (解題區) */}
-          <div className="magic-notebook lg:col-span-2 bg-[#0d9488] text-white p-6 sm:p-8 rounded-[2rem] shadow-xl relative overflow-hidden flex flex-col border-8 border-[#115e59]">
-            <div className="absolute top-2 left-4 bottom-2 w-1 border-l-2 border-dashed border-teal-500/50"></div>
-            <div className="absolute top-[-10%] right-[-10%] w-40 h-40 bg-teal-400 rounded-full mix-blend-screen filter blur-[40px] opacity-30"></div>
-            
-            <h3 className="text-2xl sm:text-3xl font-black mb-6 flex items-center gap-2 text-yellow-200 border-b-4 border-teal-600 pb-3 pl-4 z-10">
-              <span className="text-3xl sm:text-4xl">📝</span> 魔法筆記本：算給你看
-            </h3>
-            
-            <div className="flex-1 font-mono tracking-wide pl-4 z-10 text-xl leading-relaxed">
-              {totalDuration === 0 ? (
-                <div className="text-teal-200/70 font-bold mt-8 text-center bg-teal-800/50 p-4 rounded-2xl border-2 border-dashed border-teal-600">
-                  ✨ 請拖拉左邊的圓鈕來觀察變化喔！
-                </div>
-              ) : generateSolvingSteps()}
-            </div>
-
-            <div className="mt-6 pt-5 border-t-4 border-teal-600 bg-teal-900/40 -mx-8 -mb-8 p-8 pl-12 z-10">
-              <div className="text-teal-200 text-xl font-bold mb-2">{calcMode === 'find-duration' ? '🏆 得到總共經過：' : calcMode === 'find-end' ? '🏆 得到最後結束在：' : '🏆 得到一開始出發在：'}</div>
-              <div className="text-4xl sm:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 to-amber-400 drop-shadow-md">
-                {calcMode === 'find-duration' && `${totalDuration} 小時`}
-                {calcMode === 'find-end' && `${endObj.dayName} ${formatTimeText(endObj.hour)}`}
-                {calcMode === 'find-start' && `${startObj.dayName} ${formatTimeText(startObj.hour)}`}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+  return React.createElement("div", {
+    className: "py-6 px-4 w-full animate-fade-in-up"
+  }, React.createElement("div", {
+    className: "max-w-5xl mx-auto space-y-6"
+  }, React.createElement("div", {
+    className: "flex flex-col md:flex-row justify-between items-center bg-white p-6 rounded-[2rem] shadow-lg border-4 border-sky-100"
+  }, React.createElement("div", null, React.createElement("h2", {
+    className: "text-2xl font-black text-sky-600 flex items-center gap-2 drop-shadow-sm"
+  }, React.createElement("span", {
+    className: "text-3xl"
+  }, "🧭"), " 跨日時間探險操作板")), React.createElement("div", {
+    className: "flex gap-3 mt-4 md:mt-0"
+  }, React.createElement("button", {
+    onClick: toggleTimelineDays,
+    className: "px-5 py-2.5 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 rounded-2xl text-sm flex items-center gap-2 font-bold transition-transform active:scale-95 shadow-sm"
+  }, "👀 顯示 ", timelineDays === 2 ? '三天版(72時)' : '雙日版(48時)'), React.createElement("button", {
+    onClick: () => setIs12HourFormat(!is12HourFormat),
+    className: "px-5 py-2.5 bg-yellow-100 hover:bg-yellow-200 text-yellow-700 rounded-2xl text-sm flex items-center gap-2 font-bold transition-transform active:scale-95 shadow-sm"
+  }, "⏰ 切換 ", is12HourFormat ? '24小時制' : '12小時制'))), React.createElement("div", {
+    className: "bg-white p-6 rounded-[2rem] shadow-lg border-4 border-pink-100 flex flex-col md:flex-row gap-6"
+  }, React.createElement("div", {
+    className: "flex-1"
+  }, React.createElement("h2", {
+    className: "text-base font-black text-pink-400 mb-3 flex items-center gap-2"
+  }, "🕹️ 選擇探險模式"), React.createElement("div", {
+    className: "flex bg-slate-100 p-1.5 rounded-2xl gap-1"
+  }, React.createElement("button", {
+    onClick: () => setCalcMode('find-duration'),
+    className: `flex-1 py-2.5 text-sm font-bold rounded-xl transition-all ${calcMode === 'find-duration' ? 'bg-sky-400 text-white shadow-md transform scale-105' : 'text-slate-500 hover:bg-slate-200'}`
+  }, "找經過時間"), React.createElement("button", {
+    onClick: () => setCalcMode('find-end'),
+    className: `flex-1 py-2.5 text-sm font-bold rounded-xl transition-all ${calcMode === 'find-end' ? 'bg-amber-400 text-white shadow-md transform scale-105' : 'text-slate-500 hover:bg-slate-200'}`
+  }, "往後推算 ➡️"), React.createElement("button", {
+    onClick: () => setCalcMode('find-start'),
+    className: `flex-1 py-2.5 text-sm font-bold rounded-xl transition-all ${calcMode === 'find-start' ? 'bg-emerald-400 text-white shadow-md transform scale-105' : 'text-slate-500 hover:bg-slate-200'}`
+  }, "⬅️ 往前推算"))), React.createElement("div", {
+    className: "flex-1 md:border-l-4 md:pl-6 border-pink-50 border-dashed"
+  }, React.createElement("h2", {
+    className: "text-base font-black text-pink-400 mb-3 flex items-center gap-2"
+  }, "📚 帶入課本任務"), React.createElement("div", {
+    className: "flex flex-wrap gap-2"
+  }, examples.filter(ex => ex.type === calcMode || true).map(ex => React.createElement("button", {
+    key: ex.id,
+    onClick: () => loadExample(ex),
+    className: `px-4 py-2 rounded-2xl text-sm font-bold transition-transform active:scale-95 border-2 shadow-sm ${calcMode === ex.type ? 'bg-pink-400 text-white border-pink-500' : 'bg-white text-slate-600 border-slate-200 hover:bg-pink-50 hover:border-pink-300 hover:text-pink-600'}`
+  }, ex.name))))), React.createElement("div", {
+    className: "bg-white p-6 sm:p-8 rounded-[2rem] shadow-lg border-4 border-emerald-100"
+  }, React.createElement("div", {
+    className: "relative w-full h-44 select-none mt-8 mb-6"
+  }, React.createElement("div", {
+    className: "absolute inset-0 flex rounded-3xl overflow-hidden opacity-90 transition-all duration-500 shadow-inner border-4 border-slate-200"
+  }, React.createElement("div", {
+    className: "flex-1 bg-sky-200"
+  }), React.createElement("div", {
+    className: "flex-1 bg-lime-200"
+  }), timelineDays === 3 && React.createElement("div", {
+    className: "flex-1 bg-orange-200 transition-all"
+  })), React.createElement("div", {
+    className: "absolute -top-10 left-0 w-full flex text-lg font-black"
+  }, React.createElement("div", {
+    className: "flex-1 text-center"
+  }, React.createElement("span", {
+    className: "inline-block bg-sky-600 text-white px-4 py-1.5 rounded-full shadow-md border-2 border-white"
+  }, "🌤️ 第一天")), React.createElement("div", {
+    className: "flex-1 text-center"
+  }, React.createElement("span", {
+    className: "inline-block bg-lime-600 text-white px-4 py-1.5 rounded-full shadow-md border-2 border-white"
+  }, "☀️ 第二天")), timelineDays === 3 && React.createElement("div", {
+    className: "flex-1 text-center"
+  }, React.createElement("span", {
+    className: "inline-block bg-orange-500 text-white px-4 py-1.5 rounded-full shadow-md border-2 border-white"
+  }, "🌅 第三天"))), timelineDays === 2 ? React.createElement("div", {
+    className: "absolute left-1/2 top-2 bottom-2 border-l-8 border-dashed border-white/90 z-0 transition-all drop-shadow-md"
+  }) : React.createElement(React.Fragment, null, React.createElement("div", {
+    className: "absolute left-1/3 top-2 bottom-2 border-l-8 border-dashed border-white/90 z-0 transition-all drop-shadow-md"
+  }), React.createElement("div", {
+    className: "absolute left-2/3 top-2 bottom-2 border-l-8 border-dashed border-white/90 z-0 transition-all drop-shadow-md"
+  })), React.createElement("div", {
+    className: "absolute top-1/2 left-4 right-4 h-10 bg-slate-300 rounded-full -translate-y-1/2 z-10 shadow-inner border-4 border-white ring-4 ring-slate-400/40"
+  }, React.createElement("div", {
+    className: `absolute h-full rounded-full transition-all duration-300 shadow-lg border-4 border-white ${calcMode === 'find-duration' ? 'bg-gradient-to-r from-sky-500 to-indigo-700' : calcMode === 'find-end' ? 'bg-gradient-to-r from-yellow-400 to-orange-600' : 'bg-gradient-to-r from-emerald-500 to-teal-700'}`,
+    style: {
+      left: `${startHour / maxTimelineHours * 100}%`,
+      width: `${totalDuration / maxTimelineHours * 100}%`
+    }
+  }), React.createElement("div", {
+    className: "absolute -top-12 z-40 flex flex-col items-center pointer-events-none",
+    style: {
+      left: `${startHour / maxTimelineHours * 100}%`,
+      bottom: '-3.25rem',
+      transform: 'translateX(-50%)'
+    }
+  }, React.createElement("div", {
+    className: "bg-sky-700 text-white text-sm sm:text-base font-black px-3 py-1 rounded-full shadow-lg border-2 border-white"
+  }, "🏁 起點"), React.createElement("div", {
+    className: "w-2.5 flex-1 bg-sky-700 rounded-full",
+    style: {
+      boxShadow: '0 0 0 4px rgba(255,255,255,.85)'
+    }
+  }), React.createElement("div", {
+    className: "w-8 h-8 bg-white border-4 border-sky-700 rounded-full shadow-lg"
+  })), React.createElement("div", {
+    className: "absolute -top-12 z-40 flex flex-col items-center pointer-events-none",
+    style: {
+      left: `${endHour / maxTimelineHours * 100}%`,
+      bottom: '-3.25rem',
+      transform: 'translateX(-50%)'
+    }
+  }, React.createElement("div", {
+    className: "bg-pink-600 text-white text-sm sm:text-base font-black px-3 py-1 rounded-full shadow-lg border-2 border-white"
+  }, "🛑 終點"), React.createElement("div", {
+    className: "w-0 flex-1 border-dashed border-pink-600 drop-shadow-md",
+    style: {
+      borderLeftWidth: '7px'
+    }
+  }), React.createElement("div", {
+    className: "w-9 h-9 bg-pink-600 border-4 border-white rotate-45 shadow-lg"
+  })), Array.from({
+    length: maxTimelineHours + 1
+  }).map((_, i) => {
+    const isMajor = i % 24 === 0 || i % 24 === 12;
+    const isEven = i % 2 === 0;
+    let tickClass = 'h-4 mt-3 w-1.5 bg-slate-500 rounded-full';
+    if (isMajor) tickClass = 'h-14 -mt-2 w-2.5 bg-slate-900 rounded-full shadow-lg border border-white';else if (isEven) tickClass = 'h-8 mt-1 w-2 bg-slate-700 rounded-full shadow-sm';
+    return React.createElement("div", {
+      key: i,
+      className: "absolute top-0 flex flex-col items-center",
+      style: {
+        left: `${i / maxTimelineHours * 100}%`,
+        transform: 'translateX(-50%)'
+      }
+    }, React.createElement("div", {
+      className: tickClass
+    }), isEven && React.createElement("div", {
+      className: `mt-3 text-xs sm:text-sm font-black whitespace-nowrap ${i > 0 && i % 24 === 0 && i < maxTimelineHours ? 'bg-slate-900 text-white px-3 py-1.5 rounded-xl z-20 shadow-md mt-1 border-2 border-white' : isMajor ? 'text-slate-900 bg-white/80 px-2 py-1 rounded-lg shadow-sm' : 'text-slate-700 bg-white/60 px-1.5 py-0.5 rounded-md'}`
+    }, isMajor ? formatAxisLabel(i) : is12HourFormat ? i % 12 || 12 : i % 24));
+  })))), React.createElement("div", {
+    className: "grid grid-cols-1 lg:grid-cols-5 gap-6"
+  }, React.createElement("div", {
+    className: "lg:col-span-3 space-y-4 flex flex-col justify-center"
+  }, calcMode === 'find-duration' && React.createElement(React.Fragment, null, React.createElement("div", {
+    className: "bg-sky-50 p-6 rounded-[2rem] shadow-sm border-4 border-sky-200"
+  }, React.createElement("label", {
+    className: "flex justify-between items-center mb-4"
+  }, React.createElement("span", {
+    className: "font-black text-sky-800 text-lg flex items-center gap-2"
+  }, "🏁 設定開始時間"), React.createElement("span", {
+    className: "font-black text-sky-700 bg-white border-2 border-sky-200 px-3 py-1.5 rounded-xl shadow-sm"
+  }, startObj.dayName, " ", formatTimeText(startObj.hour))), renderTimeNumberInput('start', startObj)), React.createElement("div", {
+    className: "bg-pink-50 p-6 rounded-[2rem] shadow-sm border-4 border-pink-200"
+  }, React.createElement("label", {
+    className: "flex justify-between items-center mb-4"
+  }, React.createElement("span", {
+    className: "font-black text-pink-800 text-lg flex items-center gap-2"
+  }, "🛑 設定結束時間"), React.createElement("span", {
+    className: "font-black text-pink-700 bg-white border-2 border-pink-200 px-3 py-1.5 rounded-xl shadow-sm"
+  }, endObj.dayName, " ", formatTimeText(endObj.hour))), renderTimeNumberInput('end', endObj))), calcMode === 'find-end' && React.createElement(React.Fragment, null, React.createElement("div", {
+    className: "bg-sky-50 p-6 rounded-[2rem] shadow-sm border-4 border-sky-200"
+  }, React.createElement("label", {
+    className: "flex justify-between items-center mb-4"
+  }, React.createElement("span", {
+    className: "font-black text-sky-800 text-lg flex items-center gap-2"
+  }, "🏁 設定開始時間"), React.createElement("span", {
+    className: "font-black text-sky-700 bg-white border-2 border-sky-200 px-3 py-1.5 rounded-xl shadow-sm"
+  }, startObj.dayName, " ", formatTimeText(startObj.hour))), renderTimeNumberInput('start', startObj)), React.createElement("div", {
+    className: "bg-amber-100 p-6 rounded-[2rem] shadow-md border-4 border-amber-300 transform hover:scale-[1.02] transition-transform"
+  }, React.createElement("label", {
+    className: "flex justify-between items-center mb-4"
+  }, React.createElement("span", {
+    className: "font-black text-amber-900 text-lg flex items-center gap-2"
+  }, "➡️ 往右推算：經過了幾小時？"), React.createElement("span", {
+    className: "font-black text-white bg-amber-500 px-3 py-1.5 rounded-xl shadow-sm text-xl"
+  }, totalDuration, " 小時")), renderDurationNumberInput('forward'))), calcMode === 'find-start' && React.createElement(React.Fragment, null, React.createElement("div", {
+    className: "bg-pink-50 p-6 rounded-[2rem] shadow-sm border-4 border-pink-200"
+  }, React.createElement("label", {
+    className: "flex justify-between items-center mb-4"
+  }, React.createElement("span", {
+    className: "font-black text-pink-800 text-lg flex items-center gap-2"
+  }, "🛑 設定結束時間"), React.createElement("span", {
+    className: "font-black text-pink-700 bg-white border-2 border-pink-200 px-3 py-1.5 rounded-xl shadow-sm"
+  }, endObj.dayName, " ", formatTimeText(endObj.hour))), renderTimeNumberInput('end', endObj)), React.createElement("div", {
+    className: "bg-emerald-100 p-6 rounded-[2rem] shadow-md border-4 border-emerald-300 transform hover:scale-[1.02] transition-transform"
+  }, React.createElement("label", {
+    className: "flex justify-between items-center mb-4"
+  }, React.createElement("span", {
+    className: "font-black text-emerald-900 text-lg flex items-center gap-2"
+  }, "⬅️ 往左推算：之前經過幾小時？"), React.createElement("span", {
+    className: "font-black text-white bg-emerald-500 px-3 py-1.5 rounded-xl shadow-sm text-xl"
+  }, totalDuration, " 小時")), renderDurationNumberInput('backward')))), React.createElement("div", {
+    className: "magic-notebook lg:col-span-2 bg-[#0d9488] text-white p-6 sm:p-8 rounded-[2rem] shadow-xl relative overflow-hidden flex flex-col border-8 border-[#115e59]"
+  }, React.createElement("div", {
+    className: "absolute top-2 left-4 bottom-2 w-1 border-l-2 border-dashed border-teal-500/50"
+  }), React.createElement("div", {
+    className: "absolute top-[-10%] right-[-10%] w-40 h-40 bg-teal-400 rounded-full mix-blend-screen filter blur-[40px] opacity-30"
+  }), React.createElement("h3", {
+    className: "text-2xl sm:text-3xl font-black mb-6 flex items-center gap-2 text-yellow-200 border-b-4 border-teal-600 pb-3 pl-4 z-10"
+  }, React.createElement("span", {
+    className: "text-3xl sm:text-4xl"
+  }, "📝"), " 魔法筆記本：算給你看"), React.createElement("div", {
+    className: "flex-1 font-mono tracking-wide pl-4 z-10 text-xl leading-relaxed"
+  }, totalDuration === 0 ? React.createElement("div", {
+    className: "text-teal-200/70 font-bold mt-8 text-center bg-teal-800/50 p-4 rounded-2xl border-2 border-dashed border-teal-600"
+  }, "✨ 請拖拉左邊的圓鈕來觀察變化喔！") : generateSolvingSteps()), React.createElement("div", {
+    className: "mt-6 pt-5 border-t-4 border-teal-600 bg-teal-900/40 -mx-8 -mb-8 p-8 pl-12 z-10"
+  }, React.createElement("div", {
+    className: "text-teal-200 text-xl font-bold mb-2"
+  }, calcMode === 'find-duration' ? '🏆 得到總共經過：' : calcMode === 'find-end' ? '🏆 得到最後結束在：' : '🏆 得到一開始出發在：'), React.createElement("div", {
+    className: "text-4xl sm:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 to-amber-400 drop-shadow-md"
+  }, calcMode === 'find-duration' && `${totalDuration} 小時`, calcMode === 'find-end' && `${endObj.dayName} ${formatTimeText(endObj.hour)}`, calcMode === 'find-start' && `${startObj.dayName} ${formatTimeText(startObj.hour)}`))))));
 }
-
-// ==========================================
-// 模組二：測驗挑戰區組件
-// ==========================================
 function QuizTool() {
   const [gameState, setGameState] = useState('start');
   const [currentQIndex, setCurrentQIndex] = useState(0);
-  const [feedback, setFeedback] = useState(null); 
+  const [feedback, setFeedback] = useState(null);
   const [studentName, setStudentName] = useState('');
-
   const currentQ = quizData[currentQIndex];
-
-  const handleAnswer = (index) => {
-    // 若已答對，不允許再點擊（鎖定）
+  const handleAnswer = index => {
     if (feedback?.status === 'correct') return;
-
     if (index === currentQ.correctIndex) {
       playSound('correct');
-      setFeedback({ status: 'correct', msg: '🎉 太棒了！答對囉！' });
+      setFeedback({
+        status: 'correct',
+        msg: '🎉 太棒了！答對囉！'
+      });
     } else {
       playSound('wrong');
-      setFeedback({ status: 'wrong', msg: '💦 哎呀，不對喔！看看提示再試一次吧。', selectedIndex: index });
+      setFeedback({
+        status: 'wrong',
+        msg: '💦 哎呀，不對喔！看看提示再試一次吧。',
+        selectedIndex: index
+      });
     }
   };
-
   const nextQuestion = () => {
     setFeedback(null);
-    if (currentQIndex < quizData.length - 1) setCurrentQIndex(prev => prev + 1);
-    else setGameState('name_entry');
+    if (currentQIndex < quizData.length - 1) setCurrentQIndex(prev => prev + 1);else setGameState('name_entry');
   };
-
   const restartQuiz = () => {
     setGameState('start');
     setCurrentQIndex(0);
     setStudentName('');
     setFeedback(null);
   };
-
   if (gameState === 'start') {
-    return (
-      <div className="py-12 px-4 flex items-center justify-center animate-fade-in-up">
-        <div className="max-w-md w-full bg-white rounded-[3rem] shadow-2xl overflow-hidden text-center p-10 border-8 border-sky-100 relative">
-          <div className="absolute -top-4 -right-4 text-6xl">🎈</div>
-          <div className="absolute -bottom-4 -left-4 text-6xl">⭐</div>
-          <div className="w-28 h-28 bg-yellow-100 text-yellow-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner border-4 border-white">
-            <span className="text-6xl text-shadow-sm">🐻</span>
-          </div>
-          <h2 className="text-3xl font-black text-sky-600 mb-4">闖關挑戰賽</h2>
-          <p className="text-slate-500 mb-8 font-bold text-lg leading-relaxed">
-            這是一場跨越日夜的時間推算挑戰！<br/>
-            只要連續答對 5 題，<br/>就能獲得最高榮譽證書 🎓<br/>
-            <span className="text-amber-500">拿出你的魔法筆，一起動動腦吧！</span>
-          </p>
-          <button onClick={() => setGameState('playing')} className="w-full py-4 rounded-2xl bg-gradient-to-r from-sky-400 to-indigo-500 hover:from-sky-500 hover:to-indigo-600 text-white font-black text-xl transition-all shadow-[0_6px_0_#4338ca] hover:shadow-[0_4px_0_#4338ca] hover:translate-y-1 active:shadow-none active:translate-y-2">
-            🚀 開始挑戰！
-          </button>
-        </div>
-      </div>
-    );
+    return React.createElement("div", {
+      className: "py-12 px-4 flex items-center justify-center animate-fade-in-up"
+    }, React.createElement("div", {
+      className: "max-w-md w-full bg-white rounded-[3rem] shadow-2xl overflow-hidden text-center p-10 border-8 border-sky-100 relative"
+    }, React.createElement("div", {
+      className: "absolute -top-4 -right-4 text-6xl"
+    }, "🎈"), React.createElement("div", {
+      className: "absolute -bottom-4 -left-4 text-6xl"
+    }, "⭐"), React.createElement("div", {
+      className: "w-28 h-28 bg-yellow-100 text-yellow-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner border-4 border-white"
+    }, React.createElement("span", {
+      className: "text-6xl text-shadow-sm"
+    }, "🐻")), React.createElement("h2", {
+      className: "text-3xl font-black text-sky-600 mb-4"
+    }, "闖關挑戰賽"), React.createElement("p", {
+      className: "text-slate-500 mb-8 font-bold text-lg leading-relaxed"
+    }, "這是一場跨越日夜的時間推算挑戰！", React.createElement("br", null), "只要連續答對 5 題，", React.createElement("br", null), "就能獲得最高榮譽證書 🎓", React.createElement("br", null), React.createElement("span", {
+      className: "text-amber-500"
+    }, "拿出你的魔法筆，一起動動腦吧！")), React.createElement("button", {
+      onClick: () => setGameState('playing'),
+      className: "w-full py-4 rounded-2xl bg-gradient-to-r from-sky-400 to-indigo-500 hover:from-sky-500 hover:to-indigo-600 text-white font-black text-xl transition-all shadow-[0_6px_0_#4338ca] hover:shadow-[0_4px_0_#4338ca] hover:translate-y-1 active:shadow-none active:translate-y-2"
+    }, "🚀 開始挑戰！")));
   }
-
   if (gameState === 'name_entry') {
-    return (
-      <div className="py-12 px-4 flex items-center justify-center animate-fade-in-up">
-        <div className="max-w-md w-full bg-white rounded-[3rem] shadow-2xl p-10 border-8 border-yellow-100 text-center relative">
-          <div className="w-24 h-24 bg-orange-100 text-orange-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner border-4 border-white">
-            <span className="text-5xl">👑</span>
-          </div>
-          <h2 className="text-3xl font-black text-orange-500 mb-4">太厲害了！全部過關！</h2>
-          <p className="text-slate-500 mb-6 font-bold text-lg">你已經精通了跨日時間的計算魔法。<br/>請輸入你的名字，領取專屬證書：</p>
-          <input type="text" placeholder="你的名字..." value={studentName} onChange={(e) => setStudentName(e.target.value)} className="w-full px-4 py-4 rounded-2xl border-4 border-slate-200 focus:border-orange-400 focus:outline-none mb-6 text-center text-xl font-black text-slate-700 bg-slate-50" maxLength={10} />
-          <button onClick={() => studentName.trim() ? setGameState('certificate') : alert('名字不能空白喔！')} className="w-full py-4 rounded-2xl bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white font-black text-xl transition-all shadow-[0_6px_0_#c2410c] hover:shadow-[0_4px_0_#c2410c] hover:translate-y-1 active:shadow-none active:translate-y-2">
-            🎁 製作證書
-          </button>
-        </div>
-      </div>
-    );
+    return React.createElement("div", {
+      className: "py-12 px-4 flex items-center justify-center animate-fade-in-up"
+    }, React.createElement("div", {
+      className: "max-w-md w-full bg-white rounded-[3rem] shadow-2xl p-10 border-8 border-yellow-100 text-center relative"
+    }, React.createElement("div", {
+      className: "w-24 h-24 bg-orange-100 text-orange-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner border-4 border-white"
+    }, React.createElement("span", {
+      className: "text-5xl"
+    }, "👑")), React.createElement("h2", {
+      className: "text-3xl font-black text-orange-500 mb-4"
+    }, "太厲害了！全部過關！"), React.createElement("p", {
+      className: "text-slate-500 mb-6 font-bold text-lg"
+    }, "你已經精通了跨日時間的計算魔法。", React.createElement("br", null), "請輸入你的名字，領取專屬證書："), React.createElement("input", {
+      type: "text",
+      placeholder: "你的名字...",
+      value: studentName,
+      onChange: e => setStudentName(e.target.value),
+      className: "w-full px-4 py-4 rounded-2xl border-4 border-slate-200 focus:border-orange-400 focus:outline-none mb-6 text-center text-xl font-black text-slate-700 bg-slate-50",
+      maxLength: 10
+    }), React.createElement("button", {
+      onClick: () => studentName.trim() ? setGameState('certificate') : alert('名字不能空白喔！'),
+      className: "w-full py-4 rounded-2xl bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white font-black text-xl transition-all shadow-[0_6px_0_#c2410c] hover:shadow-[0_4px_0_#c2410c] hover:translate-y-1 active:shadow-none active:translate-y-2"
+    }, "🎁 製作證書")));
   }
-
   if (gameState === 'certificate') {
-    return (
-      <div className="py-8 px-4 sm:px-8 flex flex-col items-center justify-center animate-fade-in-up">
-        <div className="relative w-full max-w-3xl bg-amber-50 rounded-[2rem] shadow-2xl p-8 sm:p-16 overflow-hidden border-[16px] border-double border-yellow-400 bg-white">
-          <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#d97706 3px, transparent 3px)', backgroundSize: '40px 40px' }}></div>
-          <div className="relative z-10 text-center">
-            <div className="text-amber-500 font-serif tracking-[0.3em] mb-4 uppercase text-sm sm:text-lg font-black flex justify-center items-center gap-2">⭐ 超級榮譽證書 ⭐</div>
-            <h1 className="text-4xl sm:text-6xl font-black text-orange-600 mb-12 tracking-widest drop-shadow-sm" style={{ WebkitTextStroke: '2px #fef3c7' }}>時間魔法師認證</h1>
-            <p className="text-xl text-amber-700 mb-4 font-bold">特此證明</p>
-            <div className="text-5xl font-black text-indigo-700 mb-8 border-b-4 border-dashed border-amber-300 inline-block px-12 pb-4">{studentName}</div>
-            <p className="text-lg sm:text-2xl text-amber-900 font-bold leading-relaxed max-w-xl mx-auto mb-16 bg-white/50 p-6 rounded-3xl">
-              在跨日時間推算挑戰賽中表現非常棒！<br/>成功通過了最高難度的多日運算測驗，<br/>是一位真正的時間小達人！🎉
-            </p>
-            <div className="flex justify-between items-end mt-12 px-4 sm:px-12">
-              <div className="text-left">
-                <div className="border-b-4 border-amber-500 pb-1 mb-2 w-32"></div>
-                <div className="text-amber-700 text-lg font-black">指導魔法師</div>
-              </div>
-              <div className="relative w-32 h-32 flex items-center justify-center bg-gradient-to-br from-yellow-300 to-amber-500 rounded-full border-8 border-yellow-100 shadow-xl transform rotate-[-10deg]">
-                <div className="absolute inset-1 border-4 border-dashed border-white rounded-full opacity-60"></div>
-                <div className="text-center text-white text-shadow-md">
-                  <div className="font-black text-xl leading-none mb-1">NO.1</div>
-                  <div className="font-bold text-sm leading-none">EXPERT</div>
-                </div>
-              </div>
-              <div className="text-right">
-                <div className="border-b-4 border-amber-500 pb-1 mb-2 w-32 font-bold text-amber-900 text-lg">{new Date().toLocaleDateString()}</div>
-                <div className="text-amber-700 text-lg font-black">頒發日期</div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="mt-10 flex gap-4">
-          <button onClick={() => window.print()} className="px-8 py-3 bg-slate-700 hover:bg-slate-800 text-white rounded-2xl font-black transition-transform active:scale-95 shadow-md flex items-center gap-2 text-lg">🖨️ 列印證書</button>
-          <button onClick={restartQuiz} className="px-8 py-3 bg-indigo-500 hover:bg-indigo-600 text-white rounded-2xl font-black transition-transform active:scale-95 shadow-md flex items-center gap-2 text-lg">🔄 再玩一次</button>
-        </div>
-      </div>
-    );
+    return React.createElement("div", {
+      className: "py-8 px-4 sm:px-8 flex flex-col items-center justify-center animate-fade-in-up"
+    }, React.createElement("div", {
+      className: "relative w-full max-w-3xl bg-amber-50 rounded-[2rem] shadow-2xl p-8 sm:p-16 overflow-hidden border-[16px] border-double border-yellow-400 bg-white"
+    }, React.createElement("div", {
+      className: "absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none",
+      style: {
+        backgroundImage: 'radial-gradient(#d97706 3px, transparent 3px)',
+        backgroundSize: '40px 40px'
+      }
+    }), React.createElement("div", {
+      className: "relative z-10 text-center"
+    }, React.createElement("div", {
+      className: "text-amber-500 font-serif tracking-[0.3em] mb-4 uppercase text-sm sm:text-lg font-black flex justify-center items-center gap-2"
+    }, "⭐ 超級榮譽證書 ⭐"), React.createElement("h1", {
+      className: "text-4xl sm:text-6xl font-black text-orange-600 mb-12 tracking-widest drop-shadow-sm",
+      style: {
+        WebkitTextStroke: '2px #fef3c7'
+      }
+    }, "時間魔法師認證"), React.createElement("p", {
+      className: "text-xl text-amber-700 mb-4 font-bold"
+    }, "特此證明"), React.createElement("div", {
+      className: "text-5xl font-black text-indigo-700 mb-8 border-b-4 border-dashed border-amber-300 inline-block px-12 pb-4"
+    }, studentName), React.createElement("p", {
+      className: "text-lg sm:text-2xl text-amber-900 font-bold leading-relaxed max-w-xl mx-auto mb-16 bg-white/50 p-6 rounded-3xl"
+    }, "在跨日時間推算挑戰賽中表現非常棒！", React.createElement("br", null), "成功通過了最高難度的多日運算測驗，", React.createElement("br", null), "是一位真正的時間小達人！🎉"), React.createElement("div", {
+      className: "flex justify-between items-end mt-12 px-4 sm:px-12"
+    }, React.createElement("div", {
+      className: "text-left"
+    }, React.createElement("div", {
+      className: "border-b-4 border-amber-500 pb-1 mb-2 w-32"
+    }), React.createElement("div", {
+      className: "text-amber-700 text-lg font-black"
+    }, "指導魔法師")), React.createElement("div", {
+      className: "relative w-32 h-32 flex items-center justify-center bg-gradient-to-br from-yellow-300 to-amber-500 rounded-full border-8 border-yellow-100 shadow-xl transform rotate-[-10deg]"
+    }, React.createElement("div", {
+      className: "absolute inset-1 border-4 border-dashed border-white rounded-full opacity-60"
+    }), React.createElement("div", {
+      className: "text-center text-white text-shadow-md"
+    }, React.createElement("div", {
+      className: "font-black text-xl leading-none mb-1"
+    }, "NO.1"), React.createElement("div", {
+      className: "font-bold text-sm leading-none"
+    }, "EXPERT"))), React.createElement("div", {
+      className: "text-right"
+    }, React.createElement("div", {
+      className: "border-b-4 border-amber-500 pb-1 mb-2 w-32 font-bold text-amber-900 text-lg"
+    }, new Date().toLocaleDateString()), React.createElement("div", {
+      className: "text-amber-700 text-lg font-black"
+    }, "頒發日期"))))), React.createElement("div", {
+      className: "mt-10 flex gap-4"
+    }, React.createElement("button", {
+      onClick: () => window.print(),
+      className: "px-8 py-3 bg-slate-700 hover:bg-slate-800 text-white rounded-2xl font-black transition-transform active:scale-95 shadow-md flex items-center gap-2 text-lg"
+    }, "🖨️ 列印證書"), React.createElement("button", {
+      onClick: restartQuiz,
+      className: "px-8 py-3 bg-indigo-500 hover:bg-indigo-600 text-white rounded-2xl font-black transition-transform active:scale-95 shadow-md flex items-center gap-2 text-lg"
+    }, "🔄 再玩一次")));
   }
-
-  return (
-    <div className="py-8 px-4 flex flex-col items-center w-full animate-fade-in-up">
-      <div className="w-full max-w-3xl mb-8">
-        <div className="flex justify-between text-base font-black text-indigo-400 mb-2 px-2">
-          <span>🎯 挑戰進度</span><span className="bg-indigo-100 px-3 py-1 rounded-full text-indigo-600">第 {currentQIndex + 1} / {quizData.length} 關</span>
-        </div>
-        <div className="h-4 w-full bg-indigo-100 rounded-full overflow-hidden flex border-2 border-indigo-50">
-          {quizData.map((_, idx) => (
-            <div key={idx} className={`h-full flex-1 border-r-2 border-white transition-all duration-500 ${idx < currentQIndex ? 'bg-sky-400' : idx === currentQIndex ? 'bg-amber-400 animate-pulse' : 'bg-transparent'}`}></div>
-          ))}
-        </div>
-      </div>
-
-      <div className="w-full max-w-3xl bg-white rounded-[2rem] shadow-xl border-4 border-sky-100 overflow-hidden relative">
-        <div className="bg-sky-50 border-b-4 border-sky-100 px-8 py-4 flex items-center gap-3 text-sky-700 font-black text-lg">
-          <span className="text-2xl">🧩</span> 關卡 {currentQIndex + 1}：{currentQ.type}
-        </div>
-        <div className="p-8 sm:p-12 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] bg-white">
-          <h3 className="text-2xl sm:text-3xl font-black text-slate-800 leading-relaxed mb-10 text-center">{currentQ.question}</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            {currentQ.options.map((opt, idx) => {
-              // 判斷按鈕狀態
-              let btnClass = "bg-white border-slate-200 text-slate-600 hover:border-sky-400 hover:bg-sky-50 hover:text-sky-700 shadow-[0_4px_0_#e2e8f0] hover:shadow-[0_2px_0_#38bdf8] hover:translate-y-0.5 active:shadow-none active:translate-y-1";
-              
-              if (feedback?.status === 'correct') {
-                if (idx === currentQ.correctIndex) {
-                  btnClass = "bg-emerald-100 border-emerald-500 text-emerald-700 shadow-[0_4px_0_#10b981] transform scale-105 z-10";
-                } else {
-                  btnClass = "bg-slate-50 border-slate-200 text-slate-400 opacity-50 cursor-not-allowed";
-                }
-              } else if (feedback?.status === 'wrong' && feedback.selectedIndex === idx) {
-                btnClass = "bg-red-50 border-red-300 text-red-500 shadow-none translate-y-1 opacity-70";
-              }
-
-              return (
-                <button 
-                  key={idx} 
-                  onClick={() => handleAnswer(idx)} 
-                  className={`p-5 rounded-2xl border-4 text-2xl font-black transition-all ${btnClass}`}
-                >
-                  {opt}
-                </button>
-              )
-            })}
-          </div>
-        </div>
-
-        {feedback && (
-          <div className="border-t-4 border-slate-100 p-8 sm:px-12 sm:pb-10 bg-slate-50 animate-fade-in-up">
-            {feedback.status === 'correct' ? (
-              <div className="flex flex-col sm:flex-row gap-8 items-center">
-                <div className="flex-1 w-full">
-                  <div className="flex items-center gap-3 text-emerald-600 font-black text-2xl mb-4">
-                    <span className="text-3xl">🥳</span> {feedback.msg}
-                  </div>
-                  <div className="bg-emerald-100 p-5 rounded-2xl text-emerald-900 font-bold text-base leading-relaxed whitespace-pre-line border-4 border-emerald-200 shadow-inner">
-                    <div className="font-black text-lg mb-2 text-emerald-700 border-b-2 border-emerald-300 pb-2">📚 魔法筆記本 (正確算式)：</div>
-                    {currentQ.steps}
-                  </div>
-                </div>
-                <button onClick={nextQuestion} className="w-full sm:w-auto px-10 py-5 bg-gradient-to-r from-emerald-400 to-teal-500 hover:from-emerald-500 hover:to-teal-600 text-white font-black text-xl rounded-2xl shadow-[0_6px_0_#0f766e] hover:shadow-[0_4px_0_#0f766e] active:shadow-none hover:translate-y-1 active:translate-y-2 whitespace-nowrap">
-                  下一題 ➔
-                </button>
-              </div>
-            ) : (
-              <div className="flex flex-col sm:flex-row gap-8 items-center">
-                <div className="flex-1 w-full">
-                  <div className="flex items-center gap-3 text-red-500 font-black text-2xl mb-4">
-                    <span className="text-3xl">🤔</span> {feedback.msg}
-                  </div>
-                  <div className="bg-amber-100 p-5 rounded-2xl text-amber-900 text-base leading-relaxed border-4 border-amber-300 font-bold shadow-inner">
-                    {currentQ.hint}
-                  </div>
-                </div>
-                <button onClick={() => setFeedback(null)} className="w-full sm:w-auto px-10 py-5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-black text-xl rounded-2xl shadow-[0_6px_0_#94a3b8] hover:shadow-[0_4px_0_#94a3b8] active:shadow-none hover:translate-y-1 active:translate-y-2 whitespace-nowrap">
-                  再試一次 🔄
-                </button>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-    </div>
-  );
+  return React.createElement("div", {
+    className: "py-8 px-4 flex flex-col items-center w-full animate-fade-in-up"
+  }, React.createElement("div", {
+    className: "w-full max-w-3xl mb-8"
+  }, React.createElement("div", {
+    className: "flex justify-between text-base font-black text-indigo-400 mb-2 px-2"
+  }, React.createElement("span", null, "🎯 挑戰進度"), React.createElement("span", {
+    className: "bg-indigo-100 px-3 py-1 rounded-full text-indigo-600"
+  }, "第 ", currentQIndex + 1, " / ", quizData.length, " 關")), React.createElement("div", {
+    className: "h-4 w-full bg-indigo-100 rounded-full overflow-hidden flex border-2 border-indigo-50"
+  }, quizData.map((_, idx) => React.createElement("div", {
+    key: idx,
+    className: `h-full flex-1 border-r-2 border-white transition-all duration-500 ${idx < currentQIndex ? 'bg-sky-400' : idx === currentQIndex ? 'bg-amber-400 animate-pulse' : 'bg-transparent'}`
+  })))), React.createElement("div", {
+    className: "w-full max-w-3xl bg-white rounded-[2rem] shadow-xl border-4 border-sky-100 overflow-hidden relative"
+  }, React.createElement("div", {
+    className: "bg-sky-50 border-b-4 border-sky-100 px-8 py-4 flex items-center gap-3 text-sky-700 font-black text-lg"
+  }, React.createElement("span", {
+    className: "text-2xl"
+  }, "🧩"), " 關卡 ", currentQIndex + 1, "：", currentQ.type), React.createElement("div", {
+    className: "p-8 sm:p-12 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] bg-white"
+  }, React.createElement("h3", {
+    className: "text-2xl sm:text-3xl font-black text-slate-800 leading-relaxed mb-10 text-center"
+  }, currentQ.question), React.createElement("div", {
+    className: "grid grid-cols-1 sm:grid-cols-2 gap-5"
+  }, currentQ.options.map((opt, idx) => {
+    let btnClass = "bg-white border-slate-200 text-slate-600 hover:border-sky-400 hover:bg-sky-50 hover:text-sky-700 shadow-[0_4px_0_#e2e8f0] hover:shadow-[0_2px_0_#38bdf8] hover:translate-y-0.5 active:shadow-none active:translate-y-1";
+    if (feedback?.status === 'correct') {
+      if (idx === currentQ.correctIndex) {
+        btnClass = "bg-emerald-100 border-emerald-500 text-emerald-700 shadow-[0_4px_0_#10b981] transform scale-105 z-10";
+      } else {
+        btnClass = "bg-slate-50 border-slate-200 text-slate-400 opacity-50 cursor-not-allowed";
+      }
+    } else if (feedback?.status === 'wrong' && feedback.selectedIndex === idx) {
+      btnClass = "bg-red-50 border-red-300 text-red-500 shadow-none translate-y-1 opacity-70";
+    }
+    return React.createElement("button", {
+      key: idx,
+      onClick: () => handleAnswer(idx),
+      className: `p-5 rounded-2xl border-4 text-2xl font-black transition-all ${btnClass}`
+    }, opt);
+  }))), feedback && React.createElement("div", {
+    className: "border-t-4 border-slate-100 p-8 sm:px-12 sm:pb-10 bg-slate-50 animate-fade-in-up"
+  }, feedback.status === 'correct' ? React.createElement("div", {
+    className: "flex flex-col sm:flex-row gap-8 items-center"
+  }, React.createElement("div", {
+    className: "flex-1 w-full"
+  }, React.createElement("div", {
+    className: "flex items-center gap-3 text-emerald-600 font-black text-2xl mb-4"
+  }, React.createElement("span", {
+    className: "text-3xl"
+  }, "🥳"), " ", feedback.msg), React.createElement("div", {
+    className: "bg-emerald-100 p-5 rounded-2xl text-emerald-900 font-bold text-base leading-relaxed whitespace-pre-line border-4 border-emerald-200 shadow-inner"
+  }, React.createElement("div", {
+    className: "font-black text-lg mb-2 text-emerald-700 border-b-2 border-emerald-300 pb-2"
+  }, "📚 魔法筆記本 (正確算式)："), currentQ.steps)), React.createElement("button", {
+    onClick: nextQuestion,
+    className: "w-full sm:w-auto px-10 py-5 bg-gradient-to-r from-emerald-400 to-teal-500 hover:from-emerald-500 hover:to-teal-600 text-white font-black text-xl rounded-2xl shadow-[0_6px_0_#0f766e] hover:shadow-[0_4px_0_#0f766e] active:shadow-none hover:translate-y-1 active:translate-y-2 whitespace-nowrap"
+  }, "下一題 ➔")) : React.createElement("div", {
+    className: "flex flex-col sm:flex-row gap-8 items-center"
+  }, React.createElement("div", {
+    className: "flex-1 w-full"
+  }, React.createElement("div", {
+    className: "flex items-center gap-3 text-red-500 font-black text-2xl mb-4"
+  }, React.createElement("span", {
+    className: "text-3xl"
+  }, "🤔"), " ", feedback.msg), React.createElement("div", {
+    className: "bg-amber-100 p-5 rounded-2xl text-amber-900 text-base leading-relaxed border-4 border-amber-300 font-bold shadow-inner"
+  }, currentQ.hint)), React.createElement("button", {
+    onClick: () => setFeedback(null),
+    className: "w-full sm:w-auto px-10 py-5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-black text-xl rounded-2xl shadow-[0_6px_0_#94a3b8] hover:shadow-[0_4px_0_#94a3b8] active:shadow-none hover:translate-y-1 active:translate-y-2 whitespace-nowrap"
+  }, "再試一次 🔄")))));
 }
-
-// ==========================================
-// 主應用程式 (整合選單列)
-// ==========================================
 function App() {
-  const [currentTab, setCurrentTab] = useState('teaching'); 
-
-  return (
-    <div className="min-h-screen bg-[#f0f9ff] flex flex-col font-sans">
-      
-      {/* 頂部導覽列：可愛風格 */}
-      <header className="bg-white shadow-md sticky top-0 z-50 border-b-4 border-sky-200">
-        <div className="max-w-6xl mx-auto px-4 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <a href="../index.html" className="px-3 py-2 rounded-xl bg-sky-100 text-sky-700 font-black hover:bg-sky-200 whitespace-nowrap">← 返回數學首頁</a>
-            <div className="flex items-center gap-3 text-sky-600 font-black text-2xl drop-shadow-sm">
-              <span className="text-3xl">🌟</span> 跨日時間探險島
-            </div>
-          </div>
-          
-          <div className="flex bg-sky-50 p-1.5 rounded-2xl border-2 border-sky-100 gap-1">
-            <button 
-              onClick={() => setCurrentTab('teaching')} 
-              className={`px-5 py-2 text-base font-black rounded-xl transition-all ${currentTab === 'teaching' ? 'bg-sky-400 shadow-md text-white' : 'text-sky-600 hover:bg-sky-100'}`}
-            >
-              🔍 魔法教學區
-            </button>
-            <button 
-              onClick={() => setCurrentTab('quiz')} 
-              className={`px-5 py-2 text-base font-black rounded-xl transition-all ${currentTab === 'quiz' ? 'bg-amber-400 shadow-md text-white' : 'text-amber-600 hover:bg-amber-100'}`}
-            >
-              🏆 闖關挑戰區
-            </button>
-          </div>
-        </div>
-      </header>
-
-      {/* 內容渲染區塊 */}
-      <main className="flex-1 flex flex-col relative overflow-hidden">
-        {/* 背景裝飾小圖示 */}
-        <div className="absolute top-10 left-10 text-4xl opacity-20 pointer-events-none">☁️</div>
-        <div className="absolute top-40 right-20 text-4xl opacity-20 pointer-events-none">✨</div>
-        <div className="absolute bottom-20 left-20 text-4xl opacity-20 pointer-events-none">🎈</div>
-        
-        <div className="relative z-10 flex-1 flex flex-col">
-          {currentTab === 'teaching' ? <TeachingTool /> : <QuizTool />}
-        </div>
-      </main>
-
-      {/* 全局動畫樣式 */}
-      <style>{`
+  const [currentTab, setCurrentTab] = useState('teaching');
+  return React.createElement("div", {
+    className: "min-h-screen bg-[#f0f9ff] flex flex-col font-sans"
+  }, React.createElement("header", {
+    className: "bg-white shadow-md sticky top-0 z-50 border-b-4 border-sky-200"
+  }, React.createElement("div", {
+    className: "max-w-6xl mx-auto px-4 h-20 flex items-center justify-between"
+  }, React.createElement("div", {
+    className: "flex items-center gap-3"
+  }, React.createElement("a", {
+    href: "../index.html",
+    className: "px-3 py-2 rounded-xl bg-sky-100 text-sky-700 font-black hover:bg-sky-200 whitespace-nowrap"
+  }, "← 返回數學首頁"), React.createElement("div", {
+    className: "flex items-center gap-3 text-sky-600 font-black text-2xl drop-shadow-sm"
+  }, React.createElement("span", {
+    className: "text-3xl"
+  }, "🌟"), " 跨日時間探險島")), React.createElement("div", {
+    className: "flex bg-sky-50 p-1.5 rounded-2xl border-2 border-sky-100 gap-1"
+  }, React.createElement("button", {
+    onClick: () => setCurrentTab('teaching'),
+    className: `px-5 py-2 text-base font-black rounded-xl transition-all ${currentTab === 'teaching' ? 'bg-sky-400 shadow-md text-white' : 'text-sky-600 hover:bg-sky-100'}`
+  }, "🔍 魔法教學區"), React.createElement("button", {
+    onClick: () => setCurrentTab('quiz'),
+    className: `px-5 py-2 text-base font-black rounded-xl transition-all ${currentTab === 'quiz' ? 'bg-amber-400 shadow-md text-white' : 'text-amber-600 hover:bg-amber-100'}`
+  }, "🏆 闖關挑戰區")))), React.createElement("main", {
+    className: "flex-1 flex flex-col relative overflow-hidden"
+  }, React.createElement("div", {
+    className: "absolute top-10 left-10 text-4xl opacity-20 pointer-events-none"
+  }, "☁️"), React.createElement("div", {
+    className: "absolute top-40 right-20 text-4xl opacity-20 pointer-events-none"
+  }, "✨"), React.createElement("div", {
+    className: "absolute bottom-20 left-20 text-4xl opacity-20 pointer-events-none"
+  }, "🎈"), React.createElement("div", {
+    className: "relative z-10 flex-1 flex flex-col"
+  }, currentTab === 'teaching' ? React.createElement(TeachingTool, null) : React.createElement(QuizTool, null))), React.createElement("style", null, `
         .animate-fade-in-up {
           animation: fadeInUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
@@ -761,8 +836,7 @@ function App() {
           .min-h-screen { min-height: auto !important; background: white !important; }
           .shadow-2xl, .shadow-xl { box-shadow: none !important; }
         }
-      `}</style>
-    </div>
-  );
+      `));
 }
-ReactDOM.createRoot(document.getElementById('root')).render(<App />);</script></body></html>
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App, null));
+</script></body></html>
