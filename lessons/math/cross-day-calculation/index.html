@@ -408,11 +408,11 @@ function TeachingTool() {
     onClick: () => loadExample(ex),
     className: `px-4 py-2 rounded-2xl text-sm font-bold transition-transform active:scale-95 border-2 shadow-sm ${calcMode === ex.type ? 'bg-pink-400 text-white border-pink-500' : 'bg-white text-slate-600 border-slate-200 hover:bg-pink-50 hover:border-pink-300 hover:text-pink-600'}`
   }, ex.name))))), React.createElement("div", {
-    className: "order-2 bg-white p-6 sm:p-8 rounded-[2rem] shadow-lg border-4 border-emerald-100"
+    className: "order-2 bg-white p-6 sm:p-8 rounded-[2rem] shadow-md border-2 border-emerald-100"
   }, React.createElement("div", {
-    className: "relative w-full h-44 select-none mt-8 mb-6"
+    className: "relative w-full h-36 select-none mt-7 mb-5"
   }, React.createElement("div", {
-    className: "absolute inset-0 flex rounded-3xl overflow-hidden opacity-90 transition-all duration-500 shadow-inner border-4 border-slate-200"
+    className: "absolute inset-0 flex rounded-3xl overflow-hidden opacity-85 transition-all duration-500 shadow-inner border-2 border-slate-200"
   }, React.createElement("div", {
     className: "flex-1 bg-sky-300"
   }), React.createElement("div", {
@@ -420,7 +420,7 @@ function TeachingTool() {
   }), timelineDays === 3 && React.createElement("div", {
     className: "flex-1 bg-violet-200 transition-all"
   })), React.createElement("div", {
-    className: "absolute -top-10 left-0 w-full flex text-lg font-black"
+    className: "absolute -top-9 left-0 w-full flex text-base font-black"
   }, React.createElement("div", {
     className: "flex-1 text-center"
   }, React.createElement("span", {
@@ -434,13 +434,13 @@ function TeachingTool() {
   }, React.createElement("span", {
     className: "inline-block bg-orange-500 text-white px-4 py-1.5 rounded-full shadow-md border-2 border-white"
   }, "🌅 第三天"))), timelineDays === 2 ? React.createElement("div", {
-    className: "absolute left-1/2 top-2 bottom-2 border-l-8 border-dashed border-white/90 z-0 transition-all drop-shadow-md"
+    className: "absolute left-1/2 top-3 bottom-3 border-l-4 border-dashed border-white/90 z-0 transition-all"
   }) : React.createElement(React.Fragment, null, React.createElement("div", {
-    className: "absolute left-1/3 top-2 bottom-2 border-l-8 border-dashed border-white/90 z-0 transition-all drop-shadow-md"
+    className: "absolute left-1/3 top-3 bottom-3 border-l-4 border-dashed border-white/90 z-0 transition-all"
   }), React.createElement("div", {
-    className: "absolute left-2/3 top-2 bottom-2 border-l-8 border-dashed border-white/90 z-0 transition-all drop-shadow-md"
+    className: "absolute left-2/3 top-3 bottom-3 border-l-4 border-dashed border-white/90 z-0 transition-all"
   })), React.createElement("div", {
-    className: "absolute top-1/2 left-4 right-4 h-10 bg-slate-300 rounded-full -translate-y-1/2 z-10 shadow-inner border-4 border-white ring-4 ring-slate-400/40"
+    className: "absolute top-1/2 left-5 right-5 h-8 bg-slate-300 rounded-full -translate-y-1/2 z-10 shadow-inner border-2 border-white ring-2 ring-slate-400/30"
   }, Array.from({
     length: timelineDays
   }).map((_, dayIndex) => {
@@ -453,7 +453,7 @@ function TeachingTool() {
     if (segmentWidth <= 0) return null;
     return React.createElement("div", {
       key: dayIndex,
-      className: `absolute h-full transition-all duration-300 shadow-lg border-y-4 border-white ${colors[dayIndex]} ${segmentStart === startHour ? 'rounded-l-full border-l-4' : ''} ${segmentEnd === endHour ? 'rounded-r-full border-r-4' : ''}`,
+      className: `absolute h-full transition-all duration-300 shadow-md border-y-2 border-white ${colors[dayIndex]} ${segmentStart === startHour ? 'rounded-l-full border-l-2' : ''} ${segmentEnd === endHour ? 'rounded-r-full border-r-2' : ''}`,
       style: {
         left: `${segmentStart / maxTimelineHours * 100}%`,
         width: `${segmentWidth / maxTimelineHours * 100}%`
@@ -467,11 +467,11 @@ function TeachingTool() {
       transform: 'translateX(-50%)'
     }
   }, React.createElement("div", {
-    className: "bg-sky-700 text-white text-sm sm:text-base font-black px-4 py-1.5 rounded-full shadow-lg border-2 border-white whitespace-nowrap"
+    className: "bg-sky-700 text-white text-sm sm:text-base font-black px-3 py-1 rounded-full shadow-md border border-white whitespace-nowrap"
   }, "🏁 ", startObj.dayName, " ", formatTimeText(startObj.hour)), React.createElement("div", {
-    className: "w-2.5 flex-1 bg-sky-700 rounded-full",
+    className: "w-1.5 flex-1 bg-sky-700 rounded-full",
     style: {
-      boxShadow: '0 0 0 4px rgba(255,255,255,.85)'
+      boxShadow: '0 0 0 2px rgba(255,255,255,.85)'
     }
   })), React.createElement("div", {
     className: "absolute -top-12 z-40 flex flex-col items-center pointer-events-none",
@@ -481,19 +481,19 @@ function TeachingTool() {
       transform: 'translateX(-50%)'
     }
   }, React.createElement("div", {
-    className: "bg-pink-600 text-white text-sm sm:text-base font-black px-4 py-1.5 rounded-full shadow-lg border-2 border-white whitespace-nowrap"
+    className: "bg-pink-600 text-white text-sm sm:text-base font-black px-3 py-1 rounded-full shadow-md border border-white whitespace-nowrap"
   }, "🛑 ", endObj.dayName, " ", formatTimeText(endObj.hour)), React.createElement("div", {
-    className: "w-0 flex-1 border-dashed border-pink-600 drop-shadow-md",
+    className: "w-0 flex-1 border-dashed border-pink-600",
     style: {
-      borderLeftWidth: '7px'
+      borderLeftWidth: '4px'
     }
   })), Array.from({
     length: maxTimelineHours + 1
   }).map((_, i) => {
     const isMajor = i % 24 === 0 || i % 24 === 12;
     const isEven = i % 2 === 0;
-    let tickClass = 'h-4 mt-3 w-1.5 bg-slate-500 rounded-full';
-    if (isMajor) tickClass = 'h-14 -mt-2 w-2.5 bg-slate-900 rounded-full shadow-lg border border-white';else if (isEven) tickClass = 'h-8 mt-1 w-2 bg-slate-700 rounded-full shadow-sm';
+    let tickClass = 'h-3 mt-2.5 w-1 bg-slate-500 rounded-full';
+    if (isMajor) tickClass = 'h-10 -mt-1 w-1.5 bg-slate-900 rounded-full shadow-sm border border-white';else if (isEven) tickClass = 'h-6 mt-1 w-1.5 bg-slate-700 rounded-full';
     return React.createElement("div", {
       key: i,
       className: "absolute top-0 flex flex-col items-center",
@@ -504,7 +504,7 @@ function TeachingTool() {
     }, React.createElement("div", {
       className: tickClass
     }), isEven && React.createElement("div", {
-      className: `mt-3 text-xs sm:text-sm font-black whitespace-nowrap ${i > 0 && i % 24 === 0 && i < maxTimelineHours ? 'bg-slate-900 text-white px-3 py-1.5 rounded-xl z-20 shadow-md mt-1 border-2 border-white' : isMajor ? 'text-slate-900 bg-white/80 px-2 py-1 rounded-lg shadow-sm' : 'text-slate-700 bg-white/60 px-1.5 py-0.5 rounded-md'}`
+      className: `mt-2 text-xs sm:text-sm font-black whitespace-nowrap ${i > 0 && i % 24 === 0 && i < maxTimelineHours ? 'bg-slate-900 text-white px-2.5 py-1 rounded-lg z-20 shadow-sm mt-1 border border-white' : isMajor ? 'text-slate-900 bg-white/80 px-2 py-0.5 rounded-lg shadow-sm' : 'text-slate-700 bg-white/60 px-1.5 py-0.5 rounded-md'}`
     }, isMajor ? formatAxisLabel(i) : is12HourFormat ? i % 12 || 12 : i % 24));
   })))), React.createElement("div", {
     className: "contents"
