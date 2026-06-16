@@ -467,8 +467,8 @@ function TeachingTool() {
       transform: 'translateX(-50%)'
     }
   }, React.createElement("div", {
-    className: "bg-sky-700 text-white text-sm sm:text-base font-black px-3 py-1 rounded-full shadow-lg border-2 border-white"
-  }, "🏁 起點"), React.createElement("div", {
+    className: "bg-sky-700 text-white text-sm sm:text-base font-black px-4 py-1.5 rounded-full shadow-lg border-2 border-white whitespace-nowrap"
+  }, "🏁 ", startObj.dayName, " ", formatTimeText(startObj.hour)), React.createElement("div", {
     className: "w-2.5 flex-1 bg-sky-700 rounded-full",
     style: {
       boxShadow: '0 0 0 4px rgba(255,255,255,.85)'
@@ -481,8 +481,8 @@ function TeachingTool() {
       transform: 'translateX(-50%)'
     }
   }, React.createElement("div", {
-    className: "bg-pink-600 text-white text-sm sm:text-base font-black px-3 py-1 rounded-full shadow-lg border-2 border-white"
-  }, "🛑 終點"), React.createElement("div", {
+    className: "bg-pink-600 text-white text-sm sm:text-base font-black px-4 py-1.5 rounded-full shadow-lg border-2 border-white whitespace-nowrap"
+  }, "🛑 ", endObj.dayName, " ", formatTimeText(endObj.hour)), React.createElement("div", {
     className: "w-0 flex-1 border-dashed border-pink-600 drop-shadow-md",
     style: {
       borderLeftWidth: '7px'
