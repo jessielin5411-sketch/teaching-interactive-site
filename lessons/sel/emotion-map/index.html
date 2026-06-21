@@ -9,6 +9,13 @@
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script>window.react = window.React;</script>
   <script crossorigin src="https://unpkg.com/lucide-react@0.468.0/dist/umd/lucide-react.js"></script>
+  <script type="importmap">
+    {
+      "imports": {
+        "react/jsx-runtime": "https://esm.sh/react@18.2.0/jsx-runtime"
+      }
+    }
+  </script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <style>
     .sel-back-button{position:fixed;z-index:9999;top:12px;left:12px;padding:9px 14px;border:2px solid #fff;border-radius:999px;color:#fff;background:rgba(15,23,42,.82);box-shadow:0 5px 15px rgba(0,0,0,.25);font:800 14px "Segoe UI","Noto Sans TC",sans-serif;text-decoration:none;backdrop-filter:blur(8px)}
@@ -18,7 +25,7 @@
 <body>
   <a class="sel-back-button" href="../index.html">← 返回 SEL 課程</a>
   <div id="root"></div>
-  <script type="text/babel">
+  <script type="text/babel" data-type="module">
 const { useState, useEffect, useRef } = React;
 const { Sparkles, Star, AlertCircle, Heart, MapPin, Coffee, Gift, Flame, Droplets, Wind, Smile, ArrowRight, Info, Music, VolumeX, Cloud, Dices } = LucideReact;
 // --- 全局背景音樂 URL (更換為保證不阻擋的 Wikimedia 開源 MP3，薩替的 Gymnopédie No. 1) ---
