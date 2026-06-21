@@ -1,0 +1,1539 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>5年級數學：不規則物體體積計算</title>
+  
+  <!-- 引入 Tailwind CSS 確保畫面現代化且完全響應式 -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- 引入 FontAwesome 圖標 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- 引入 KaTeX 以渲染完美的 LaTeX 數學公式 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/contrib/auto-render.min.js"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Noto+Sans+TC:wght@400;700;900&display=swap');
+    
+    body {
+      font-family: 'Noto Sans TC', 'Fredoka One', sans-serif;
+      background-color: #f0fdf4; /* 療癒粉綠色底 */
+    }
+
+    /* 拖曳中的影子與狀態 */
+    .dragging {
+      opacity: 0.5;
+      transform: scale(1.1) rotate(5deg);
+    }
+
+    .smooth-transition {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* 3D 翻轉字卡樣式 */
+    .flip-card {
+      perspective: 1000px;
+    }
+    .flip-card-inner {
+      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      transform-style: preserve-3d;
+    }
+    .flip-card.flipped .flip-card-inner {
+      transform: rotateY(180deg);
+    }
+    .flip-card-front, .flip-card-back {
+      backface-visibility: hidden;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      border-radius: 24px;
+    }
+    .flip-card-back {
+      transform: rotateY(180deg);
+    }
+
+    /* 動態漂浮波浪微調 */
+    .water-polygon {
+      transition: fill 0.5s ease;
+    }
+
+    /* 水中物體晃動 (專屬圖層，不影響座標) */
+    @keyframes floating-underwater {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-3px) rotate(2deg); }
+    }
+    .underwater-item {
+      animation: floating-underwater 4s ease-in-out infinite;
+    }
+
+    /* 內嵌 SVG 水花動畫 */
+    @keyframes splash-fly-svg {
+      0% { transform: translate(0, 0) scale(1); opacity: 1; }
+      100% { transform: translate(var(--dx), var(--dy)) scale(0.2); opacity: 0; }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between overflow-x-hidden">
+  <a href="../index.html" class="fixed top-4 left-4 z-50 inline-flex items-center gap-2 bg-white/95 hover:bg-white text-emerald-800 font-black px-5 py-3 rounded-full shadow-lg border-2 border-emerald-200 transition-all">
+    ← 回數學首頁
+  </a>
+
+  <!-- 全域 SVG 漸層與濾鏡定義 -->
+  <svg class="absolute w-0 h-0" width="0" height="0" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <!-- 大石頭漸層 -->
+      <linearGradient id="stoneGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#cbd5e1" />
+        <stop offset="50%" stop-color="#94a3b8" />
+        <stop offset="100%" stop-color="#475569" />
+      </linearGradient>
+      <!-- 鐵球漸層 -->
+      <radialGradient id="metalGrad" cx="35%" cy="35%" r="65%">
+        <stop offset="0%" stop-color="#f8fafc" />
+        <stop offset="30%" stop-color="#94a3b8" />
+        <stop offset="70%" stop-color="#475569" />
+        <stop offset="100%" stop-color="#1e293b" />
+      </radialGradient>
+      <!-- 雞蛋漸層 -->
+      <radialGradient id="eggGrad" cx="45%" cy="45%" r="55%">
+        <stop offset="0%" stop-color="#fffdf5" />
+        <stop offset="70%" stop-color="#faecc8" />
+        <stop offset="100%" stop-color="#e3ce9c" />
+      </radialGradient>
+      
+      <!-- 3D 水體立體漸層 -->
+      <linearGradient id="waterFrontGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="rgba(34, 211, 238, 0.65)" />
+        <stop offset="100%" stop-color="rgba(14, 165, 233, 0.8)" />
+      </linearGradient>
+      <linearGradient id="waterSideGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="rgba(14, 165, 233, 0.75)" />
+        <stop offset="100%" stop-color="rgba(3, 105, 161, 0.85)" />
+      </linearGradient>
+      <linearGradient id="waterTopGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="rgba(186, 230, 253, 0.85)" />
+        <stop offset="100%" stop-color="rgba(34, 211, 238, 0.75)" />
+      </linearGradient>
+    </defs>
+  </svg>
+
+  <!-- 全螢幕慶祝 Canvas -->
+  <canvas id="confetti" class="fixed top-0 left-0 w-full h-full pointer-events-none z-50 hidden"></canvas>
+
+  <!-- 頂部導航與標題 -->
+  <header class="bg-gradient-to-r from-teal-400 via-emerald-400 to-green-500 text-white shadow-md p-4 sticky top-0 z-30">
+    <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="bg-white p-2 rounded-2xl shadow-inner text-emerald-600 text-2xl animate-bounce">
+          💡
+        </div>
+        <div>
+          <h1 class="text-xl sm:text-2xl font-black tracking-wider">不規則物體體積計算</h1>
+          <p class="text-xs text-emerald-100 font-medium">實驗模擬 × 互動閃卡 × 隨堂測驗 — 國小五年級數學素養教材</p>
+        </div>
+      </div>
+      <!-- 進度指示器 -->
+      <div class="flex items-center gap-2 bg-emerald-700/30 px-4 py-2 rounded-2xl border border-emerald-300/30">
+        <span class="text-sm font-bold">解鎖進度：</span>
+        <div class="flex gap-1" id="stars-container">
+          <i class="fa-regular fa-star text-amber-300 text-lg" id="star-egg" title="完成雞蛋實驗"></i>
+          <i class="fa-regular fa-star text-amber-300 text-lg" id="star-stone" title="完成石頭實驗"></i>
+          <i class="fa-regular fa-star text-amber-300 text-lg" id="star-iron" title="完成鐵球實驗"></i>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 分頁導覽列 (學習階段切換) -->
+  <nav class="flex justify-center bg-white shadow-sm border-b border-emerald-100 p-2 gap-2 sticky top-[72px] sm:top-[80px] z-20">
+    <button id="tab-btn-lab" onclick="switchTab('lab')" class="px-5 py-2.5 rounded-2xl font-black flex items-center gap-2 bg-emerald-500 text-white shadow-md transition-all duration-300">
+      <i class="fa-solid fa-vial"></i> 🧪 互動實驗室
+    </button>
+    <button id="tab-btn-cards" onclick="switchTab('cards')" class="px-5 py-2.5 rounded-2xl font-black flex items-center gap-2 text-slate-600 hover:bg-slate-50 transition-all duration-300">
+      <i class="fa-solid fa-bolt"></i> ⚡ 觀念閃卡
+    </button>
+    <button id="tab-btn-quiz" onclick="switchTab('quiz')" class="px-5 py-2.5 rounded-2xl font-black flex items-center gap-2 text-slate-600 hover:bg-slate-50 transition-all duration-300">
+      <i class="fa-solid fa-clipboard-question"></i> 📝 隨堂測驗
+    </button>
+  </nav>
+
+  <!-- 主區塊 -->
+  <main class="max-w-6xl w-full mx-auto px-4 py-6 flex-grow">
+    
+    <!-- ==================== 1. 互動實驗室分頁 ==================== -->
+    <section id="tab-content-lab" class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      <!-- 左側：3D 立體水槽物理實驗室 (Col span 5) -->
+      <div class="lg:col-span-5 flex flex-col gap-4">
+        <div class="bg-white rounded-3xl p-6 shadow-xl border-4 border-emerald-400 relative overflow-hidden flex flex-col items-center">
+          <div class="absolute -top-1 -left-1 bg-emerald-400 text-white font-bold text-xs px-4 py-1.5 rounded-br-2xl shadow-md z-10">
+            📍 3D 立體透明水槽
+          </div>
+
+          <div class="w-full text-center mt-3 mb-3">
+            <div class="inline-block bg-teal-50 px-4 py-1.5 rounded-full text-sm text-teal-800 font-bold border border-teal-200">
+              底面積：長 $10\text{ cm} \times$ 寬 $10\text{ cm} = 100\text{ cm}^2$
+            </div>
+          </div>
+
+          <!-- 立體水槽主體區 -->
+          <div class="relative w-full max-w-[340px] h-[310px] flex items-center justify-center" id="tank-dropzone">
+            <svg id="cube-tank-svg" class="w-full h-full overflow-visible" viewBox="0 0 320 280" xmlns="http://www.w3.org/2000/svg">
+              <!-- 1. 容器內部背面虛線 -->
+              <line id="wire-back-bottom" x1="125" y1="200" x2="245" y2="200" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4,4" />
+              <line id="wire-back-left" x1="125" y1="200" x2="125" y2="50" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4,4" />
+              <line id="wire-back-bottom-left" x1="125" y1="200" x2="45" y2="245" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4,4" />
+
+              <!-- 2. 立體水體渲染 (Back Face & Bottom Face) -->
+              <polygon id="water-back-face" points="125,200 245,200 245,200 125,200" fill="rgba(14, 165, 233, 0.25)" class="water-polygon" />
+              <polygon id="water-bottom-face" points="45,245 165,245 245,200 125,200" fill="rgba(3, 105, 161, 0.3)" />
+
+              <!-- 3. 沈入水中物體容置槽 -->
+              <g transform="translate(145, 222.5)">
+                <g id="svg-submerged-item-group" class="underwater-item hidden">
+                  <!-- 動態注入的 SVG -->
+                </g>
+              </g>
+
+              <!-- 4. 立體水體前側、右側及波動表面 -->
+              <polygon id="water-left-face" points="45,245 125,200 125,200 45,245" fill="rgba(14, 165, 233, 0.35)" class="water-polygon" />
+              <polygon id="water-right-face" points="165,245 245,200 245,200 165,245" fill="url(#waterSideGrad)" class="water-polygon" />
+              <polygon id="water-front-face" points="45,245 165,245 165,245 45,245" fill="url(#waterFrontGrad)" class="water-polygon" />
+              <polygon id="water-top-surface" points="45,245 165,245 245,200 125,200" fill="url(#waterTopGrad)" class="water-polygon" />
+
+              <!-- 5. 容器外框實線 -->
+              <line x1="45" y1="245" x2="165" y2="245" stroke="#475569" stroke-width="2.5" />
+              <line x1="165" y1="245" x2="245" y2="200" stroke="#475569" stroke-width="2.5" />
+              <line x1="45" y1="245" x2="45" y2="95" stroke="#475569" stroke-width="2.5" />
+              <line x1="165" y1="245" x2="165" y2="95" stroke="#475569" stroke-width="2.5" />
+              <line x1="245" y1="200" x2="245" y2="50" stroke="#475569" stroke-width="2.5" />
+              <polygon points="45,95 165,95 245,50 125,50" fill="none" stroke="#475569" stroke-width="2.5" />
+
+              <!-- 6. 前左垂直稜線刻度尺 -->
+              <g id="svg-ruler-group"></g>
+
+              <!-- 7. 底部長寬尺寸標示 (新增) -->
+              <!-- 前底邊 (長) -->
+              <text x="105" y="262" font-size="13px" font-weight="900" fill="#475569" text-anchor="middle">10 cm</text>
+              <!-- 右底邊 (寬) - 帶有符合透視角度的旋轉 -->
+              <text x="212" y="234" font-size="13px" font-weight="900" fill="#475569" text-anchor="middle" transform="rotate(-29.35, 212, 234)">10 cm</text>
+            </svg>
+
+          </div>
+
+          <!-- 水位即時看板 -->
+          <div class="w-full mt-4 bg-slate-50 border border-slate-200 rounded-2xl p-3 flex justify-around text-center">
+            <div>
+              <span class="text-xs text-slate-500 block font-bold">目前水位高度</span>
+              <span class="text-xl font-extrabold text-sky-600" id="current-height-display">5.0</span> <span class="text-xs text-sky-600 font-bold">公分</span>
+            </div>
+            <div class="border-l border-slate-200"></div>
+            <div>
+              <span class="text-xs text-slate-500 block font-bold">目前液體總體積</span>
+              <span class="text-xl font-extrabold text-teal-600" id="current-volume-display">500</span> <span class="text-xs text-teal-600 font-bold">立方公分</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 導引氣泡 -->
+        <div id="quiz-complete-guide" class="bg-indigo-50 rounded-2xl p-4 border-2 border-indigo-200 shadow-md flex flex-col gap-3 items-center hidden">
+          <div class="flex gap-3 items-start">
+            <span class="text-3xl">🎉</span>
+            <div>
+              <h4 class="font-extrabold text-indigo-900 text-sm">實驗通關！太棒了！</h4>
+              <p class="text-xs text-indigo-700 mt-1">你已經成功算出所有實驗物品的體積與水位。接下來，我們一起去瞧瞧「觀念閃卡」加深印象，準備迎接隨堂挑戰！</p>
+            </div>
+          </div>
+          <button onclick="switchTab('cards')" class="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-xl text-xs transition-all flex items-center justify-center gap-1">
+            前往下一關：⚡ 觀念閃卡 <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+
+        <div class="bg-amber-50 rounded-2xl p-4 border-2 border-amber-200 shadow-sm flex gap-3 items-start" id="normal-teacher-bubble">
+          <span class="text-2xl">👩‍🏫</span>
+          <div>
+            <h4 class="font-bold text-amber-800 text-sm">依芯老師的排水法小教室：</h4>
+            <p class="text-xs text-amber-700 mt-1 leading-relaxed">
+              「排水法有兩個重要的觀念唷！第一：知道水位差，就可以求出物體體積。第二：若已知物體體積，也可以反過來預測水位會上升幾公分！」
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 右側：實驗材料盒與引導計算區 (Col span 7) -->
+      <div class="lg:col-span-7 flex flex-col gap-6">
+        <div class="bg-white rounded-3xl p-6 shadow-xl border-4 border-amber-300">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-black text-amber-900 flex items-center gap-2">
+              🎒 實驗材料盒 <span class="text-xs text-amber-700 bg-amber-100 px-2 py-0.5 rounded-md">拖曳或點擊皆可</span>
+            </h3>
+            <button id="btn-retrieve" class="text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1.5 rounded-xl border border-slate-300 transition-colors hidden flex items-center gap-1">
+              <i class="fa-solid fa-rotate-left"></i> 取出物體
+            </button>
+          </div>
+
+          <div class="grid grid-cols-3 gap-4">
+            <!-- 大石頭 -->
+            <div id="item-stone" class="bg-neutral-50 hover:bg-neutral-100 border-2 border-neutral-200 hover:border-neutral-400 rounded-2xl p-3 flex flex-col items-center gap-2 cursor-grab active:cursor-grabbing smooth-transition relative group" draggable="true">
+              <div class="w-20 h-20 flex items-center justify-center group-hover:scale-110 smooth-transition" id="stone-svg-holder"></div>
+              <span class="font-bold text-sm text-neutral-800">大石頭</span>
+              <span class="item-desc text-[10px] text-neutral-500 font-bold">課本第二題同款</span>
+              <span class="item-vol hidden text-xs sm:text-sm font-black text-rose-600 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-md">體積 $300\text{ cm}^3$</span>
+              <div class="absolute -top-2 -right-2 bg-emerald-500 text-white text-xs w-6 h-6 rounded-full flex items-center justify-center shadow-md hidden" id="badge-stone">
+                <i class="fa-solid fa-check"></i>
+              </div>
+            </div>
+
+            <!-- 鐵球 -->
+            <div id="item-iron" class="bg-slate-50 hover:bg-slate-100 border-2 border-slate-200 hover:border-slate-400 rounded-2xl p-3 flex flex-col items-center gap-2 cursor-grab active:cursor-grabbing smooth-transition relative group" draggable="true">
+              <div class="w-16 h-16 flex items-center justify-center group-hover:scale-110 smooth-transition" id="iron-svg-holder"></div>
+              <span class="font-bold text-sm text-slate-800">鐵球</span>
+              <span class="item-desc text-[10px] text-slate-500 font-bold">課本第三題觀念</span>
+              <span class="item-vol hidden text-xs sm:text-sm font-black text-rose-600 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-md">體積 $200\text{ cm}^3$</span>
+              <div class="absolute -top-2 -right-2 bg-emerald-500 text-white text-xs w-6 h-6 rounded-full flex items-center justify-center shadow-md hidden" id="badge-iron">
+                <i class="fa-solid fa-check"></i>
+              </div>
+            </div>
+
+            <!-- 雞蛋 -->
+            <div id="item-egg" class="bg-amber-50 hover:bg-orange-50 border-2 border-amber-200 hover:border-amber-400 rounded-2xl p-3 flex flex-col items-center gap-2 cursor-grab active:cursor-grabbing smooth-transition relative group" draggable="true">
+              <div class="w-16 h-16 flex items-center justify-center group-hover:scale-110 smooth-transition" id="egg-svg-holder"></div>
+              <span class="font-bold text-sm text-amber-900">雞蛋</span>
+              <span class="item-desc text-[10px] text-amber-600 font-bold">量筒實驗精準版</span>
+              <span class="item-vol hidden text-xs sm:text-sm font-black text-rose-600 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-md">體積 $60\text{ cm}^3$</span>
+              <div class="absolute -top-2 -right-2 bg-emerald-500 text-white text-xs w-6 h-6 rounded-full flex items-center justify-center shadow-md hidden" id="badge-egg">
+                <i class="fa-solid fa-check"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 引導計算面板 -->
+        <div class="bg-white rounded-3xl p-6 shadow-xl border-4 border-sky-400 min-h-[350px] flex flex-col justify-between" id="quiz-board">
+          
+          <!-- 雙階段測驗模式切換器 -->
+          <div class="flex bg-slate-100 p-1.5 rounded-xl mb-4 w-full sm:max-w-sm mx-auto shadow-inner">
+            <button id="btn-mode-vol" onclick="setLabMode('vol')" class="flex-1 py-2 rounded-lg bg-white shadow-sm text-slate-800 font-black text-sm transition-all border border-slate-200">
+              第一階段：算體積
+            </button>
+            <button id="btn-mode-height" onclick="setLabMode('height')" class="flex-1 py-2 rounded-lg text-slate-500 font-bold text-sm hover:bg-slate-200 transition-all">
+              第二階段：算水位
+            </button>
+          </div>
+
+          <div id="quiz-empty-state" class="flex flex-col items-center justify-center text-center py-6 flex-grow">
+            <div class="w-20 h-20 bg-sky-50 text-sky-400 rounded-full flex items-center justify-center text-4xl mb-4 animate-pulse border-2 border-sky-100">
+              <i class="fa-solid fa-hand-pointer"></i>
+            </div>
+            <h4 class="text-lg font-extrabold text-slate-700">準備開始測驗囉！</h4>
+            <p class="text-sm text-slate-500 mt-2 max-w-sm">請將上方任何一個物體拖曳或直接點擊，放入水槽中進行驗證。</p>
+          </div>
+
+          <div id="quiz-interactive-area" class="hidden flex-col gap-4 flex-grow">
+            <!-- 標題區 -->
+            <div class="border-b-2 border-dashed border-slate-200 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div>
+                <span id="quiz-badge" class="px-3 py-1 bg-sky-100 text-sky-700 rounded-full text-xs font-bold mr-2">不規則排水測量</span>
+                <h4 id="quiz-title" class="text-lg font-black text-slate-800 inline-block">大石頭的體積計算</h4>
+              </div>
+              <span id="quiz-subtitle" class="text-xs text-slate-500 font-bold bg-slate-100 px-3 py-1 rounded-md">底面積：$100\text{ cm}^2$</span>
+            </div>
+
+            <!-- ================= 第一階段：算體積 (Mode: vol) ================= -->
+            <div id="form-vol-fields" class="flex flex-col gap-4">
+              <!-- 第1步 -->
+              <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
+                <div class="sm:col-span-8 flex items-center gap-2">
+                  <span class="w-6 h-6 rounded-full bg-sky-500 text-white text-xs font-bold flex items-center justify-center">1</span>
+                  <label class="text-sm font-bold text-slate-700">原來的裝水高度是幾公分？</label>
+                </div>
+                <div class="sm:col-span-4 flex items-center gap-2">
+                  <input type="number" id="input-v-h1" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl px-3 py-2 text-center text-lg font-black text-slate-800 focus:border-sky-400 focus:bg-white outline-none smooth-transition" placeholder="?">
+                  <span class="text-sm font-bold text-slate-500">公分</span>
+                  <span class="text-emerald-500 text-xl hidden" id="check-v-h1"></span>
+                </div>
+              </div>
+              <!-- 第2步 -->
+              <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
+                <div class="sm:col-span-8 flex items-center gap-2">
+                  <span class="w-6 h-6 rounded-full bg-sky-500 text-white text-xs font-bold flex items-center justify-center">2</span>
+                  <label class="text-sm font-bold text-slate-700" id="label-v-h2">放入後裝水高度是幾公分？</label>
+                </div>
+                <div class="sm:col-span-4 flex items-center gap-2">
+                  <input type="number" id="input-v-h2" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl px-3 py-2 text-center text-lg font-black text-slate-800 focus:border-sky-400 focus:bg-white outline-none smooth-transition" placeholder="?">
+                  <span class="text-sm font-bold text-slate-500">公分</span>
+                  <span class="text-emerald-500 text-xl hidden" id="check-v-h2"></span>
+                </div>
+              </div>
+              <!-- 第3步 -->
+              <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
+                <div class="sm:col-span-8 flex items-center gap-2">
+                  <span class="w-6 h-6 rounded-full bg-indigo-500 text-white text-xs font-bold flex items-center justify-center">3</span>
+                  <label class="text-sm font-bold text-slate-700">水面上升了幾公分？</label>
+                </div>
+                <div class="sm:col-span-4 flex items-center gap-2">
+                  <input type="number" id="input-v-diff" class="w-full bg-indigo-50 border-2 border-indigo-200 rounded-xl px-3 py-2 text-center text-lg font-black text-indigo-800 focus:border-indigo-400 focus:bg-white outline-none smooth-transition" placeholder="?">
+                  <span class="text-sm font-bold text-indigo-500">公分</span>
+                  <span class="text-emerald-500 text-xl hidden" id="check-v-diff"></span>
+                </div>
+              </div>
+              <!-- 第4步 -->
+              <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center bg-teal-50/50 p-3 rounded-2xl border border-teal-100">
+                <div class="sm:col-span-8 flex items-center gap-2">
+                  <span class="w-6 h-6 rounded-full bg-teal-500 text-white text-xs font-bold flex items-center justify-center">4</span>
+                  <label class="text-sm font-extrabold text-teal-900" id="label-v-vol">物體體積是多少立方公分？</label>
+                </div>
+                <div class="sm:col-span-4 flex items-center gap-2">
+                  <input type="number" id="input-v-vol" class="w-full bg-teal-50 border-2 border-teal-300 rounded-xl px-3 py-2 text-center text-lg font-black text-teal-800 focus:border-teal-500 focus:bg-white outline-none smooth-transition" placeholder="?">
+                  <span class="text-sm font-bold text-teal-600">$\text{cm}^3$</span>
+                  <span class="text-emerald-500 text-xl hidden" id="check-v-vol"></span>
+                </div>
+              </div>
+            </div>
+
+            <!-- ================= 第二階段：算水位 (Mode: height) ================= -->
+            <div id="form-height-fields" class="hidden flex-col gap-4">
+              <!-- 第1步 -->
+              <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
+                <div class="sm:col-span-8 flex items-center gap-2">
+                  <span class="w-6 h-6 rounded-full bg-indigo-500 text-white text-xs font-bold flex items-center justify-center">1</span>
+                  <label class="text-sm font-bold text-slate-700">水槽的底面積是幾平方公分？</label>
+                </div>
+                <div class="sm:col-span-4 flex items-center gap-2">
+                  <input type="number" id="input-h-base" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl px-3 py-2 text-center text-lg font-black text-slate-800 focus:border-indigo-400 focus:bg-white outline-none smooth-transition" placeholder="?">
+                  <span class="text-sm font-bold text-slate-500">$\text{cm}^2$</span>
+                  <span class="text-emerald-500 text-xl hidden" id="check-h-base"></span>
+                </div>
+              </div>
+              <!-- 第2步 (新增物體體積) -->
+              <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
+                <div class="sm:col-span-8 flex items-center gap-2">
+                  <span class="w-6 h-6 rounded-full bg-indigo-500 text-white text-xs font-bold flex items-center justify-center">2</span>
+                  <label class="text-sm font-bold text-slate-700">投入水槽的物體體積是多少？</label>
+                </div>
+                <div class="sm:col-span-4 flex items-center gap-2">
+                  <input type="number" id="input-h-objvol" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl px-3 py-2 text-center text-lg font-black text-slate-800 focus:border-indigo-400 focus:bg-white outline-none smooth-transition" placeholder="?">
+                  <span class="text-sm font-bold text-slate-500">$\text{cm}^3$</span>
+                  <span class="text-emerald-500 text-xl hidden" id="check-h-objvol"></span>
+                </div>
+              </div>
+              <!-- 第3步 -->
+              <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
+                <div class="sm:col-span-8 flex items-center gap-2">
+                  <span class="w-6 h-6 rounded-full bg-indigo-500 text-white text-xs font-bold flex items-center justify-center">3</span>
+                  <label class="text-sm font-bold text-slate-700">物體投入水槽後，水面會上升幾公分？</label>
+                </div>
+                <div class="sm:col-span-4 flex items-center gap-2">
+                  <input type="number" id="input-h-rise" class="w-full bg-indigo-50 border-2 border-indigo-200 rounded-xl px-3 py-2 text-center text-lg font-black text-indigo-800 focus:border-indigo-400 focus:bg-white outline-none smooth-transition" placeholder="?">
+                  <span class="text-sm font-bold text-indigo-500">公分</span>
+                  <span class="text-emerald-500 text-xl hidden" id="check-h-rise"></span>
+                </div>
+              </div>
+              <!-- 第4步 -->
+              <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
+                <div class="sm:col-span-8 flex items-center gap-2">
+                  <span class="w-6 h-6 rounded-full bg-sky-500 text-white text-xs font-bold flex items-center justify-center">4</span>
+                  <label class="text-sm font-bold text-slate-700">原來的裝水高度是幾公分？</label>
+                </div>
+                <div class="sm:col-span-4 flex items-center gap-2">
+                  <input type="number" id="input-h-init" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl px-3 py-2 text-center text-lg font-black text-slate-800 focus:border-sky-400 focus:bg-white outline-none smooth-transition" placeholder="?">
+                  <span class="text-sm font-bold text-slate-500">公分</span>
+                  <span class="text-emerald-500 text-xl hidden" id="check-h-init"></span>
+                </div>
+              </div>
+              <!-- 第5步 -->
+              <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center bg-teal-50/50 p-3 rounded-2xl border border-teal-100">
+                <div class="sm:col-span-8 flex items-center gap-2">
+                  <span class="w-6 h-6 rounded-full bg-teal-500 text-white text-xs font-bold flex items-center justify-center">5</span>
+                  <label class="text-sm font-extrabold text-teal-900">最終水位高度會變為幾公分？</label>
+                </div>
+                <div class="sm:col-span-4 flex items-center gap-2">
+                  <input type="number" id="input-h-final" class="w-full bg-teal-50 border-2 border-teal-300 rounded-xl px-3 py-2 text-center text-lg font-black text-teal-800 focus:border-teal-500 focus:bg-white outline-none smooth-transition" placeholder="?">
+                  <span class="text-sm font-bold text-teal-600">公分</span>
+                  <span class="text-emerald-500 text-xl hidden" id="check-h-final"></span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 提示算式呈現 -->
+            <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200 text-xs text-slate-600 leading-relaxed hidden" id="hint-box"></div>
+
+            <div class="flex gap-3 justify-end mt-2 pt-2 border-t border-slate-100">
+              <button id="btn-show-hint" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-sm border border-slate-300 smooth-transition flex items-center gap-1">
+                <i class="fa-regular fa-lightbulb"></i> 算式引導
+              </button>
+              <button id="btn-submit" class="px-6 py-2 bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 text-white font-extrabold rounded-xl text-sm shadow-md hover:shadow-lg transition-all">
+                檢查答案
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 2. 觀念閃卡分頁 ==================== -->
+    <section id="tab-content-cards" class="hidden flex-col items-center gap-6 max-w-2xl mx-auto">
+      <!-- 閃卡卡牌 -->
+      <div id="flashcard-container" class="flip-card w-full h-80 sm:h-96 cursor-pointer relative">
+        <div class="flip-card-inner w-full h-full relative text-center">
+          
+          <!-- 正面 -->
+          <div class="flip-card-front bg-gradient-to-br from-amber-500 to-orange-600 text-white p-8 flex flex-col justify-between items-center shadow-2xl border-4 border-amber-300">
+            <span class="text-xs bg-amber-400/30 px-3 py-1 rounded-full font-bold uppercase tracking-wider text-amber-100">❓ CONCEPT CARD</span>
+            <div id="card-front-text" class="text-xl sm:text-2xl font-black max-w-md leading-relaxed my-auto">載入中...</div>
+            <span class="text-xs opacity-75 font-semibold"><i class="fa-solid fa-rotate"></i> 點選卡片即可翻面看解答</span>
+          </div>
+
+          <!-- 反面 -->
+          <div class="flip-card-back bg-white text-slate-800 p-8 flex flex-col justify-between items-center shadow-2xl border-4 border-teal-400">
+            <span class="text-xs bg-teal-100 text-teal-700 px-3 py-1 rounded-full font-bold uppercase tracking-wider">💡 EXPLANATION</span>
+            <div id="card-back-text" class="text-lg sm:text-xl font-bold text-slate-700 max-w-md leading-relaxed my-auto">載入中...</div>
+            <span class="text-xs text-slate-400 font-semibold"><i class="fa-solid fa-rotate"></i> 點選卡片可以回到正面</span>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 閃卡控制器 -->
+      <div class="w-full flex items-center justify-between gap-4 mt-2 bg-white px-6 py-4 rounded-3xl shadow-md border border-slate-200">
+        <button onclick="prevCard()" class="w-12 h-12 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-all shadow active:scale-95">
+          <i class="fa-solid fa-chevron-left text-lg"></i>
+        </button>
+        
+        <div class="flex flex-col items-center flex-grow">
+          <span class="text-sm font-black text-slate-700 mb-1" id="card-progress-num">0 / 9</span>
+          <div class="w-32 sm:w-48 bg-slate-100 h-2.5 rounded-full overflow-hidden">
+            <div id="card-progress-bar" class="bg-gradient-to-r from-amber-500 to-orange-500 h-full w-[0%] transition-all duration-300"></div>
+          </div>
+        </div>
+
+        <button onclick="nextCard()" class="w-12 h-12 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-all shadow active:scale-95">
+          <i class="fa-solid fa-chevron-right text-lg"></i>
+        </button>
+      </div>
+
+      <!-- 工具按鈕 -->
+      <div class="flex gap-3 justify-center w-full">
+        <button onclick="shuffleCards()" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-2xl text-sm border border-slate-200 transition-all flex items-center gap-1.5 shadow-sm">
+          <i class="fa-solid fa-shuffle"></i> 隨機打亂卡片
+        </button>
+        <button onclick="switchTab('quiz')" class="px-5 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-extrabold rounded-2xl text-sm shadow-md hover:shadow-lg transition-all flex items-center gap-1.5">
+          進階挑戰隨堂測驗 <i class="fa-solid fa-circle-arrow-right"></i>
+        </button>
+      </div>
+    </section>
+
+    <!-- ==================== 3. 隨堂測驗分頁 ==================== -->
+    <section id="tab-content-quiz" class="hidden flex-col items-center gap-6 max-w-2xl mx-auto">
+      
+      <!-- 測驗卡片容器 -->
+      <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-xl border-4 border-indigo-400 w-full flex flex-col justify-between min-h-[400px]" id="quiz-main-card">
+        
+        <!-- 題目進度 -->
+        <div class="flex justify-between items-center border-b border-slate-100 pb-3 mb-5">
+          <span class="text-xs bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full font-extrabold" id="question-index-badge">問題 1 / 5</span>
+          <span class="text-xs text-slate-400 font-black flex items-center gap-1"><i class="fa-solid fa-award"></i> 完全沉入排水法</span>
+        </div>
+
+        <!-- 題目與選項 -->
+        <div class="flex-grow flex flex-col justify-between">
+          <h3 id="test-question-text" class="text-base sm:text-lg font-black text-slate-800 leading-relaxed mb-6">題目載入中...</h3>
+          
+          <!-- 選項清單 -->
+          <div id="test-options-container" class="flex flex-col gap-3.5 w-full">
+            <!-- 動態生成選項按鈕 -->
+          </div>
+        </div>
+
+        <!-- 即時詳解看板 -->
+        <div id="test-explanation-box" class="mt-6 bg-emerald-50 border border-emerald-100 rounded-2xl p-4 text-xs text-slate-600 leading-relaxed hidden">
+          <!-- 解題說明 -->
+        </div>
+
+        <!-- 測驗控制按鈕 -->
+        <div class="flex justify-end gap-3 mt-6 border-t border-slate-100 pt-4">
+          <button id="test-btn-next" onclick="nextQuestion()" class="px-6 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white font-black rounded-xl text-sm transition-all shadow-md hidden flex items-center gap-1">
+            下一題 <i class="fa-solid fa-angle-right"></i>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- 測驗報告卡片 (預設隱藏) -->
+      <div class="bg-white rounded-3xl p-8 shadow-2xl border-4 border-emerald-400 w-full flex-col items-center text-center gap-6 hidden" id="quiz-report-card">
+        <div class="w-24 h-24 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center text-5xl animate-bounce shadow-inner border-2 border-emerald-200">
+          🏆
+        </div>
+        <div>
+          <h2 class="text-2xl font-black text-slate-800">測驗完成！你太棒了！</h2>
+          <p class="text-xs text-slate-400 mt-1">讓我們看看你的不規則體積學習成果報告：</p>
+        </div>
+
+        <!-- 成績圈 -->
+        <div class="bg-slate-50 border border-slate-100 rounded-2xl px-8 py-4 flex gap-8 items-center justify-center shadow-inner">
+          <div class="text-center">
+            <span class="text-slate-400 text-xs font-bold block">答對題數</span>
+            <span class="text-3xl font-black text-emerald-500" id="report-correct-count">0</span> <span class="text-xs text-slate-400 font-bold">/ 5 題</span>
+          </div>
+          <div class="border-l border-slate-200 h-10"></div>
+          <div class="text-center">
+            <span class="text-slate-400 text-xs font-bold block">總成績</span>
+            <span class="text-3xl font-black text-indigo-500" id="report-score">0</span> <span class="text-xs text-slate-400 font-bold">分</span>
+          </div>
+        </div>
+
+        <!-- 評語 -->
+        <p id="report-comment" class="text-sm font-bold text-slate-600 max-w-md leading-relaxed"></p>
+
+        <!-- 再玩一次與回到首頁 -->
+        <div class="flex gap-3 justify-center mt-2 w-full">
+          <button onclick="restartQuiz()" class="px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-black rounded-2xl text-sm transition-all flex items-center gap-1.5 border border-slate-200">
+            <i class="fa-solid fa-arrow-rotate-left"></i> 重新測驗
+          </button>
+          <button onclick="switchTab('lab')" class="px-6 py-3 bg-gradient-to-r from-teal-500 to-emerald-500 text-white font-black rounded-2xl text-sm shadow-md hover:shadow-lg transition-all flex items-center gap-1.5">
+            <i class="fa-solid fa-vial"></i> 返回互動水槽
+          </button>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- 頁尾 -->
+  <footer class="bg-slate-800 text-slate-400 text-center py-4 text-xs mt-6 border-t border-slate-700">
+    <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <p>© 2026 國小數學 5年級不規則物體體積（排水法）全方位套件</p>
+      <div class="flex gap-4">
+        <span class="hover:text-white transition-colors cursor-help" onclick="alert('本系統完美融合三大階段學習，底面積皆對應標準 100 cm² 計算。點擊上方導航即可自由在「實驗室」、「閃卡」與「隨堂測驗」之間切換！')"><i class="fa-solid fa-circle-info"></i> 操作說明</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 核心 JavaScript 邏輯 -->
+  <script>
+    // ==================== 全域變數與數據 ====================
+    const BASE_AREA = 100;
+    const INITIAL_HEIGHT = 5.0; // 5 cm
+
+    // 3D 投影參數 (Cavalier Projection)
+    const ORIGIN_X = 45;       
+    const ORIGIN_Y = 245;      
+    const UNIT_X_DX = 1.2;     
+    const UNIT_X_DY = 0.0;     // 完美貼合平面前緣
+    const UNIT_Z_DX = 0.8;     
+    const UNIT_Z_DY = -0.45;
+    const UNIT_Y_DY = -1.25;   
+
+    let globalWaterHeight = 50.0; 
+    let animationTime = 0;        
+    let currentLabMode = 'vol';   // 'vol' 或 'height'
+
+    // 三種實驗物品的詳細數據與立體 SVG 結構
+    const OBJECTS_DATA = {
+      stone: {
+        id: 'stone',
+        name: '大石頭',
+        volume: 300,        
+        heightDiff: 3.0,    
+        finalHeight: 8.0,   
+        textbookInfo: '完美契合課本第二題。大石頭沉入底面積為 $10 \\times 10\\text{ cm}$ 的容器中，水面高度由 $5\\text{ cm}$ 升到 $8\\text{ cm}$。',
+        menuSvg: `<svg viewBox="0 0 100 100" class="w-20 h-20 filter drop-shadow">
+                <path d="M 25,30 C 15,45 20,65 35,75 C 50,85 70,80 80,65 C 90,50 85,30 70,20 C 55,10 35,15 25,30 Z" fill="url(#stoneGrad)" />
+                <path d="M 35,35 Q 45,30 55,40 Q 60,30 75,35" stroke="#334155" stroke-width="2" fill="none" opacity="0.3" />
+                <path d="M 30,55 Q 50,65 70,55" stroke="#334155" stroke-width="2" fill="none" opacity="0.3" />
+              </svg>`,
+        submergedSvg: `<svg x="-25" y="-40" width="50" height="50" viewBox="0 0 100 100">
+                <path d="M 25,30 C 15,45 20,65 35,75 C 50,85 70,80 80,65 C 90,50 85,30 70,20 C 55,10 35,15 25,30 Z" fill="url(#stoneGrad)" />
+                <path d="M 35,35 Q 45,30 55,40 Q 60,30 75,35" stroke="#334155" stroke-width="2" fill="none" opacity="0.3" />
+                <path d="M 30,55 Q 50,65 70,55" stroke="#334155" stroke-width="2" fill="none" opacity="0.3" />
+              </svg>`
+      },
+      iron: {
+        id: 'iron',
+        name: '鐵球',
+        volume: 200,        
+        heightDiff: 2.0,    
+        finalHeight: 7.0,   
+        textbookInfo: '課本第三題延伸思考。鐵球沉入後，水面從 $5\\text{ cm}$ 升到 $7\\text{ cm}$；如果把鐵球拿出水槽，水位則會下降 $2\\text{ cm}$！',
+        menuSvg: `<svg viewBox="0 0 100 100" class="w-14 h-14 filter drop-shadow">
+                <circle cx="50" cy="50" r="40" fill="url(#metalGrad)" />
+                <ellipse cx="40" cy="30" rx="12" ry="6" fill="#ffffff" opacity="0.4" transform="rotate(-30, 40, 30)" />
+              </svg>`,
+        submergedSvg: `<svg x="-25" y="-40" width="50" height="50" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="40" fill="url(#metalGrad)" />
+                <ellipse cx="40" cy="30" rx="12" ry="6" fill="#ffffff" opacity="0.4" transform="rotate(-30, 40, 30)" />
+              </svg>`
+      },
+      egg: {
+        id: 'egg',
+        name: '雞蛋',
+        volume: 60,         
+        heightDiff: 0.6,    
+        finalHeight: 5.6,   
+        textbookInfo: '課本第一部分量筒實驗精準轉換。雞蛋讓水面升高的體積為 $60\\text{ 毫升}$（也就是 $60\\text{ cm}^3$）。在底面積為 $100\\text{ cm}^2$ 的水槽中，水位會微幅上升 $0.6\\text{ cm}$。',
+        menuSvg: `<svg viewBox="0 0 100 120" class="w-11 h-14 filter drop-shadow">
+                <path d="M 50,15 C 28,15 22,75 22,95 A 28,28 0 0 0 78,95 C 78,75 72,15 50,15 Z" fill="url(#eggGrad)" />
+              </svg>`,
+        submergedSvg: `<svg x="-20" y="-45" width="40" height="48" viewBox="0 0 120 120">
+                <path d="M 60,15 C 38,15 32,75 32,95 A 28,28 0 0 0 88,95 C 88,75 82,15 60,15 Z" fill="url(#eggGrad)" />
+              </svg>`
+      }
+    };
+    // 簡化後的 9 張核心觀念閃卡
+    const FLASHCARDS_DATA = [
+      {front: "求不規則物體體積的核心公式", back: "<div class='text-left inline-block leading-relaxed'>不規則物體體積<br>= 容器底面積 $\\times$ 水面上升（或下降）的高度</div>"},
+      {front: "水面上升體積與不規則物體的關係", back: "當不規則物體「完全沉入」水中時，水面上升的體積就剛好等於該物體的體積。"},
+      {front: "已知體積，求水面上升高度的公式", back: "<div class='text-left inline-block leading-relaxed'>水面上升高度<br>= 物體體積 $\\div$ 容器底面積</div>"},
+      {front: "已知體積，求放入後的「最終水位高度」", back: "<div class='text-left inline-block leading-relaxed'>先算出「水面上升高度」，再與「原本的水位高度」相加。<br><br>最終高度 = 原高度 + 上升高度</div>"},
+      {front: "物體取出時的水位變化", back: "當完全沉入的物體被取出時，水面會「下降」，下降減少的體積就等於該物體的體積。"},
+      {front: "排水法的核心限制條件", back: "<div class='text-left inline-block space-y-2'>1. 物體必須能「完全沉入」水中。<br>2. 物體「不能吸水」或溶解。<br>3. 放入物體後水「不能溢出」容器。</div>"},
+      {front: "溢水法 (Overflow Method) 觀念", back: "當容器裝滿水時，放入物體後「溢出來的水的體積」，就剛好等於物體體積。"},
+      {front: "容量與體積的單位換算", back: "<div class='text-left inline-block space-y-2'>• $1\\text{ 公升 (L)} = 1000\\text{ 立方公分 (cm}^3\\text{)}$<br>• $1\\text{ 立方公尺 (m}^3\\text{)} = 1000\\text{ 公升 (L)}$</div>"},
+      {front: "記憶口訣", back: "<span class='text-xl text-rose-500 font-black block mb-3'>「底乘高差，便是體積」</span>將水槽的「底面積」乘以「水面上升或下降的高度」，就是物體的體積。"}
+    ];
+
+    // 5 題隨堂小測驗題目
+    const QUIZ_DATA = [
+      {
+        question: "有一個長方體水槽，底面長 $15\\text{ 公分}$、寬 $10\\text{ 公分}$，原來的裝水高度為 $12\\text{ 公分}$。將一顆不規則的石頭完全沉入水中後，水面高度上升到 $15\\text{ 公分}$。這顆石頭的體積是多少立方公分？",
+        options: ["150", "300", "450", "1800"],
+        correctIndex: 2,
+        rationale: "水槽底面積為 $15 \\times 10 = 150\\text{ 平方公分}$，水面上升的高度為 $15 - 12 = 3\\text{ 公分}$。因此石頭體積等於底面積乘以高度差：$150 \\times 3 = 450\\text{ 立方公分}$。"
+      },
+      {
+        question: "一個底面積為 $200\\text{ 平方公分}$ 的長方體容器，裝有一些水。將一個黏土模型完全沉入水中後，水面高度由 $14\\text{ 公分}$ 上升到 $18.5\\text{ 公分}$。這個黏土模型的體積是多少立方公分？",
+        options: ["450", "900", "2800", "3700"],
+        correctIndex: 1,
+        rationale: "水面上升的高度為 $18.5 - 14 = 4.5\\text{ 公分}$。黏土模型的體積等於底面積乘以高度差：$200 \\times 4.5 = 900\\text{ 立方公分}$。"
+      },
+      {
+        question: "在一口底面積為 $120\\text{ 平方公分}$ 的裝水長方體容器中，完全沉入一個鐵塊，此時水的高度是 $25\\text{ 公分}$。取出鐵塊後，水面下降到 $18\\text{ 公分}$。這個鐵塊的體積是多少立方公分？",
+        options: ["84", "840", "960", "3000"],
+        correctIndex: 1,
+        rationale: "取出鐵塊後，水面下降的高度就是鐵塊所占的高度差：$25 - 18 = 7\\text{ 公分}$。鐵塊體積等於底面積乘以下降高度：$120 \\times 7 = 840\\text{ 立方公分}$。"
+      },
+      {
+        question: "一個每邊長 $10\\text{ 公分}$ 的正方體容器，裡面裝水高度 $6\\text{ 公分}$。將一個體積 $250\\text{ 立方公分}$ 的玩具車完全沉入水中，且水沒有溢出。此時的水位高度會變為幾公分？",
+        options: ["2.5", "6.25", "8.0", "8.5"],
+        correctIndex: 3,
+        rationale: "容器底面積為 $10 \\times 10 = 100\\text{ 平方公分}$。玩具車放入後會使水面上升 $250 \\div 100 = 2.5\\text{ 公分}$，所以後來的高度為原本的 $6\text{ 公分} + 2.5\text{ 公分} = 8.5\text{ 公分}$。"
+      },
+      {
+        question: "有一個每邊長 $10\\text{ 公分}$ 的正方體容器，裡面裝滿了水。放入一顆大水晶球完全沉入後，溢出來的水剛好可以裝滿另一個底面積為 $50\\text{ 平方公分}$、水深 $8\\text{ 公分}$ 的長方體容器。這顆水晶球的體積是多少立方公分？",
+        options: ["200", "400", "500", "1000"],
+        correctIndex: 1,
+        rationale: "水晶球完全沉入滿水的容器時，溢出來的水體積就剛好等於水晶球的體積。溢出的水在新容器中的體積為 $50 \\times 8 = 400\\text{ 立方公分}$。"
+      }
+    ];
+
+    let currentActiveObject = null; 
+    let unlockedItems = { egg: false, stone: false, iron: false };
+    let currentCardIndex = 0;
+    let localFlashcards = [...FLASHCARDS_DATA];
+    let currentQuizIndex = 0;
+    let userQuizScore = 0;
+    let selectedOptionIndex = null;
+
+    // 音效產生器 (Web Audio API)
+    let audioCtx = null;
+    function getAudioContext() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      return audioCtx;
+    }
+
+    function playBloopSound() {
+      try {
+        const ctx = getAudioContext();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(120, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(450, ctx.currentTime + 0.35);
+        gain.gain.setValueAtTime(0.3, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.35);
+        osc.start(); osc.stop(ctx.currentTime + 0.35);
+      } catch (e) {}
+    }
+
+    function playCorrectSound() {
+      try {
+        const ctx = getAudioContext();
+        const notes = [261.63, 329.63, 392.00, 523.25];
+        notes.forEach((freq, i) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.connect(gain); gain.connect(ctx.destination);
+          osc.frequency.value = freq;
+          gain.gain.setValueAtTime(0.15, ctx.currentTime + i * 0.08);
+          gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + i * 0.08 + 0.25);
+          osc.start(ctx.currentTime + i * 0.08); osc.stop(ctx.currentTime + i * 0.08 + 0.25);
+        });
+      } catch (e) {}
+    }
+
+    function playWrongSound() {
+      try {
+        const ctx = getAudioContext();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(160, ctx.currentTime);
+        osc.frequency.linearRampToValueAtTime(110, ctx.currentTime + 0.3);
+        gain.gain.setValueAtTime(0.2, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+        osc.start(); osc.stop(ctx.currentTime + 0.3);
+      } catch (e) {}
+    }
+
+    // ==================== 初始化與分頁切換 ====================
+    window.addEventListener('DOMContentLoaded', () => {
+      loadSvgs();
+      generateRuler3D();
+      startWaterWaveLoop();
+      
+      setupDragAndDrop();
+      setupClickActions();
+      setupFormControls();
+      
+      initFlashcards();
+      initQuiz();
+
+      updateWater3D(50.0);
+      renderMathEquations();
+    });
+
+    function loadSvgs() {
+      document.getElementById('stone-svg-holder').innerHTML = OBJECTS_DATA.stone.menuSvg;
+      document.getElementById('iron-svg-holder').innerHTML = OBJECTS_DATA.iron.menuSvg;
+      document.getElementById('egg-svg-holder').innerHTML = OBJECTS_DATA.egg.menuSvg;
+    }
+
+    function switchTab(tabId) {
+      const tabs = ['lab', 'cards', 'quiz'];
+      tabs.forEach(t => {
+        const btn = document.getElementById(`tab-btn-${t}`);
+        const content = document.getElementById(`tab-content-${t}`);
+        
+        if (t === tabId) {
+          btn.className = "px-5 py-2.5 rounded-2xl font-black flex items-center gap-2 bg-emerald-500 text-white shadow-md transition-all duration-300";
+          content.classList.remove('hidden');
+          content.classList.add('flex');
+        } else {
+          btn.className = "px-5 py-2.5 rounded-2xl font-black flex items-center gap-2 text-slate-600 hover:bg-slate-50 transition-all duration-300";
+          content.classList.add('hidden');
+          content.classList.remove('flex');
+        }
+      });
+      setTimeout(renderMathEquations, 50);
+    }
+
+    function renderMathEquations() {
+      if (typeof renderMathInElement === 'function') {
+        renderMathInElement(document.body, {
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false}
+          ],
+          throwOnError: false
+        });
+      }
+    }
+
+    // ==================== 1. 3D 立體水槽投影與繪製核心邏輯 ====================
+    function project3D(x, y, z) {
+      const projX = ORIGIN_X + (x * UNIT_X_DX) + (z * UNIT_Z_DX);
+      const projY = ORIGIN_Y + (x * UNIT_X_DY) + (z * UNIT_Z_DY) + (y * UNIT_Y_DY);
+      return { x: projX, y: projY };
+    }
+
+    function generateRuler3D() {
+      const rulerContainer = document.getElementById('svg-ruler-group');
+      rulerContainer.innerHTML = '';
+      
+      for (let cm = 0; cm <= 12; cm++) {
+        const ySpace = cm * 10;
+        const ptRuler = project3D(0, ySpace, 0); 
+
+        const lineLength = (cm === 0 || cm % 5 === 0 || cm === 5 || cm === 10 || cm === 12) ? 14 : 8;
+        const isInitial = (cm === 5);
+
+        const tickLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        tickLine.setAttribute("x1", ptRuler.x);
+        tickLine.setAttribute("y1", ptRuler.y);
+        tickLine.setAttribute("x2", ptRuler.x - lineLength);
+        tickLine.setAttribute("y2", ptRuler.y + lineLength * 0.2); 
+        tickLine.setAttribute("stroke", isInitial ? "#0ea5e9" : "#475569");
+        tickLine.setAttribute("stroke-width", isInitial ? "2.5" : "1.5");
+        rulerContainer.appendChild(tickLine);
+
+        const tickText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        tickText.setAttribute("x", ptRuler.x - lineLength - 4);
+        tickText.setAttribute("y", ptRuler.y + 4);
+        tickText.setAttribute("text-anchor", "end");
+        
+        if (isInitial) {
+          tickText.textContent = "初始) 5 cm";
+          tickText.setAttribute("font-size", "11px");
+          tickText.setAttribute("font-weight", "900");
+          tickText.setAttribute("fill", "#0284c7");
+        } else {
+          tickText.textContent = `${cm} cm`;
+          tickText.setAttribute("font-size", "9px");
+          tickText.setAttribute("font-weight", "bold");
+          tickText.setAttribute("fill", "#64748b");
+        }
+        
+        rulerContainer.appendChild(tickText);
+      }
+    }
+
+    function updateWater3D(h) {
+      globalWaterHeight = h;
+      
+      const t000 = project3D(0, h, 0);
+      const t100 = project3D(100, h, 0);
+      const t101 = project3D(100, h, 100);
+      const t001 = project3D(0, h, 100);
+
+      const b000 = project3D(0, 0, 0);
+      const b100 = project3D(100, 0, 0);
+      const b101 = project3D(100, 0, 100);
+      const b001 = project3D(0, 0, 100);
+
+      const waveAmplitude = 1.6; 
+      const w0 = Math.sin(animationTime) * waveAmplitude;
+      const w1 = Math.cos(animationTime) * waveAmplitude;
+      const w2 = Math.sin(animationTime + 1.5) * waveAmplitude;
+      const w3 = Math.cos(animationTime + 1.5) * waveAmplitude;
+
+      document.getElementById('water-top-surface').setAttribute('points', 
+        `${t000.x},${t000.y + w0} ${t100.x},${t100.y + w1} ${t101.x},${t101.y + w2} ${t001.x},${t001.y + w3}`
+      );
+      document.getElementById('water-front-face').setAttribute('points', 
+        `${b000.x},${b000.y} ${b100.x},${b100.y} ${t100.x},${t100.y + w1} ${t000.x},${t000.y + w0}`
+      );
+      document.getElementById('water-right-face').setAttribute('points', 
+        `${b100.x},${b100.y} ${b101.x},${b101.y} ${t101.x},${t101.y + w2} ${t100.x},${t100.y + w1}`
+      );
+      document.getElementById('water-left-face').setAttribute('points', 
+        `${b000.x},${b000.y} ${b001.x},${b001.y} ${t001.x},${t001.y + w3} ${t000.x},${t000.y + w0}`
+      );
+      document.getElementById('water-back-face').setAttribute('points', 
+        `${b001.x},${b001.y} ${b101.x},${b101.y} ${t101.x},${t101.y + w2} ${t001.x},${t001.y + w3}`
+      );
+    }
+
+    function startWaterWaveLoop() {
+      function loop() {
+        animationTime += 0.04;
+        updateWater3D(globalWaterHeight);
+        requestAnimationFrame(loop);
+      }
+      requestAnimationFrame(loop);
+    }
+
+    // ==================== 2. 材料盒與拖放交互 ====================
+    function setupDragAndDrop() {
+      const items = document.querySelectorAll('[draggable="true"]');
+      const dropzone = document.getElementById('tank-dropzone');
+
+      items.forEach(item => {
+        item.addEventListener('dragstart', (e) => {
+          e.dataTransfer.setData('text/plain', item.id);
+          item.classList.add('dragging');
+        });
+        item.addEventListener('dragend', () => {
+          item.classList.remove('dragging');
+        });
+      });
+
+      dropzone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropzone.classList.add('scale-105');
+      });
+      dropzone.addEventListener('dragleave', () => {
+        dropzone.classList.remove('scale-105');
+      });
+      dropzone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropzone.classList.remove('scale-105');
+        const itemId = e.dataTransfer.getData('text/plain');
+        const objectType = itemId.replace('item-', '');
+        if (OBJECTS_DATA[objectType]) {
+          putObjectInWater(objectType);
+        }
+      });
+    }
+
+    function setupClickActions() {
+      Object.keys(OBJECTS_DATA).forEach(type => {
+        document.getElementById(`item-${type}`).addEventListener('click', () => {
+          putObjectInWater(type);
+        });
+      });
+      document.getElementById('btn-retrieve').addEventListener('click', removeObjectFromWater);
+    }
+
+    function putObjectInWater(type) {
+      if (currentActiveObject === type) return;
+      playBloopSound();
+      currentActiveObject = type;
+      const data = OBJECTS_DATA[type];
+      
+      const targetHeightSpace = data.finalHeight * 10;
+      animateWaterLevel(globalWaterHeight, targetHeightSpace, 1200);
+
+      triggerSplashEffect3D();
+      
+      setTimeout(() => {
+        const subGroup = document.getElementById('svg-submerged-item-group');
+        subGroup.innerHTML = data.submergedSvg;
+        subGroup.classList.remove('hidden');
+      }, 250);
+
+      animateNumber('current-height-display', INITIAL_HEIGHT, data.finalHeight, 1200);
+      animateNumber('current-volume-display', 500, 500 + data.volume, 1200);
+
+      document.getElementById('btn-retrieve').classList.remove('hidden');
+      showQuizForm(type);
+    }
+
+    function removeObjectFromWater() {
+      if (!currentActiveObject) return;
+      playBloopSound();
+      const data = OBJECTS_DATA[currentActiveObject];
+      
+      animateWaterLevel(globalWaterHeight, INITIAL_HEIGHT * 10, 1200);
+
+      document.getElementById('svg-submerged-item-group').classList.add('hidden');
+      document.getElementById('svg-submerged-item-group').innerHTML = '';
+
+      animateNumber('current-height-display', data.finalHeight, INITIAL_HEIGHT, 1200);
+      animateNumber('current-volume-display', 500 + data.volume, 500, 1200);
+
+      currentActiveObject = null;
+      document.getElementById('btn-retrieve').classList.add('hidden');
+
+      document.getElementById('quiz-empty-state').classList.remove('hidden');
+      document.getElementById('quiz-interactive-area').classList.add('hidden');
+    }
+
+    function triggerSplashEffect3D() {
+      const svgContainer = document.getElementById('cube-tank-svg');
+      const centerX = ORIGIN_X + (50 * UNIT_X_DX) + (50 * UNIT_Z_DX); 
+      const centerY = ORIGIN_Y + (50 * UNIT_X_DY) + (50 * UNIT_Z_DY) + (globalWaterHeight * UNIT_Y_DY);
+
+      for (let i = 0; i < 14; i++) {
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        const angle = Math.random() * Math.PI - Math.PI; 
+        const distance = Math.random() * 60 + 20;
+        const dx = Math.cos(angle) * distance;
+        const dy = Math.sin(angle) * distance - 15;
+        const size = Math.random() * 4 + 2;
+
+        circle.setAttribute('cx', centerX);
+        circle.setAttribute('cy', centerY);
+        circle.setAttribute('r', size);
+        circle.setAttribute('fill', 'rgba(186, 230, 253, 0.9)');
+        circle.style.transformOrigin = `${centerX}px ${centerY}px`;
+
+        circle.style.animation = `splash-fly-svg 0.6s cubic-bezier(0.1, 0.8, 0.3, 1) forwards`;
+        circle.style.setProperty('--dx', `${dx}px`);
+        circle.style.setProperty('--dy', `${dy}px`);
+
+        svgContainer.appendChild(circle);
+        setTimeout(() => circle.remove(), 600);
+      }
+    }
+
+    function animateWaterLevel(startVal, endVal, duration) {
+      const startTime = performance.now();
+      function update(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const easeProgress = 1 - Math.pow(1 - progress, 3);
+        const currentVal = startVal + (endVal - startVal) * easeProgress;
+        
+        globalWaterHeight = currentVal;
+        
+        if (progress < 1) requestAnimationFrame(update);
+        else globalWaterHeight = endVal;
+      }
+      requestAnimationFrame(update);
+    }
+
+    function animateNumber(id, start, end, duration) {
+      const obj = document.getElementById(id);
+      const startTime = performance.now();
+      function update(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const easeProgress = 1 - Math.pow(1 - progress, 3);
+        const value = start + (end - start) * easeProgress;
+        obj.textContent = id.includes('height') ? value.toFixed(1) : Math.round(value);
+        if (progress < 1) requestAnimationFrame(update);
+        else obj.textContent = id.includes('height') ? end.toFixed(1) : Math.round(end);
+      }
+      requestAnimationFrame(update);
+    }
+
+    // ==================== 3. 實驗室答題與雙模式提示控制 ====================
+    function setLabMode(mode) {
+      currentLabMode = mode;
+      
+      const btnVol = document.getElementById('btn-mode-vol');
+      const btnHeight = document.getElementById('btn-mode-height');
+      const formVol = document.getElementById('form-vol-fields');
+      const formHeight = document.getElementById('form-height-fields');
+      const itemDescs = document.querySelectorAll('.item-desc');
+      const itemVols = document.querySelectorAll('.item-vol');
+
+      if (mode === 'vol') {
+        btnVol.className = "flex-1 py-2 rounded-lg bg-white shadow-sm text-slate-800 font-black text-sm transition-all border border-slate-200";
+        btnHeight.className = "flex-1 py-2 rounded-lg text-slate-500 font-bold text-sm hover:bg-slate-200 transition-all border border-transparent";
+        formVol.classList.remove('hidden');
+        formHeight.classList.add('hidden');
+        itemDescs.forEach(el => el.classList.remove('hidden'));
+        itemVols.forEach(el => el.classList.add('hidden'));
+      } else {
+        btnHeight.className = "flex-1 py-2 rounded-lg bg-white shadow-sm text-slate-800 font-black text-sm transition-all border border-slate-200";
+        btnVol.className = "flex-1 py-2 rounded-lg text-slate-500 font-bold text-sm hover:bg-slate-200 transition-all border border-transparent";
+        formHeight.classList.remove('hidden');
+        formVol.classList.add('hidden');
+        itemDescs.forEach(el => el.classList.add('hidden'));
+        itemVols.forEach(el => el.classList.remove('hidden'));
+      }
+
+      if (currentActiveObject) {
+        showQuizForm(currentActiveObject);
+      }
+    }
+
+    function showQuizForm(type) {
+      const data = OBJECTS_DATA[type];
+      document.getElementById('quiz-empty-state').classList.add('hidden');
+      document.getElementById('quiz-interactive-area').classList.remove('hidden');
+      document.getElementById('quiz-interactive-area').classList.add('flex');
+
+      // 更新標題
+      if (currentLabMode === 'vol') {
+        document.getElementById('quiz-title').innerHTML = `${data.name} 的體積計算`;
+        document.getElementById('quiz-subtitle').innerHTML = `底面積：$100\\text{ cm}^2$`;
+        document.getElementById('label-v-h2').innerHTML = `放入 ${data.name} 後，裝水高度變為幾公分？`;
+      } else {
+        document.getElementById('quiz-title').innerHTML = `${data.name} 的水位預測`;
+        document.getElementById('quiz-subtitle').innerHTML = `已知體積：$${data.volume}\\text{ cm}^3$`;
+      }
+
+      resetFormInputs();
+      document.getElementById('hint-box').classList.add('hidden');
+      renderMathEquations();
+    }
+
+    function resetFormInputs() {
+      const fields = ['v-h1', 'v-h2', 'v-diff', 'v-vol', 'h-base', 'h-objvol', 'h-rise', 'h-init', 'h-final'];
+      fields.forEach(field => {
+        const input = document.getElementById(`input-${field}`);
+        if(input) {
+          input.value = '';
+          input.className = input.className.replace(/border-emerald-500|border-rose-400|bg-emerald-50|bg-rose-50/g, 'border-slate-200 bg-slate-50');
+        }
+        const check = document.getElementById(`check-${field}`);
+        if(check) check.classList.add('hidden');
+      });
+    }
+
+    function setupFormControls() {
+      const btnSubmit = document.getElementById('btn-submit');
+      const btnShowHint = document.getElementById('btn-show-hint');
+
+      btnSubmit.addEventListener('click', () => {
+        if (!currentActiveObject) return;
+        const data = OBJECTS_DATA[currentActiveObject];
+
+        if (currentLabMode === 'vol') {
+          const valH1 = parseFloat(document.getElementById('input-v-h1').value);
+          const valH2 = parseFloat(document.getElementById('input-v-h2').value);
+          const valDiff = parseFloat(document.getElementById('input-v-diff').value);
+          const valVol = parseFloat(document.getElementById('input-v-vol').value);
+
+          const isH1 = (valH1 === INITIAL_HEIGHT);
+          const isH2 = (valH2 === data.finalHeight);
+          const isDiff = (Math.abs(valDiff - data.heightDiff) < 0.01);
+          const isVol = (valVol === data.volume);
+
+          updateInputVisual('v-h1', isH1);
+          updateInputVisual('v-h2', isH2);
+          updateInputVisual('v-diff', isDiff);
+          updateInputVisual('v-vol', isVol);
+
+          if (isH1 && isH2 && isDiff && isVol) {
+            playCorrectSound(); markAsSolved(currentActiveObject);
+          } else {
+            playWrongSound(); showSmartHintVol(data, isH1, isH2, isDiff, isVol);
+          }
+        } else {
+          // 水位模式
+          const valBase = parseFloat(document.getElementById('input-h-base').value);
+          const valObjVol = parseFloat(document.getElementById('input-h-objvol').value);
+          const valRise = parseFloat(document.getElementById('input-h-rise').value);
+          const valInit = parseFloat(document.getElementById('input-h-init').value);
+          const valFinal = parseFloat(document.getElementById('input-h-final').value);
+
+          const isBase = (valBase === BASE_AREA);
+          const isObjVol = (valObjVol === data.volume);
+          const isRise = (Math.abs(valRise - data.heightDiff) < 0.01);
+          const isInit = (valInit === INITIAL_HEIGHT);
+          const isFinal = (valFinal === data.finalHeight);
+
+          updateInputVisual('h-base', isBase);
+          updateInputVisual('h-objvol', isObjVol);
+          updateInputVisual('h-rise', isRise);
+          updateInputVisual('h-init', isInit);
+          updateInputVisual('h-final', isFinal);
+
+          if (isBase && isObjVol && isRise && isInit && isFinal) {
+            playCorrectSound(); markAsSolved(currentActiveObject);
+          } else {
+            playWrongSound(); showSmartHintHeight(data, isBase, isObjVol, isRise, isInit, isFinal);
+          }
+        }
+      });
+
+      btnShowHint.addEventListener('click', () => {
+        if (!currentActiveObject) return;
+        const data = OBJECTS_DATA[currentActiveObject];
+        const hintBox = document.getElementById('hint-box');
+        hintBox.classList.toggle('hidden');
+
+        if (currentLabMode === 'vol') {
+          hintBox.innerHTML = `
+            <div class="flex flex-col gap-2">
+              <span class="font-extrabold text-teal-800 text-sm">💡 算式推導引領：</span>
+              <p>1. 找出水槽底面積為：$10 \\times 10 = 100\\text{ 平方公分}$</p>
+              <p>2. 水面上升高度：$\\text{後來高度 } (${data.finalHeight}) - \\text{原來高度 } (${INITIAL_HEIGHT}) = ${data.heightDiff}\\text{ cm}$</p>
+              <p>3. 依據公式：$$\\text{不規則物體體積} = \\text{水槽底面積} \\times \\text{水面上升的高度}$$</p>
+              <p>4. 帶入數據：$$100 \\times ${data.heightDiff} = ${data.volume}\\text{ 立方公分}$$</p>
+            </div>
+          `;
+        } else {
+          hintBox.innerHTML = `
+            <div class="flex flex-col gap-2">
+              <span class="font-extrabold text-indigo-800 text-sm">💡 預測水位算式引領：</span>
+              <p>1. 水槽底面積 (長 $\\times$ 寬)：$10 \\times 10 = 100\\text{ 平方公分}$</p>
+              <p>2. 確認物體體積：$${data.volume}\\text{ 立方公分}$</p>
+              <p>3. 水面上升高度 = 體積 $\\div$ 底面積：$${data.volume} \\div 100 = ${data.heightDiff}\\text{ cm}$</p>
+              <p>4. 最終水位高度 = 原來高度 + 上升高度：$${INITIAL_HEIGHT} + ${data.heightDiff} = ${data.finalHeight}\\text{ cm}$</p>
+            </div>
+          `;
+        }
+        renderMathEquations();
+      });
+    }
+
+    function updateInputVisual(field, isCorrect) {
+      const input = document.getElementById(`input-${field}`);
+      const check = document.getElementById(`check-${field}`);
+      if (!input || !check) return;
+      input.className = input.className.replace(/border-slate-200|border-emerald-500|border-rose-400|bg-slate-50|bg-emerald-50|bg-rose-50/g, '').trim();
+
+      if (isCorrect) {
+        input.classList.add('border-emerald-500', 'bg-emerald-50');
+        check.classList.remove('hidden');
+        check.innerHTML = `<i class="fa-solid fa-circle-check"></i>`;
+      } else {
+        input.classList.add('border-rose-400', 'bg-rose-50');
+        check.classList.remove('hidden');
+        check.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-500"></i>`;
+      }
+    }
+
+    function showSmartHintVol(data, isH1, isH2, isDiff, isVol) {
+      const hintBox = document.getElementById('hint-box');
+      hintBox.classList.remove('hidden');
+      let tipText = `❌ <strong>再仔細觀察看看喔！</strong><br>`;
+      if (!isH1) tipText += `• 請看水槽左邊立體刻度，在<strong>還沒放進物體時</strong>，水位指的是 <strong>${INITIAL_HEIGHT}</strong> 公分。<br>`;
+      else if (!isH2) tipText += `• 放入 <strong>${data.name}</strong> 沉到底部後，現在水面升到了刻度 <strong>${data.finalHeight}</strong> 公分。<br>`;
+      else if (!isDiff) tipText += `• 水面上升高度 = 後來高度 (<strong>${data.finalHeight}</strong>) - 原來高度 (<strong>${INITIAL_HEIGHT}</strong>) = <strong>?</strong> 公分。<br>`;
+      else if (!isVol) tipText += `• 體積 = 底面積 (<strong>$100\\text{ 平方公分}$</strong>) $\\times$ 上升高度 (<strong>${data.heightDiff}</strong> 公分) = <strong>?</strong> 立方公分。`;
+
+      hintBox.innerHTML = `<div class="text-rose-700 bg-rose-50/50 p-2 rounded-xl border border-rose-100">${tipText}</div>`;
+      renderMathEquations();
+    }
+    function showSmartHintHeight(data, isBase, isObjVol, isRise, isInit, isFinal) {
+      const hintBox = document.getElementById('hint-box');
+      hintBox.classList.remove('hidden');
+      let tipText = `❌ <strong>再仔細思考看看喔！</strong><br>`;
+      if (!isBase) tipText += `• 請確認水槽的底面積 (長 $\\times$ 寬)：$10 \\times 10 =$ <strong>?</strong> 平方公分。<br>`;
+      else if (!isObjVol) tipText += `• 請確認投入水槽的 <strong>${data.name}</strong> 體積是多少立方公分？<br>`;
+      else if (!isRise) tipText += `• 水面上升高度 = 物體體積 (<strong>${data.volume}</strong>) $\\div$ 底面積 (<strong>100</strong>) = <strong>?</strong> 公分。<br>`;
+      else if (!isInit) tipText += `• 原來的裝水高度在水槽左邊刻度有標示，是 <strong>${INITIAL_HEIGHT}</strong> 公分喔。<br>`;
+      else if (!isFinal) tipText += `• 最終水位 = 原來高度 (<strong>${INITIAL_HEIGHT}</strong>) + 上升高度 (<strong>${data.heightDiff}</strong>) = <strong>?</strong> 公分。`;
+
+      hintBox.innerHTML = `<div class="text-rose-700 bg-rose-50/50 p-2 rounded-xl border border-rose-100">${tipText}</div>`;
+      renderMathEquations();
+    }
+
+    function markAsSolved(type) {
+      if (unlockedItems[type]) return;
+      unlockedItems[type] = true;
+      document.getElementById(`badge-${type}`).classList.remove('hidden');
+      const star = document.getElementById(`star-${type}`);
+      star.className = "fa-solid fa-star text-amber-300 text-lg animate-bounce";
+
+      const allSolved = Object.values(unlockedItems).every(val => val === true);
+      if (allSolved) {
+        triggerFullConfetti(false); 
+        document.getElementById('normal-teacher-bubble').classList.add('hidden');
+        document.getElementById('quiz-complete-guide').classList.remove('hidden');
+      }
+    }
+
+    // ==================== 4. 觀念閃卡邏輯 ====================
+    function initFlashcards() {
+      const card = document.getElementById('flashcard-container');
+      card.addEventListener('click', () => {
+        card.classList.toggle('flipped');
+      });
+      showCard(0);
+    }
+
+    function showCard(index) {
+      const card = document.getElementById('flashcard-container');
+      card.classList.remove('flipped'); 
+
+      setTimeout(() => {
+        const item = localFlashcards[index];
+        document.getElementById('card-front-text').innerHTML = item.front;
+        document.getElementById('card-back-text').innerHTML = item.back;
+        
+        document.getElementById('card-progress-num').textContent = `${index + 1} / ${localFlashcards.length}`;
+        const pct = ((index + 1) / localFlashcards.length) * 100;
+        document.getElementById('card-progress-bar').style.width = `${pct}%`;
+        
+        renderMathEquations();
+      }, 150);
+    }
+
+    function nextCard() {
+      currentCardIndex = (currentCardIndex + 1) % localFlashcards.length;
+      showCard(currentCardIndex);
+    }
+
+    function prevCard() {
+      currentCardIndex = (currentCardIndex - 1 + localFlashcards.length) % localFlashcards.length;
+      showCard(currentCardIndex);
+    }
+
+    function shuffleCards() {
+      playBloopSound();
+      for (let i = localFlashcards.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [localFlashcards[i], localFlashcards[j]] = [localFlashcards[j], localFlashcards[i]];
+      }
+      currentCardIndex = 0;
+      showCard(0);
+    }
+
+    // ==================== 5. 隨堂測驗邏輯 ====================
+    function initQuiz() {
+      currentQuizIndex = 0;
+      userQuizScore = 0;
+      selectedOptionIndex = null;
+      document.getElementById('quiz-main-card').classList.remove('hidden');
+      document.getElementById('quiz-report-card').classList.add('hidden');
+      showQuestion(0);
+    }
+
+    function showQuestion(index) {
+      selectedOptionIndex = null;
+      document.getElementById('test-btn-next').classList.add('hidden');
+      document.getElementById('test-explanation-box').classList.add('hidden');
+
+      const data = QUIZ_DATA[index];
+      document.getElementById('question-index-badge').textContent = `問題 ${index + 1} / ${QUIZ_DATA.length}`;
+      document.getElementById('test-question-text').innerHTML = data.question;
+
+      const optionsContainer = document.getElementById('test-options-container');
+      optionsContainer.innerHTML = '';
+
+      data.options.forEach((optText, optIdx) => {
+        const btn = document.createElement('button');
+        btn.className = "w-full text-left px-5 py-3.5 rounded-2xl border-2 border-slate-200 hover:border-indigo-300 hover:bg-indigo-50/30 text-slate-700 font-bold text-sm smooth-transition flex justify-between items-center group active:scale-[0.99]";
+        btn.innerHTML = `
+          <span>${optText}</span>
+          <span class="w-6 h-6 rounded-full border border-slate-300 flex items-center justify-center text-xs group-hover:border-indigo-400 smooth-transition" id="opt-icon-${optIdx}">
+            ${String.fromCharCode(65 + optIdx)}
+          </span>
+        `;
+        
+        btn.addEventListener('click', () => selectQuizOption(optIdx));
+        optionsContainer.appendChild(btn);
+      });
+
+      renderMathEquations();
+    }
+
+    function selectQuizOption(optIdx) {
+      if (selectedOptionIndex !== null) return; 
+      selectedOptionIndex = optIdx;
+
+      const data = QUIZ_DATA[currentQuizIndex];
+      const optionsContainer = document.getElementById('test-options-container');
+      const buttons = optionsContainer.querySelectorAll('button');
+
+      buttons.forEach((btn, idx) => {
+        btn.className = "w-full text-left px-5 py-3.5 rounded-2xl border-2 text-sm font-bold flex justify-between items-center ";
+        const icon = document.getElementById(`opt-icon-${idx}`);
+
+        if (idx === data.correctIndex) {
+          btn.className += "border-emerald-500 bg-emerald-50 text-emerald-800";
+          icon.className = "w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs";
+          icon.innerHTML = `<i class="fa-solid fa-check"></i>`;
+        } else if (idx === optIdx) {
+          btn.className += "border-rose-400 bg-rose-50 text-rose-700";
+          icon.className = "w-6 h-6 rounded-full bg-rose-500 text-white flex items-center justify-center text-xs";
+          icon.innerHTML = `<i class="fa-solid fa-xmark"></i>`;
+        } else {
+          btn.className += "border-slate-100 bg-slate-50/50 text-slate-400";
+          icon.className = "w-6 h-6 rounded-full border border-slate-200 text-slate-300 flex items-center justify-center text-xs";
+        }
+      });
+
+      if (optIdx === data.correctIndex) {
+        playCorrectSound();
+        userQuizScore++;
+      } else {
+        playWrongSound();
+      }
+
+      const expBox = document.getElementById('test-explanation-box');
+      expBox.classList.remove('hidden');
+      expBox.innerHTML = `
+        <div class="flex flex-col gap-1.5">
+          <span class="font-extrabold text-emerald-800 text-xs">📖 題目詳解：</span>
+          <p class="leading-relaxed text-slate-700">${data.rationale}</p>
+        </div>
+      `;
+      renderMathEquations();
+
+      document.getElementById('test-btn-next').classList.remove('hidden');
+    }
+
+    function nextQuestion() {
+      currentQuizIndex++;
+      if (currentQuizIndex < QUIZ_DATA.length) {
+        showQuestion(currentQuizIndex);
+      } else {
+        showQuizReport();
+      }
+    }
+
+    function showQuizReport() {
+      document.getElementById('quiz-main-card').classList.add('hidden');
+      const reportCard = document.getElementById('quiz-report-card');
+      reportCard.classList.remove('hidden');
+      reportCard.classList.add('flex');
+
+      const score = userQuizScore * 20;
+      document.getElementById('report-correct-count').textContent = userQuizScore;
+      document.getElementById('report-score').textContent = score;
+
+      let comment = "";
+      if (score === 100) {
+        comment = "🏅 太驚人了！你獲得了 100 分滿分！你已經完全掌握了不規則物體排水法的全部觀念，是一位頂尖的數學小專家唷！🌟";
+        triggerFullConfetti(true);
+      } else if (score >= 80) {
+        comment = "👍 表現得非常棒！你答對了大部分的題目。如果再仔細檢查一下水位的高度差計算，就一定能挑戰滿分喔！加油！";
+        triggerFullConfetti(false);
+      } else if (score >= 60) {
+        comment = "😊 不錯唷！你已經具備了排水法的基本觀念。建議可以回到「⚡ 觀念閃卡」多翻閱幾次，你的成績一定會更進步！";
+      } else {
+        comment = "💪 不要氣餒！數學大師也是從不間斷的練習中培養出來的。你可以回到「🧪 互動實驗室」動手操作幾遍，更能感受水位的變化喔！";
+      }
+      document.getElementById('report-comment').innerHTML = comment;
+    }
+
+    function restartQuiz() {
+      initQuiz();
+    }
+
+    // ==================== 6. 全螢幕五彩碎紙 ====================
+    function triggerFullConfetti(isPerfectScore) {
+      const canvas = document.getElementById('confetti');
+      canvas.classList.remove('hidden');
+      const ctx = canvas.getContext('2d');
+      
+      let width = (canvas.width = window.innerWidth);
+      let height = (canvas.height = window.innerHeight);
+      
+      window.addEventListener('resize', () => {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+      });
+
+      const colors = ['#f59e0b', '#10b981', '#3b82f6', '#ec4899', '#8b5cf6', '#ef4444'];
+      const particles = [];
+
+      for (let i = 0; i < 150; i++) {
+        particles.push({
+          x: Math.random() * width,
+          y: Math.random() * height - height,
+          r: Math.random() * 6 + 4,
+          d: Math.random() * height,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          tilt: Math.random() * 10 - 5,
+          tiltAngleIncremental: Math.random() * 0.07 + 0.02,
+          tiltAngle: 0
+        });
+      }
+
+      let animationFrameId;
+      function draw() {
+        ctx.clearRect(0, 0, width, height);
+        particles.forEach((p, index) => {
+          p.tiltAngle += p.tiltAngleIncremental;
+          p.y += (Math.cos(p.d) + 3 + p.r / 2) / 2;
+          p.x += Math.sin(p.tiltAngle);
+          p.tilt = Math.sin(p.tiltAngle - index / 3) * 15;
+
+          ctx.beginPath();
+          ctx.lineWidth = p.r;
+          ctx.strokeStyle = p.color;
+          ctx.moveTo(p.x + p.tilt + p.r / 2, p.y);
+          ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r / 2);
+          ctx.stroke();
+
+          if (p.y > height) {
+            particles[index] = {
+              ...p,
+              x: Math.random() * width,
+              y: -20,
+              tilt: Math.random() * 10 - 5
+            };
+          }
+        });
+        animationFrameId = requestAnimationFrame(draw);
+      }
+
+      draw();
+
+      setTimeout(() => {
+        cancelAnimationFrame(animationFrameId);
+        canvas.classList.add('hidden');
+        if (isPerfectScore) {
+          alert("🏆 滿分大獎章解鎖！波波老師為你驕傲！繼續保持對數學的喜愛吧！");
+        }
+      }, 5000);
+    }
+  </script>
+</body>
+</html>
