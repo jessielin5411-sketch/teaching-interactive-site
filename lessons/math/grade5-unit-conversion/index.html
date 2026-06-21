@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生活中的大單位：吉卜力數學冒險</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&family=Zhi+Mang+Xing&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ghibli-sky: #87CEEB;
+            --ghibli-grass: #91CF7E;
+            --ghibli-wood: #8B5A2B;
+            --ghibli-cream: #FDF5E6;
+        }
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: var(--ghibli-cream);
+            color: #333;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        .ghibli-bg {
+            background: linear-gradient(to bottom, #87CEEB 0%, #E0F7FA 40%, #91CF7E 100%);
+            min-height: 100vh;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 24px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+            border: 3px solid #D2B48C;
+        }
+
+        .btn-ghibli {
+            background-color: #6B8E23;
+            color: white;
+            transition: all 0.3s;
+            border-radius: 50px;
+            padding: 12px 30px;
+            box-shadow: 0 5px 0 #4B6516;
+            cursor: pointer;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-ghibli:hover { transform: translateY(-2px); background-color: #556B2F; box-shadow: 0 7px 0 #4B6516; }
+        .btn-ghibli:active { transform: translateY(3px); box-shadow: none; }
+        
+        .btn-orange { background-color: #E67E22; box-shadow: 0 5px 0 #A04000; }
+        .btn-orange:hover { background-color: #D35400; box-shadow: 0 7px 0 #A04000; }
+
+        .hidden-section { display: none; }
+
+        .certificate {
+            background: #fff;
+            border: 15px double #D4AF37;
+            padding: 40px;
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto;
+            animation: fadeIn 1s ease-in;
+        }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        #feedback-modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .result-stamp {
+            font-size: 5rem;
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            transform: rotate(15deg);
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+
+<div class="ghibli-bg p-4 md:p-10">
+    <a href="../index.html" class="inline-flex items-center gap-2 bg-white/90 hover:bg-white text-green-800 font-bold px-5 py-3 rounded-full shadow-md border-2 border-green-200 mb-6 transition-all">
+        ← 回數學首頁
+    </a>
+    <header class="text-center mb-10">
+        <h1 class="text-5xl md:text-6xl font-bold text-green-900 mb-3" style="font-family: 'Zhi Mang Xing', cursive;">🍃 森林大單位冒險 🍃</h1>
+        <p class="text-xl text-green-800 font-medium">學習重量與面積換算，爭取榮譽證書！</p>
+    </header>
+
+    <nav id="main-nav" class="flex justify-center space-x-6 mb-10">
+        <button onclick="changeMainMode('lesson')" class="btn-ghibli text-lg">🏫 進入森林教室</button>
+        <button onclick="changeMainMode('quiz')" class="btn-ghibli text-lg btn-orange">🧪 接受挑戰闖關</button>
+    </nav>
+
+    <!-- 森林教室區 -->
+    <section id="lesson-section" class="max-w-6xl mx-auto">
+        <div class="card p-8 mb-10">
+            <h2 class="text-3xl font-bold text-green-800 mb-6">🐘 重量單位魔法陣</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-yellow-100 p-8 rounded-3xl border-4 border-yellow-400 shadow-lg text-center">
+                    <h3 class="text-4xl md:text-5xl font-black text-red-600 mb-4">1 公噸 (t) = 1000 公斤 (kg)</h3>
+                    <p class="text-xl text-yellow-900 font-bold">記住：大變小用「乘」，小變大用「除」！</p>
+                </div>
+                <div class="bg-white/60 p-8 rounded-3xl border-2 border-dashed border-brown-200 text-center flex flex-col justify-center">
+                    <div id="weight-illustration" class="text-8xl mb-4">🚛</div>
+                    <p id="weight-desc" class="text-xl font-bold italic">載滿木頭的卡車，重約 5 公噸</p>
+                </div>
+            </div>
+        </div>
+        <div class="card p-8">
+             <h2 class="text-3xl font-bold text-green-800 mb-6">🌾 面積單位換算表</h2>
+             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                 <div class="p-4 border-2 rounded-xl bg-sky-50 text-center"><strong>平方公里</strong><br>100 公頃</div>
+                 <div class="p-4 border-2 rounded-xl bg-orange-50 text-center"><strong>公頃</strong><br>100 公畝</div>
+                 <div class="p-4 border-2 rounded-xl bg-amber-50 text-center"><strong>公畝</strong><br>100 平方公尺</div>
+                 <div class="p-4 border-2 rounded-xl bg-emerald-50 text-center"><strong>平方公尺</strong><br>基礎單位</div>
+             </div>
+        </div>
+    </section>
+
+    <!-- 測驗挑戰區 -->
+    <section id="quiz-section" class="max-w-4xl mx-auto hidden-section">
+        <!-- 狀態列 -->
+        <div class="card p-6 mb-8 flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <div class="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center font-bold text-2xl text-green-700 border-4 border-green-200" id="quiz-badge">1</div>
+                <div>
+                    <h3 class="font-bold text-green-900 text-xl" id="current-phase-name">階段一：重量挑戰</h3>
+                </div>
+            </div>
+            <div class="flex-1 mx-8">
+                <div class="w-full bg-gray-200 h-4 rounded-full overflow-hidden">
+                    <div id="progress-bar" class="bg-green-500 h-full transition-all duration-300" style="width: 0%"></div>
+                </div>
+            </div>
+            <div class="font-black text-3xl text-green-700" id="display-score">0 分</div>
+        </div>
+
+        <!-- 題目卡片 -->
+        <div id="question-card" class="card p-8 md:p-12 mb-8 min-h-[450px] flex flex-col justify-between">
+            <div id="question-content"></div>
+            <div class="mt-10 flex justify-between items-center border-t pt-6">
+                <span id="question-index-label" class="text-gray-500 font-bold text-lg">題目 1 / 5</span>
+                <div id="quiz-action-area">
+                    <button id="next-btn" onclick="submitCurrentQuestion()" class="btn-ghibli text-xl px-10 py-4">送出答案 ➜</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 階段結算畫面 -->
+        <div id="phase-result" class="card p-12 text-center hidden-section relative">
+            <div id="result-emoji" class="text-8xl mb-6">🎉</div>
+            <h2 class="text-4xl font-bold text-gray-800 mb-2" id="result-title">階段完成！</h2>
+            <p class="text-2xl text-gray-600 mb-6">您的得分是：</p>
+            <div class="text-7xl font-black text-red-600 mb-10" id="result-score">100</div>
+            
+            <div id="result-msg" class="text-xl text-gray-500 mb-12"></div>
+            
+            <div class="flex flex-col md:flex-row justify-center space-y-4 md:space-y-0 md:space-x-6">
+                <button id="btn-retry" onclick="startPhase()" class="btn-ghibli bg-gray-500 hover:bg-gray-600 shadow-gray-700">🔄 重新挑戰</button>
+                <button id="btn-next-phase" onclick="goToNextPhase()" class="btn-ghibli btn-orange hidden-section">🌱 進入階段二 ➜</button>
+                <button id="btn-get-cert" onclick="showFinalCert()" class="btn-ghibli bg-yellow-600 hover:bg-yellow-700 shadow-yellow-800 hidden-section">🏅 領取榮譽證書</button>
+            </div>
+        </div>
+
+        <!-- 最終證書 -->
+        <div id="quiz-success" class="hidden-section pb-20">
+            <div class="certificate shadow-2xl">
+                <div class="result-stamp">💮</div>
+                <div class="text-center">
+                    <p class="text-green-700 font-bold tracking-widest mb-4">FOREST GUARDIAN HONOR</p>
+                    <h2 class="text-6xl font-bold text-gray-800 mb-8" style="font-family: 'Zhi Mang Xing', cursive;">森林守護者證書</h2>
+                    <p class="text-2xl text-gray-700 leading-relaxed mb-10">
+                        恭喜這位勇者，在森林數學冒險中展現了非凡的智慧，<br>
+                        完全掌握了「重量」與「面積」的大單位魔法，<br>
+                        並獲得 <span class="text-4xl font-black text-red-600 mx-2">100分</span> 的榮耀！
+                    </p>
+                    <div class="border-t-2 border-dashed border-gray-300 pt-8 mb-8">
+                        <p class="text-gray-500 italic text-lg">森林長老 🍂 認證</p>
+                    </div>
+                    <button onclick="window.location.reload()" class="btn-ghibli text-xl">回首頁重新開始</button>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- 錯誤反饋彈窗 -->
+<div id="feedback-modal">
+    <div class="card p-8 max-w-md w-full mx-4 shadow-2xl border-4 border-red-400">
+        <h3 class="text-2xl font-bold text-red-600 mb-4">🍂 森林長老的叮嚀</h3>
+        <p class="text-lg text-gray-700 mb-6" id="feedback-text"></p>
+        <div class="bg-green-50 p-4 rounded-xl mb-6 border-l-8 border-green-500">
+            <p class="font-bold text-green-800">正確答案：<span id="feedback-correct" class="text-xl"></span></p>
+        </div>
+        <button onclick="closeFeedback()" class="btn-ghibli w-full text-xl py-4">懂了，繼續前進！</button>
+    </div>
+</div>
+
+<audio id="snd-correct" src="https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3"></audio>
+<audio id="snd-wrong" src="https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3"></audio>
+<audio id="snd-win" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio>
+
+<script>
+    const weightPool = [
+        { q: "爸爸的體重大約是 75 (___)？", a: "公斤", hint: "通常人的體重用公斤表示，公噸那是大象的級別喔！", o: ["公噸", "公斤", "公克"] },
+        { q: "12 公噸等於幾公斤？", a: "12000", hint: "1 公噸 = 1000 公斤。12 × 1000 = 12000。", o: ["1200", "12000", "120000"] },
+        { q: "4500 公斤等於幾公噸？", a: "4.5", hint: "小換大要除以 1000。4500 ÷ 1000 = 4.5。", o: ["45", "4.5", "0.45"] },
+        { q: "大卡車載貨重量約 15 (___)？", a: "公噸", hint: "大型貨車非常重，適合用公噸。15000公斤 = 15公噸。", o: ["公噸", "公斤", "公克"] },
+        { q: "2 公噸 5 公斤等於幾公斤？", a: "2005", hint: "2公噸=2000公斤，加5公斤是2005公斤。注意中間有兩個0！", o: ["250", "2050", "2005"] }
+    ];
+
+    const areaPool = [
+        { q: "1 公頃等於幾平方公尺？", a: "10000", hint: "公頃 = 100 公畝，公畝 = 100 平方公尺。所以是 10000。", o: ["1000", "10000", "100000"] },
+        { q: "大安森林公園面積約 26 (___)？", a: "公頃", hint: "大型公園通常用公頃，台北市才用平方公里。", o: ["平方公里", "公頃", "平方公尺"] },
+        { q: "0.8 平方公里等於幾公頃？", a: "80", hint: "1 平方公里 = 100 公頃。0.8 × 100 = 80。", o: ["8", "80", "800"] },
+        { q: "350 公畝等於幾公頃？", a: "3.5", hint: "100 公畝 = 1 公頃。350 ÷ 100 = 3.5。", o: ["3.5", "35", "350"] },
+        { q: "1 平方公里是幾公畝？", a: "10000", hint: "平方公里 → 公頃 (100) → 公畝 (10000)。", o: ["1000", "10000", "100000"] }
+    ];
+
+    let currentPhase = 1, currentQuestions = [], currentIdx = 0, score = 0;
+
+    function playSnd(id) {
+        const audio = document.getElementById(id);
+        if(audio) { audio.currentTime = 0; audio.play().catch(e=>{}); }
+    }
+
+    function changeMainMode(m) {
+        document.getElementById('lesson-section').classList.toggle('hidden-section', m !== 'lesson');
+        document.getElementById('quiz-section').classList.toggle('hidden-section', m !== 'quiz');
+        document.getElementById('main-nav').classList.toggle('hidden-section', m === 'quiz');
+        if(m === 'quiz') startPhase();
+    }
+
+    function shuffle(arr) { return arr.sort(() => Math.random() - 0.5); }
+
+    function startPhase() {
+        currentIdx = 0; score = 0;
+        document.getElementById('display-score').innerText = "0 分";
+        document.getElementById('phase-result').classList.add('hidden-section');
+        document.getElementById('question-card').classList.remove('hidden-section');
+        document.getElementById('quiz-success').classList.add('hidden-section');
+        
+        if (currentPhase === 1) {
+            currentQuestions = shuffle([...weightPool]);
+            document.getElementById('current-phase-name').innerText = "階段一：重量挑戰";
+            document.getElementById('quiz-badge').innerText = "1";
+        } else {
+            currentQuestions = shuffle([...areaPool]);
+            document.getElementById('current-phase-name').innerText = "階段二：面積挑戰";
+            document.getElementById('quiz-badge').innerText = "2";
+        }
+        renderQuestion();
+    }
+
+    function renderQuestion() {
+        const q = currentQuestions[currentIdx];
+        const opts = shuffle([...q.o]);
+        document.getElementById('question-content').innerHTML = `
+            <p class="text-3xl font-bold text-gray-800 mb-10">${q.q}</p>
+            <div class="grid grid-cols-1 gap-5">
+                ${opts.map(o => `
+                    <label class="flex items-center p-6 border-4 border-gray-100 rounded-2xl cursor-pointer hover:bg-green-50 transition-all">
+                        <input type="radio" name="opt" value="${o}" class="w-7 h-7 text-green-600">
+                        <span class="ml-6 text-2xl font-bold">${o}</span>
+                    </label>
+                `).join('')}
+            </div>
+        `;
+        document.getElementById('question-index-label').innerText = `題目 ${currentIdx + 1} / 5`;
+        
+        // 渲染按鈕文字
+        const actionArea = document.getElementById('quiz-action-area');
+        const isLast = currentIdx === 4;
+        actionArea.innerHTML = `
+            <button id="next-btn" onclick="submitCurrentQuestion()" class="btn-ghibli text-xl px-10 py-4 ${isLast ? 'btn-orange' : ''}">
+                ${isLast ? '完成挑戰並看成績 🏁' : '送出答案 ➜'}
+            </button>
+        `;
+
+        updateProgress();
+    }
+
+    function submitCurrentQuestion() {
+        const sel = document.querySelector('input[name="opt"]:checked');
+        if (!sel) return;
+
+        // 如果是最後一題，先讓按鈕消失避免誤觸
+        if (currentIdx === 4) {
+            document.getElementById('quiz-action-area').innerHTML = '<span class="text-green-700 font-bold italic animate-pulse">正在計算森林評分...</span>';
+        }
+
+        const isCorrect = sel.value === currentQuestions[currentIdx].a;
+        if (isCorrect) {
+            score += 20;
+            playSnd('snd-correct');
+            // 延遲一點點讓學生感覺有「送出」的動作
+            setTimeout(goNext, 300);
+        } else {
+            playSnd('snd-wrong');
+            showFeedback(currentQuestions[currentIdx]);
+        }
+    }
+
+    function showFeedback(qData) {
+        document.getElementById('feedback-text').innerText = qData.hint;
+        document.getElementById('feedback-correct').innerText = qData.a;
+        document.getElementById('feedback-modal').style.display = 'flex';
+    }
+
+    function closeFeedback() {
+        document.getElementById('feedback-modal').style.display = 'none';
+        goNext();
+    }
+
+    function goNext() {
+        document.getElementById('display-score').innerText = `${score} 分`;
+        currentIdx++;
+        if (currentIdx < 5) renderQuestion();
+        else handleFinishPhase();
+    }
+
+    function handleFinishPhase() {
+        document.getElementById('question-card').classList.add('hidden-section');
+        const res = document.getElementById('phase-result');
+        const scoreDisplay = document.getElementById('result-score');
+        const btnNext = document.getElementById('btn-next-phase');
+        const btnCert = document.getElementById('btn-get-cert');
+        const msg = document.getElementById('result-msg');
+        const emoji = document.getElementById('result-emoji');
+        
+        res.classList.remove('hidden-section');
+        scoreDisplay.innerText = score;
+        
+        btnNext.classList.add('hidden-section');
+        btnCert.classList.add('hidden-section');
+
+        if (score === 100) {
+            emoji.innerText = "🌟";
+            msg.innerText = "完美！你已經完全掌握了這個階段的魔法。";
+            playSnd('snd-win');
+            if (currentPhase === 1) btnNext.classList.remove('hidden-section');
+            else btnCert.classList.remove('hidden-section');
+        } else {
+            emoji.innerText = "🌧️";
+            msg.innerText = "加油！還差一點點就能過關。森林長老規定要 100 分才能晉級喔！";
+        }
+    }
+
+    function goToNextPhase() {
+        currentPhase = 2;
+        startPhase();
+    }
+
+    function showFinalCert() {
+        document.getElementById('phase-result').classList.add('hidden-section');
+        document.getElementById('quiz-success').classList.remove('hidden-section');
+        playSnd('snd-win');
+    }
+
+    function updateProgress() {
+        document.getElementById('progress-bar').style.width = (currentIdx / 5 * 100) + '%';
+    }
+</script>
+</body>
+</html>
