@@ -1,0 +1,1101 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>人際情境偵探</title>
+  <style>
+    :root {
+      --ink: #31434a;
+      --muted: #6b7c83;
+      --paper: #fff8fb;
+      --cream: #fffdf8;
+      --line: #f3d9e5;
+      --teal: #65b8ad;
+      --coral: #ef8f9a;
+      --amber: #f3c96c;
+      --blue: #87b4e8;
+      --green: #8bcf9b;
+      --purple: #a78bd7;
+      --rose: #f7b8c9;
+      --sky: #bde3f7;
+      --mint: #c9f2df;
+      --butter: #fff0ba;
+      --shadow: 0 12px 28px rgba(168, 117, 145, .17);
+      --soft-shadow: 0 5px 16px rgba(168, 117, 145, .12);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: "Segoe UI", "Noto Sans TC", system-ui, sans-serif;
+      background:
+        radial-gradient(circle at 12% 16%, rgba(247, 184, 201, .55) 0 10px, transparent 11px),
+        radial-gradient(circle at 82% 14%, rgba(255, 240, 186, .72) 0 13px, transparent 14px),
+        radial-gradient(circle at 78% 78%, rgba(201, 242, 223, .64) 0 12px, transparent 13px),
+        linear-gradient(135deg, rgba(189, 227, 247, .42), transparent 34%),
+        linear-gradient(225deg, rgba(247, 184, 201, .30), transparent 36%),
+        repeating-linear-gradient(0deg, rgba(167, 139, 215, .045) 0 1px, transparent 1px 32px),
+        repeating-linear-gradient(90deg, rgba(101, 184, 173, .045) 0 1px, transparent 1px 32px),
+        var(--paper);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 24% 72%, rgba(255, 255, 255, .78) 0 6px, transparent 7px),
+        radial-gradient(circle at 62% 30%, rgba(255, 255, 255, .75) 0 5px, transparent 6px),
+        linear-gradient(115deg, transparent 0 44%, rgba(255, 255, 255, .46) 45% 48%, transparent 49% 100%),
+        linear-gradient(65deg, transparent 0 58%, rgba(255, 246, 226, .54) 59% 62%, transparent 63% 100%);
+      opacity: .75;
+    }
+
+    button, textarea {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .top {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      padding: 14px clamp(14px, 4vw, 34px);
+      background: rgba(255, 250, 253, .90);
+      border-bottom: 2px solid rgba(243, 217, 229, .95);
+      backdrop-filter: blur(10px);
+    }
+
+    .top a {
+      color: #d46f88;
+      font-weight: 900;
+      text-decoration: none;
+    }
+
+    .mini-stats {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 34px;
+      padding: 6px 11px;
+      border: 2px solid rgba(239, 143, 154, .20);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .88);
+      font-size: 13px;
+      font-weight: 900;
+      white-space: nowrap;
+      box-shadow: var(--soft-shadow);
+    }
+
+    .shell {
+      width: min(1120px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 34px 0 70px;
+    }
+
+    .hero {
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(320px, .82fr);
+      gap: 28px;
+      align-items: stretch;
+      margin-bottom: 26px;
+    }
+
+    .hero::after {
+      content: "✦  ♡  ✦";
+      position: absolute;
+      right: 18px;
+      top: -12px;
+      color: #d98aa0;
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: 8px;
+      transform: rotate(7deg);
+      opacity: .75;
+      pointer-events: none;
+    }
+
+    .intro {
+      min-height: 360px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 680px;
+      font-size: clamp(40px, 7vw, 74px);
+      line-height: 1.02;
+      letter-spacing: 0;
+      color: #46535b;
+      text-shadow: 0 2px 0 rgba(255, 255, 255, .75);
+    }
+
+    h1::after {
+      content: "";
+      display: block;
+      width: min(260px, 70%);
+      height: 14px;
+      margin-top: -8px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(247, 184, 201, .72), rgba(255, 240, 186, .78), rgba(201, 242, 223, .72));
+      position: relative;
+      z-index: -1;
+    }
+
+    .lead {
+      max-width: 680px;
+      margin: 18px 0 0;
+      color: var(--muted);
+      font-size: 19px;
+      line-height: 1.75;
+      font-weight: 650;
+      background: rgba(255, 255, 255, .70);
+      border: 2px solid rgba(243, 217, 229, .85);
+      border-radius: 22px;
+      padding: 14px 16px;
+    }
+
+    .start-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 26px;
+    }
+
+    .btn {
+      min-height: 48px;
+      border: 0;
+      border-radius: 999px;
+      padding: 12px 18px;
+      color: #fff;
+      background: var(--coral);
+      box-shadow: 0 5px 0 #d46f7a, var(--soft-shadow);
+      font-weight: 950;
+      transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+    }
+
+    .btn:hover { transform: translateY(-2px); }
+    .btn:active { transform: translateY(3px); box-shadow: 0 2px 0 #ad3e35; }
+    .btn.secondary { background: var(--teal); box-shadow: 0 5px 0 #4d978e, var(--soft-shadow); }
+    .btn.ghost { color: #d46f88; background: rgba(255, 255, 255, .90); border: 2px solid #f3c6d5; box-shadow: var(--soft-shadow); }
+    .btn[disabled] { opacity: .45; cursor: not-allowed; transform: none; }
+
+    .visual {
+      min-height: 360px;
+      position: relative;
+      border: 3px solid rgba(247, 184, 201, .86);
+      border-radius: 30px;
+      background:
+        radial-gradient(circle at 22% 18%, rgba(255, 240, 186, .62) 0 24px, transparent 25px),
+        radial-gradient(circle at 82% 78%, rgba(201, 242, 223, .58) 0 32px, transparent 33px),
+        linear-gradient(180deg, rgba(255,255,255,.86), rgba(255,246,250,.86)),
+        linear-gradient(135deg, #eefbf7, #fff1f6);
+      box-shadow: var(--shadow);
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+    }
+
+    .visual::before {
+      content: "♡";
+      position: absolute;
+      top: 18px;
+      right: 24px;
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: #d46f88;
+      background: #fff;
+      box-shadow: var(--soft-shadow);
+      font-size: 24px;
+      font-weight: 900;
+    }
+
+    .visual img {
+      width: min(100%, 460px);
+      height: auto;
+      max-height: 340px;
+      object-fit: contain;
+      display: block;
+      filter: drop-shadow(0 18px 22px rgba(79, 63, 90, .18));
+    }
+
+    .panel {
+      border: 2px solid rgba(243, 217, 229, .92);
+      border-radius: 28px;
+      background: rgba(255, 253, 250, .92);
+      box-shadow: var(--shadow);
+      padding: clamp(18px, 3vw, 28px);
+      backdrop-filter: blur(4px);
+    }
+
+    .game {
+      display: none;
+      grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr);
+      gap: 22px;
+      align-items: start;
+    }
+
+    .game.active { display: grid; }
+    .hero.hidden { display: none; }
+
+    .case-card {
+      position: sticky;
+      top: 86px;
+    }
+
+    .case-tag {
+      display: inline-flex;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: #fff0f5;
+      color: #d46f88;
+      font-size: 13px;
+      font-weight: 950;
+      border: 2px solid #f5cddd;
+    }
+
+    .case-card h2 {
+      margin: 14px 0 8px;
+      font-size: clamp(26px, 4vw, 38px);
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+
+    .scenario {
+      color: #435a5f;
+      font-size: 17px;
+      line-height: 1.72;
+      font-weight: 650;
+      margin: 0;
+      background: rgba(255, 255, 255, .74);
+      border: 2px solid rgba(243, 217, 229, .92);
+      border-radius: 20px;
+      padding: 13px;
+    }
+
+    .clues {
+      display: grid;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .clue {
+      display: grid;
+      grid-template-columns: 38px minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+      padding: 10px;
+      border: 2px solid #f3d9e5;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, .82);
+      font-weight: 800;
+      color: #4d5960;
+      box-shadow: var(--soft-shadow);
+    }
+
+    .clue span {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background: #fff0f5;
+      font-size: 22px;
+    }
+
+    .progress {
+      margin-top: 22px;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 900;
+      margin-bottom: 8px;
+    }
+
+    .bar {
+      height: 14px;
+      border-radius: 999px;
+      background: #f8e9ef;
+      overflow: hidden;
+      box-shadow: inset 0 2px 6px rgba(35, 52, 63, .16);
+    }
+
+    .bar-fill {
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #ef8f9a, #f3c96c, #65b8ad);
+      transition: width .35s ease;
+    }
+
+    .station {
+      min-height: 560px;
+    }
+
+    .station-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: start;
+      margin-bottom: 18px;
+    }
+
+    .station h3 {
+      margin: 0;
+      font-size: 28px;
+      letter-spacing: 0;
+      color: #52616a;
+    }
+
+    .station-note {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-weight: 650;
+      line-height: 1.6;
+    }
+
+    .step-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 46px;
+      height: 46px;
+      border-radius: 18px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--purple), var(--coral));
+      font-size: 18px;
+      font-weight: 950;
+      box-shadow: var(--soft-shadow);
+    }
+
+    .options {
+      display: grid;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .option {
+      width: 100%;
+      min-height: 76px;
+      display: grid;
+      grid-template-columns: 38px minmax(0, 1fr);
+      gap: 12px;
+      text-align: left;
+      align-items: start;
+      padding: 15px;
+      border: 2px solid #f0d7e3;
+      border-radius: 22px;
+      background: rgba(255, 255, 255, .90);
+      color: var(--ink);
+      box-shadow: var(--soft-shadow);
+      transition: transform .15s ease, border-color .15s ease, background .15s ease;
+    }
+
+    .option:hover {
+      transform: translateY(-3px);
+      border-color: #f3b9cb;
+      background: #fff7fa;
+    }
+
+    .option.selected {
+      border-color: var(--teal);
+      background: #eefbf8;
+    }
+
+    .option.good {
+      border-color: var(--green);
+      background: #f0fff4;
+    }
+
+    .option.ok {
+      border-color: var(--amber);
+      background: #fff8dd;
+    }
+
+    .option.poor {
+      border-color: var(--coral);
+      background: #fff0f4;
+    }
+
+    .letter {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      color: #fff;
+      background: linear-gradient(135deg, #87b4e8, #a78bd7);
+      font-weight: 950;
+    }
+
+    .option strong {
+      display: block;
+      font-size: 17px;
+      line-height: 1.35;
+    }
+
+    .option small {
+      display: block;
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.45;
+      font-weight: 650;
+    }
+
+    .feedback {
+      display: none;
+      margin-top: 18px;
+      padding: 16px 17px;
+      border: 2px solid #f3d9e5;
+      border-radius: 20px;
+      background: #fff8fb;
+      color: #4c5b62;
+      font-weight: 750;
+      line-height: 1.65;
+      box-shadow: var(--soft-shadow);
+    }
+
+    .feedback.show { display: block; }
+
+    .toolbox {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .tool {
+      padding: 12px;
+      border: 2px dashed #f0c9d8;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, .78);
+      min-height: 96px;
+    }
+
+    .tool b {
+      display: block;
+      color: #d46f88;
+      margin-bottom: 4px;
+    }
+
+    .tool span {
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 650;
+      line-height: 1.45;
+    }
+
+    .builder {
+      display: grid;
+      gap: 16px;
+      margin-top: 18px;
+    }
+
+    .builder-group {
+      padding: 14px;
+      border: 2px solid #f3d9e5;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, .76);
+      box-shadow: var(--soft-shadow);
+    }
+
+    .builder-group h4 {
+      margin: 0 0 10px;
+      font-size: 16px;
+      letter-spacing: 0;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip {
+      min-height: 38px;
+      border: 2px solid #f2d0dd;
+      border-radius: 999px;
+      padding: 8px 12px;
+      background: rgba(255, 255, 255, .90);
+      color: var(--ink);
+      font-size: 14px;
+      font-weight: 900;
+      box-shadow: none;
+    }
+
+    .chip:hover {
+      border-color: var(--teal);
+      background: #f0fffb;
+    }
+
+    .chip.selected {
+      border-color: var(--teal);
+      background: #ddf8f1;
+      color: #185f56;
+    }
+
+    .sentence-preview {
+      margin-top: 16px;
+      padding: 15px;
+      border: 2px solid #f3c6d5;
+      border-radius: 22px;
+      background: linear-gradient(180deg, #fff8fb, #fffdf7);
+      color: #30464d;
+      font-weight: 850;
+      line-height: 1.65;
+      box-shadow: var(--soft-shadow);
+    }
+
+    .optional-note {
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 750;
+      line-height: 1.55;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 92px;
+      margin-top: 10px;
+      resize: vertical;
+      border: 2px solid #f0d7e3;
+      border-radius: 20px;
+      padding: 14px;
+      background: rgba(255, 255, 255, .92);
+      color: var(--ink);
+      font-weight: 650;
+      line-height: 1.6;
+      outline: none;
+    }
+
+    textarea:focus {
+      border-color: var(--teal);
+      box-shadow: 0 0 0 4px rgba(45, 140, 127, .13);
+    }
+
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+    .summary {
+      display: none;
+      margin-top: 24px;
+    }
+
+    .summary.active { display: block; }
+
+    .badges {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .badge {
+      min-height: 112px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 12px;
+      border: 3px solid #dfcfba;
+      border-radius: 18px;
+      background: #fff;
+      color: #a6a0a0;
+      font-weight: 950;
+    }
+
+    .badge.earned {
+      color: var(--ink);
+      border-color: var(--green);
+      background: #f0fff3;
+    }
+
+    .badge span {
+      display: block;
+      font-size: 34px;
+      margin-bottom: 6px;
+    }
+
+    .result-box {
+      margin-top: 18px;
+      padding: 16px;
+      border-radius: 20px;
+      background: #eef9f6;
+      border: 3px solid #badbd5;
+    }
+
+    .result-box h3 {
+      margin: 0 0 8px;
+      font-size: 24px;
+    }
+
+    .result-box p {
+      margin: 0;
+      color: #41535b;
+      line-height: 1.65;
+      font-weight: 700;
+    }
+
+    @media (max-width: 920px) {
+      .hero, .game { grid-template-columns: 1fr; }
+      .case-card { position: static; }
+      .toolbox, .badges { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 620px) {
+      .top { align-items: flex-start; flex-direction: column; }
+      .mini-stats { justify-content: flex-start; }
+      .visual, .intro { min-height: auto; }
+      .visual { padding: 16px; }
+      .option { grid-template-columns: 1fr; }
+      .letter { width: 34px; height: 34px; }
+      .toolbox, .badges { grid-template-columns: 1fr; }
+      .station-head { flex-direction: column-reverse; }
+    }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <a href="../index.html">返回 SEL 課程</a>
+    <div class="mini-stats" aria-live="polite">
+      <span class="pill">案件 <b id="caseCount">0/4</b></span>
+      <span class="pill">同理星 <b id="scoreCount">0</b></span>
+      <span class="pill">徽章 <b id="badgeCount">0</b></span>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="hero" id="hero">
+      <div class="intro">
+        <h1>人際情境偵探</h1>
+        <p class="lead">你是班級裡的「溝通偵探」。每一個案件都有情緒線索、不同立場和可能後果。請判斷情境，選出成熟回應，最後寫下可以真的用在生活中的修復句。</p>
+        <div class="start-row">
+          <button class="btn" id="startBtn">開始辦案</button>
+          <button class="btn ghost" id="previewBtn">先看任務</button>
+        </div>
+      </div>
+      <div class="visual">
+        <img src="./assets/social-detective-hero.png" alt="兩位可愛學生化身人際情境偵探，一起用放大鏡和愛心對話卡觀察情緒線索">
+      </div>
+    </section>
+
+    <section class="game" id="game" aria-live="polite">
+      <aside class="panel case-card">
+        <span class="case-tag" id="caseTag">案件 1</span>
+        <h2 id="caseTitle">案件標題</h2>
+        <p class="scenario" id="caseText"></p>
+        <div class="clues" id="clues"></div>
+        <div class="progress">
+          <div class="progress-label">
+            <span>辦案進度</span>
+            <span id="progressText">0%</span>
+          </div>
+          <div class="bar"><div class="bar-fill" id="barFill"></div></div>
+        </div>
+      </aside>
+
+      <section class="panel station">
+        <div class="station-head">
+          <div>
+            <h3 id="stepTitle">第一步</h3>
+            <p class="station-note" id="stepNote"></p>
+          </div>
+          <span class="step-badge" id="stepBadge">1</span>
+        </div>
+
+        <div id="choiceArea">
+          <div class="options" id="options"></div>
+          <div class="feedback" id="feedback"></div>
+        </div>
+
+        <div id="repairArea" hidden>
+          <div class="toolbox">
+            <div class="tool"><b>我看到</b><span>先說可觀察到的事，不急著貼標籤。</span></div>
+            <div class="tool"><b>我感覺</b><span>用情緒字詞說明自己受影響的地方。</span></div>
+            <div class="tool"><b>我希望</b><span>提出可做到、具體、尊重彼此的下一步。</span></div>
+          </div>
+          <div class="builder" id="sentenceBuilder">
+            <div class="builder-group">
+              <h4>1. 選一個感受</h4>
+              <div class="chips" id="feelingChips"></div>
+            </div>
+            <div class="builder-group">
+              <h4>2. 選一個需要被照顧的重點</h4>
+              <div class="chips" id="needChips"></div>
+            </div>
+            <div class="builder-group">
+              <h4>3. 選一個下一步</h4>
+              <div class="chips" id="actionChips"></div>
+            </div>
+          </div>
+          <div class="sentence-preview" id="sentencePreview">請先完成三個選擇，系統會幫你組成一句修復句。</div>
+          <p class="optional-note">想挑戰更完整的表達，可以在下面加一句自己的補充；不填也可以。</p>
+          <textarea id="repairText" placeholder="選填：我還想補充……"></textarea>
+          <div class="feedback" id="repairFeedback"></div>
+        </div>
+
+        <div class="actions">
+          <button class="btn ghost" id="backBtn">回首頁</button>
+          <button class="btn secondary" id="nextBtn" disabled>下一步</button>
+        </div>
+      </section>
+    </section>
+
+    <section class="panel summary" id="summary">
+      <h2>偵探任務完成</h2>
+      <p class="lead">你完成了四個高年級常見情境。真正厲害的溝通不是每次都贏，而是能看見情緒、理解立場、說清楚需求，並願意修復關係。</p>
+      <div class="badges" id="badges"></div>
+      <div class="result-box">
+        <h3 id="rankTitle">溝通偵探</h3>
+        <p id="rankText"></p>
+      </div>
+      <div class="start-row">
+        <button class="btn" id="restartBtn">重新挑戰</button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const cases = [
+      {
+        title: "分組報告卡住了",
+        tag: "合作衝突",
+        text: "自然課要分組報告。你發現其中一位同學一直沒交資料，其他人開始在群組抱怨：「他每次都拖累大家。」那位同學已讀不回，隔天看起來也很低落。",
+        clues: ["群組文字容易讓語氣變尖銳", "有人沒有完成任務", "低落可能代表壓力或尷尬"],
+        ask: "你第一個比較成熟的行動會是？",
+        options: [
+          { text: "在群組直接標記他，說大家都知道是他害的。", note: "這會讓對方更防衛，也讓問題更難處理。", score: 0, tone: "poor" },
+          { text: "私下問他是不是遇到困難，再和小組討論如何補救分工。", note: "先理解原因，再回到任務，是高年級很重要的合作能力。", score: 3, tone: "good" },
+          { text: "自己把他的部分全部做完，免得老師扣分。", note: "短期能解決作業，但沒有處理合作責任，自己也可能累積委屈。", score: 1, tone: "ok" }
+        ],
+        repairPrompt: "寫一句你可以對那位同學說的話，包含關心與具體下一步。"
+      },
+      {
+        title: "朋友開玩笑過頭",
+        tag: "界線表達",
+        text: "午休時，朋友一直模仿你的口頭禪，全班笑了。你也想裝沒事，但其實覺得很丟臉。朋友說：「我只是開玩笑，你幹嘛那麼小氣？」",
+        clues: ["玩笑是否好笑，要看當事人感受", "被說小氣可能讓人不敢表達界線", "界線可以堅定，也可以不攻擊人"],
+        ask: "哪一種回應最能保護自己，也保留關係？",
+        options: [
+          { text: "「你才小氣，以後我也拿你的缺點開玩笑。」", note: "反擊很有衝動感，但通常會讓衝突升級。", score: 0, tone: "poor" },
+          { text: "「剛剛大家笑的時候我很尷尬。你可以不要再模仿我的口頭禪嗎？」", note: "這是清楚的我訊息：說事實、說感受、說請求。", score: 3, tone: "good" },
+          { text: "什麼都不說，之後避開他。", note: "保持距離有時必要，但如果還想保留友誼，可以先嘗試說清楚。", score: 1, tone: "ok" }
+        ],
+        repairPrompt: "用「我訊息」寫一句界線句，不罵人但清楚。"
+      },
+      {
+        title: "社群訊息被截圖",
+        tag: "數位同理",
+        text: "班級聊天群有人截圖一段私訊，內容是在抱怨另一位同學。截圖被轉傳後，當事人很生氣，也有人開始看熱鬧，叫大家繼續貼更多證據。",
+        clues: ["截圖轉傳會放大傷害", "旁觀者也會影響氣氛", "停止擴散是修復的第一步"],
+        ask: "你在群組中最適合怎麼做？",
+        options: [
+          { text: "不要留言，但把截圖傳給另一個朋友討論。", note: "沒有公開留言不等於沒有擴散，轉傳仍會增加傷害。", score: 0, tone: "poor" },
+          { text: "留言提醒大家先停止轉傳，並建議當事人私下找老師或輔導室協助。", note: "你沒有選邊攻擊，而是先降低傷害，這是負責任的旁觀者行動。", score: 3, tone: "good" },
+          { text: "叫大家不要吵，然後傳一個搞笑貼圖轉移注意。", note: "轉移注意可能暫時降溫，但沒有處理轉傳和受傷的人。", score: 1, tone: "ok" }
+        ],
+        repairPrompt: "寫一句你可以在群組中說的降溫提醒。"
+      },
+      {
+        title: "被老師誤會作弊",
+        tag: "壓力溝通",
+        text: "小考時，你只是低頭撿橡皮擦，老師以為你在看隔壁答案。你很委屈，當下心跳很快，差點直接頂嘴。",
+        clues: ["被誤會時情緒會很強", "先穩住語氣有助於被聽見", "說明事實比指責更有效"],
+        ask: "當下最能幫助你被理解的說法是？",
+        options: [
+          { text: "「你都亂懷疑人，我再也不考了！」", note: "委屈是真的，但這種說法會讓焦點從事實變成態度。", score: 0, tone: "poor" },
+          { text: "「老師，我剛剛是在撿橡皮擦。我知道看起來像在看旁邊，我可以考完後再跟您說明嗎？」", note: "這句話承認對方可能看到的畫面，同時清楚說明自己的事實。", score: 3, tone: "good" },
+          { text: "一直沉默，等老師自己發現。", note: "沉默能避免爆炸，但重要誤會通常需要找時間說明。", score: 1, tone: "ok" }
+        ],
+        repairPrompt: "寫一句考後可以對老師說的說明句。"
+      }
+    ];
+
+    const steps = [
+      { title: "選擇回應", note: "比較每個選項的後果，找出能保護自己也尊重他人的做法。" },
+      { title: "修復句練習", note: "把想法寫成可以真的說出口的句子。" }
+    ];
+
+    const badges = [
+      { icon: "👀", name: "線索觀察" },
+      { icon: "💬", name: "我訊息" },
+      { icon: "🤝", name: "修復行動" },
+      { icon: "🛡️", name: "數位同理" }
+    ];
+
+    let started = false;
+    let caseIndex = 0;
+    let stepIndex = 0;
+    let score = 0;
+    let earned = 0;
+    let selectedOption = null;
+    let repairs = [];
+    let selectedRepair = { feeling: "", need: "", action: "" };
+
+    const repairChoices = {
+      feelings: ["有點擔心", "覺得尷尬", "感到委屈", "有點生氣", "覺得壓力很大", "想把事情說清楚"],
+      needs: ["需要先了解原因", "需要被尊重", "需要停止轉傳", "需要把責任分清楚", "需要一個冷靜說明的機會", "需要一起找到補救方式"],
+      actions: ["我們可以先私下談一談", "請你下次不要這樣做", "大家先不要繼續轉傳", "我們一起重新分工", "我想考完後再向老師說明", "我們可以找老師協助"]
+    };
+
+    const $ = id => document.getElementById(id);
+
+    function updateStats() {
+      $("caseCount").textContent = `${Math.min(caseIndex + (started ? 1 : 0), cases.length)}/${cases.length}`;
+      $("scoreCount").textContent = String(score);
+      $("badgeCount").textContent = String(earned);
+    }
+
+    function startGame() {
+      started = true;
+      caseIndex = 0;
+      stepIndex = 0;
+      score = 0;
+      earned = 0;
+      selectedOption = null;
+      selectedRepair = { feeling: "", need: "", action: "" };
+      repairs = [];
+      $("hero").classList.add("hidden");
+      $("summary").classList.remove("active");
+      $("game").classList.add("active");
+      renderCase();
+    }
+
+    function renderCase() {
+      const item = cases[caseIndex];
+      selectedOption = null;
+      $("caseTag").textContent = `案件 ${caseIndex + 1}｜${item.tag}`;
+      $("caseTitle").textContent = item.title;
+      $("caseText").textContent = item.text;
+      $("clues").innerHTML = item.clues.map((clue, i) => `<div class="clue"><span>${["🔎", "🧠", "💡"][i]}</span><div>${clue}</div></div>`).join("");
+      const percent = Math.round((caseIndex / cases.length) * 100);
+      $("barFill").style.width = `${percent}%`;
+      $("progressText").textContent = `${percent}%`;
+      renderStep();
+      updateStats();
+    }
+
+    function renderStep() {
+      const item = cases[caseIndex];
+      const step = steps[stepIndex];
+      $("stepTitle").textContent = step.title;
+      $("stepNote").textContent = stepIndex < 2 ? (stepIndex === 0 ? item.ask : "再想一次：哪個選項比較能降低傷害、照顧關係，也保留自己的界線？") : item.repairPrompt;
+      $("stepBadge").textContent = String(stepIndex + 1);
+      $("feedback").classList.remove("show");
+      $("feedback").textContent = "";
+      $("nextBtn").disabled = true;
+
+      if (stepIndex < 1) {
+        $("choiceArea").hidden = false;
+        $("repairArea").hidden = true;
+        renderOptions(item);
+      } else {
+        $("choiceArea").hidden = true;
+        $("repairArea").hidden = false;
+        selectedRepair = { feeling: "", need: "", action: "" };
+        $("repairText").value = "";
+        $("sentencePreview").textContent = "請先完成三個選擇，系統會幫你組成一句修復句。";
+        $("repairFeedback").classList.remove("show");
+        $("repairFeedback").textContent = "";
+        $("nextBtn").disabled = true;
+        renderSentenceBuilder();
+      }
+    }
+
+    function renderSentenceBuilder() {
+      renderChipGroup("feelingChips", "feeling", repairChoices.feelings);
+      renderChipGroup("needChips", "need", repairChoices.needs);
+      renderChipGroup("actionChips", "action", repairChoices.actions);
+    }
+
+    function renderChipGroup(containerId, key, choices) {
+      $(containerId).innerHTML = choices.map(choice => `
+        <button class="chip ${selectedRepair[key] === choice ? "selected" : ""}" type="button" data-key="${key}" data-value="${choice}">${choice}</button>
+      `).join("");
+
+      $(containerId).querySelectorAll(".chip").forEach(chip => {
+        chip.addEventListener("click", () => {
+          selectedRepair[chip.dataset.key] = chip.dataset.value;
+          renderSentenceBuilder();
+          updateRepairPreview();
+        });
+      });
+    }
+
+    function buildRepairSentence() {
+      if (!selectedRepair.feeling || !selectedRepair.need || !selectedRepair.action) return "";
+      return `我看到這件事情讓大家有不同感受，我${selectedRepair.feeling}，也覺得${selectedRepair.need}。我希望${selectedRepair.action}。`;
+    }
+
+    function updateRepairPreview() {
+      const sentence = buildRepairSentence();
+      if (!sentence) {
+        const missing = [];
+        if (!selectedRepair.feeling) missing.push("感受");
+        if (!selectedRepair.need) missing.push("重點");
+        if (!selectedRepair.action) missing.push("下一步");
+        $("sentencePreview").textContent = `還需要選擇：${missing.join("、")}。`;
+        $("repairFeedback").classList.remove("show");
+        $("nextBtn").disabled = true;
+        return;
+      }
+
+      $("sentencePreview").textContent = sentence;
+      $("repairFeedback").innerHTML = "<strong>修復句已完成。</strong><br>你已經用安全的句型說出感受、需求和下一步，可以前進到下一個案件。";
+      $("repairFeedback").classList.add("show");
+      $("nextBtn").disabled = false;
+    }
+
+    function renderOptions(item) {
+      $("options").innerHTML = item.options.map((opt, i) => `
+        <button class="option" data-index="${i}" type="button">
+          <span class="letter">${String.fromCharCode(65 + i)}</span>
+          <span><strong>${opt.text}</strong><small>先不要急著判斷，想想這句話可能造成什麼影響。</small></span>
+        </button>
+      `).join("");
+
+      document.querySelectorAll(".option").forEach(button => {
+        button.addEventListener("click", () => chooseOption(Number(button.dataset.index)));
+      });
+    }
+
+    function chooseOption(index) {
+      const item = cases[caseIndex];
+      const opt = item.options[index];
+      selectedOption = opt;
+      document.querySelectorAll(".option").forEach((button, i) => {
+        button.classList.toggle("selected", i === index);
+        button.classList.remove("good", "ok", "poor");
+        if (i === index) button.classList.add(opt.tone);
+      });
+
+      $("feedback").innerHTML = `<strong>${opt.score === 3 ? "成熟偵探判斷！" : opt.score === 1 ? "有一部分可行，但還能更完整。" : "這個做法風險偏高。"}</strong><br>${opt.note}`;
+      $("feedback").classList.add("show");
+      $("nextBtn").disabled = false;
+    }
+
+    function validateRepair() {
+      const sentence = buildRepairSentence();
+      if (!sentence) {
+        updateRepairPreview();
+        $("repairFeedback").textContent = "請先選完感受、重點和下一步，避免修復句太空泛。";
+        $("repairFeedback").classList.add("show");
+        $("nextBtn").disabled = true;
+        return;
+      }
+
+      const extra = $("repairText").value.trim();
+      const bonus = extra.length >= 10 ? 2 : 1;
+      $("repairFeedback").innerHTML = `<strong>修復句已記錄。</strong><br>${extra.length >= 10 ? "你除了完成基本句型，也加入自己的補充，很適合高年級真實情境。" : "基本修復句已完成；若想挑戰，可以加一句自己的補充。"}`;
+      $("repairFeedback").classList.add("show");
+      $("nextBtn").disabled = false;
+      return bonus;
+    }
+
+    function nextStep() {
+      if (stepIndex < 1) {
+        if (selectedOption) score += selectedOption.score;
+        updateStats();
+        stepIndex += 1;
+        renderStep();
+        return;
+      }
+
+      const bonus = validateRepair();
+      if (!bonus) return;
+      score += bonus;
+      repairs.push([buildRepairSentence(), $("repairText").value.trim()].filter(Boolean).join(" "));
+      earned = Math.min(4, Math.floor(score / 4));
+
+      if (caseIndex < cases.length - 1) {
+        caseIndex += 1;
+        stepIndex = 0;
+        renderCase();
+      } else {
+        finishGame();
+      }
+    }
+
+    function finishGame() {
+      $("game").classList.remove("active");
+      $("summary").classList.add("active");
+      $("barFill").style.width = "100%";
+      $("progressText").textContent = "100%";
+      earned = Math.max(earned, score >= 13 ? 4 : score >= 10 ? 3 : score >= 7 ? 2 : 1);
+      updateStats();
+
+      $("badges").innerHTML = badges.map((badge, i) => `
+        <div class="badge ${i < earned ? "earned" : ""}">
+          <div><span>${badge.icon}</span>${badge.name}</div>
+        </div>
+      `).join("");
+
+      if (score >= 17) {
+        $("rankTitle").textContent = "首席溝通偵探";
+        $("rankText").textContent = "你很會把情緒、立場與後果放在一起思考，也能提出具體修復句。下次遇到衝突時，可以試著當那個讓場面降溫的人。";
+      } else if (score >= 12) {
+        $("rankTitle").textContent = "穩健溝通偵探";
+        $("rankText").textContent = "你已經能抓到多數情境的重點。繼續練習把感受說清楚，並提出更具體的下一步。";
+      } else {
+        $("rankTitle").textContent = "見習溝通偵探";
+        $("rankText").textContent = "你完成了所有案件，這就是練習的開始。可以再玩一次，試著選擇更能修復關係、降低傷害的回應。";
+      }
+    }
+
+    $("startBtn").addEventListener("click", startGame);
+    $("restartBtn").addEventListener("click", startGame);
+    $("backBtn").addEventListener("click", () => {
+      $("game").classList.remove("active");
+      $("summary").classList.remove("active");
+      $("hero").classList.remove("hidden");
+      started = false;
+      updateStats();
+    });
+    $("nextBtn").addEventListener("click", nextStep);
+    $("repairText").addEventListener("input", validateRepair);
+    $("previewBtn").addEventListener("click", () => {
+      $("previewBtn").textContent = "4 個案件：合作、界線、網路、誤會";
+      setTimeout(() => $("previewBtn").textContent = "先看任務", 2600);
+    });
+
+    updateStats();
+  </script>
+</body>
+</html>
