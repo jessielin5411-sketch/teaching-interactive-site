@@ -13,7 +13,7 @@
     .shell{width:min(1180px,calc(100% - 28px));margin:0 auto;padding:76px 0 46px}.hero{display:grid;grid-template-columns:1.15fr .85fr;gap:22px;align-items:stretch}.panel{border:1px solid var(--line);border-radius:28px;background:linear-gradient(180deg,rgba(13,27,49,.88),rgba(8,18,34,.82));box-shadow:0 18px 50px rgba(0,0,0,.35),inset 0 0 0 1px rgba(255,255,255,.04);backdrop-filter:blur(10px)}
     .intro{padding:34px}.kicker{display:inline-flex;gap:8px;align-items:center;color:#a5f3fc;border:1px solid rgba(34,211,238,.35);background:rgba(34,211,238,.08);border-radius:999px;padding:8px 13px;font-size:14px;font-weight:900;letter-spacing:.08em}.intro h1{margin:18px 0 12px;font-size:clamp(38px,6vw,74px);line-height:1.02;text-shadow:0 0 26px rgba(34,211,238,.32)}.intro p{margin:0;color:var(--muted);font-size:18px;line-height:1.75;font-weight:650}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:22px}.stat{padding:14px;border:1px solid rgba(255,255,255,.08);border-radius:18px;background:rgba(255,255,255,.05)}.stat b{display:block;font-size:24px;color:#fff}.stat span{color:var(--muted);font-size:13px;font-weight:800}
     .status{padding:28px;display:flex;flex-direction:column;justify-content:space-between;gap:18px}.rank{font-size:72px;text-align:center;filter:drop-shadow(0 0 18px rgba(250,204,21,.42))}.meter{height:14px;border-radius:999px;overflow:hidden;background:#101827;border:1px solid rgba(255,255,255,.08)}.meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--cyan),var(--green),var(--yellow));box-shadow:0 0 18px rgba(52,211,153,.55);transition:width .4s}.status h2{margin:0;text-align:center;font-size:28px}.status p{margin:0;text-align:center;color:var(--muted);line-height:1.6;font-weight:650}.bossGrid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:14px 0}.boss{position:relative;display:grid;place-items:center;min-height:64px;border-radius:16px;background:radial-gradient(circle at 50% 25%,rgba(251,113,133,.26),rgba(15,23,42,.92));border:1px solid rgba(251,113,133,.35);overflow:hidden;box-shadow:inset 0 0 18px rgba(251,113,133,.12),0 0 18px rgba(251,113,133,.08);animation:bossFloat 2.8s ease-in-out infinite}.boss::after{content:"";position:absolute;inset:auto 8px 5px;height:5px;border-radius:999px;background:rgba(251,113,133,.35);filter:blur(3px)}.bossAvatar{width:56px;height:46px;background-image:url("assets/boss-sprite-sheet.png");background-size:1000% auto;background-position:calc(var(--boss-index) * 11.111%) center;background-repeat:no-repeat;filter:drop-shadow(0 0 10px rgba(34,211,238,.32));transform:scale(1.7);transition:.28s}.boss.defeated{background:radial-gradient(circle at 50% 28%,rgba(52,211,153,.26),rgba(15,23,42,.88));border-color:rgba(52,211,153,.6);box-shadow:0 0 22px rgba(52,211,153,.2),inset 0 0 20px rgba(52,211,153,.12)}.boss.defeated .bossAvatar{filter:saturate(.35) brightness(1.4) drop-shadow(0 0 12px rgba(250,204,21,.65));transform:scale(1.45) rotate(-5deg);opacity:.78}.boss.defeated::before{content:"";position:absolute;inset:8px;border-radius:50%;background:radial-gradient(circle,rgba(250,204,21,.72),rgba(52,211,153,.1) 38%,transparent 62%);animation:defeatBurst 1.4s ease-out infinite}.scorePanel{margin-top:12px;padding:12px;border-radius:16px;background:rgba(250,204,21,.08);border:1px solid rgba(250,204,21,.25);color:#fde68a;font-weight:950;text-align:center}
-    .levels{margin-top:24px;display:grid;grid-template-columns:repeat(5,1fr);gap:14px}.level{position:relative;min-height:174px;padding:18px;border:1px solid rgba(125,211,252,.28);border-radius:22px;background:linear-gradient(160deg,rgba(16,40,70,.94),rgba(11,20,38,.92));box-shadow:0 10px 0 rgba(0,0,0,.22);transition:.18s;cursor:pointer}.level:hover{transform:translateY(-4px);border-color:rgba(34,211,238,.72)}.level.locked{filter:grayscale(.85);opacity:.55;cursor:not-allowed}.level.done{border-color:rgba(52,211,153,.75);box-shadow:0 0 24px rgba(52,211,153,.18),0 10px 0 rgba(0,0,0,.22)}.badge{display:flex;align-items:center;justify-content:space-between;gap:8px}.num{width:42px;height:42px;display:grid;place-items:center;border-radius:14px;background:linear-gradient(135deg,var(--cyan),var(--violet));color:#04111f;font-weight:1000}.lock{font-size:24px}.level h3{margin:15px 0 8px;font-size:20px}.level p{margin:0;color:var(--muted);font-size:14px;line-height:1.5;font-weight:650}.keyline{margin-top:12px;color:#fde68a;font-weight:900}.levelActions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.miniBtn{border:0;border-radius:999px;padding:8px 10px;color:#04111f;background:linear-gradient(135deg,var(--cyan),var(--green));font:inherit;font-size:12px;font-weight:1000;cursor:pointer}.miniBtn.advanced{background:linear-gradient(135deg,var(--yellow),var(--pink));color:#2a0c18}.miniBtn.lockedAdv{background:rgba(255,255,255,.08);color:#94a3b8;cursor:not-allowed}
+    .levels{margin-top:24px;display:grid;grid-template-columns:repeat(5,1fr);gap:14px}.level{position:relative;min-height:150px;padding:18px;border:1px solid rgba(125,211,252,.28);border-radius:22px;background:linear-gradient(160deg,rgba(16,40,70,.94),rgba(11,20,38,.92));box-shadow:0 10px 0 rgba(0,0,0,.22);transition:.18s;cursor:pointer}.level:hover{transform:translateY(-4px);border-color:rgba(34,211,238,.72)}.level.locked{filter:grayscale(.85);opacity:.55;cursor:not-allowed}.level.done{border-color:rgba(52,211,153,.75);box-shadow:0 0 24px rgba(52,211,153,.18),0 10px 0 rgba(0,0,0,.22)}.badge{display:flex;align-items:center;justify-content:space-between;gap:8px}.num{width:42px;height:42px;display:grid;place-items:center;border-radius:14px;background:linear-gradient(135deg,var(--cyan),var(--violet));color:#04111f;font-weight:1000}.lock{font-size:24px}.level h3{margin:15px 0 8px;font-size:20px}.level p{margin:0;color:var(--muted);font-size:14px;line-height:1.5;font-weight:650}.keyline{margin-top:12px;color:#fde68a;font-weight:900}
     .game{display:none;margin-top:24px;padding:24px}.game.active{display:block}.topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}.pill{display:inline-flex;align-items:center;gap:8px;padding:9px 13px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);font-weight:900;color:#dffbff}.question{margin-top:18px;padding:24px;border-radius:24px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1)}.prompt{font-size:clamp(24px,4vw,42px);font-weight:1000;line-height:1.2;margin:8px 0}.hint{color:#c4d8e8;font-size:17px;line-height:1.65;font-weight:650}.options{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:18px}.option,.primary,.ghost{border:0;border-radius:18px;padding:15px 16px;font:inherit;font-weight:900;cursor:pointer;transition:.16s}.option{text-align:left;color:#eafcff;background:rgba(96,165,250,.11);border:1px solid rgba(96,165,250,.28)}.option:hover{transform:translateY(-2px);background:rgba(34,211,238,.16);border-color:rgba(34,211,238,.62)}.option.correct{background:rgba(52,211,153,.25);border-color:var(--green)}.option.wrong{background:rgba(251,113,133,.22);border-color:var(--pink)}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.primary{color:#04111f;background:linear-gradient(135deg,var(--cyan),var(--green));box-shadow:0 8px 0 rgba(8,145,178,.35)}.ghost{color:#b8f3ff;background:rgba(255,255,255,.06);border:1px solid var(--line)}.feedback{margin-top:16px;min-height:58px;padding:14px 16px;border-radius:18px;background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.09);color:#dbeafe;font-weight:750;line-height:1.55}.inputAnswer{width:100%;margin-top:15px;padding:16px 18px;border-radius:18px;border:1px solid rgba(34,211,238,.46);background:rgba(2,8,23,.72);color:#fff;font-size:22px;font-weight:900;outline:none}.inputAnswer:focus{box-shadow:0 0 0 4px rgba(34,211,238,.16)}
     .modal{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(2,6,23,.74);backdrop-filter:blur(8px)}.modal.show{display:flex}.modalBox{width:min(680px,100%);max-height:92vh;overflow:auto;padding:30px;text-align:center}.modalBox h2{font-size:38px;margin:8px 0}.modalBox p{color:var(--muted);line-height:1.7;font-weight:700}.bigkey{font-size:88px;filter:drop-shadow(0 0 22px rgba(250,204,21,.58));animation:pulse 1.2s infinite alternate}.bigkey.bossDefeat{position:relative;width:180px;height:132px;margin:0 auto 6px;display:grid;place-items:center;font-size:20px;animation:none}.modalBoss{width:92px;height:78px;background-image:url("assets/boss-sprite-sheet.png");background-size:1000% auto;background-position:calc(var(--boss-index) * 11.111%) center;background-repeat:no-repeat;transform:scale(2.05) rotate(-8deg);filter:saturate(.35) brightness(1.35) drop-shadow(0 0 22px rgba(250,204,21,.85));animation:bossKnockout 1.05s ease-in-out infinite alternate}.bossBoom{position:absolute;inset:8px;border-radius:50%;background:radial-gradient(circle,rgba(250,204,21,.85),rgba(251,113,133,.28) 38%,transparent 65%);animation:defeatBurst 1.2s ease-out infinite}.defeatText{position:absolute;bottom:0;left:50%;transform:translateX(-50%);white-space:nowrap;padding:5px 10px;border-radius:999px;background:rgba(251,113,133,.9);color:white;font-size:15px;font-weight:1000;box-shadow:0 0 22px rgba(251,113,133,.45)}.reviewBox{display:none;margin-top:16px;text-align:left}.reviewBox.show{display:block}.reviewBox h3{margin:0 0 10px;color:#fde68a}.reviewText{width:100%;min-height:150px;padding:14px;border-radius:16px;border:1px solid rgba(125,211,252,.28);background:rgba(2,8,23,.76);color:#e0f2fe;font:700 14px/1.55 "Segoe UI","Noto Sans TC",sans-serif;resize:vertical}.miniStatus{margin-top:12px;padding:12px;border-radius:16px;background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.22);color:#a5f3fc;font-weight:850}.danger{background:linear-gradient(135deg,#fb7185,#f97316);box-shadow:0 8px 0 rgba(190,18,60,.35)}@keyframes pulse{to{transform:scale(1.08) rotate(5deg)}}@keyframes bossFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}@keyframes defeatBurst{0%{transform:scale(.65);opacity:.9}100%{transform:scale(1.35);opacity:0}}@keyframes bossKnockout{0%{transform:scale(2.05) rotate(-8deg) translateY(0)}100%{transform:scale(1.82) rotate(8deg) translateY(10px)}}
     @media(max-width:900px){.hero{grid-template-columns:1fr}.levels{grid-template-columns:repeat(2,1fr)}.options{grid-template-columns:1fr}}@media(max-width:560px){.shell{padding-top:70px}.levels{grid-template-columns:1fr}.stats{grid-template-columns:1fr}.intro,.status,.game{padding:20px}.back{position:absolute}}
@@ -107,7 +107,7 @@
       {name:'Level 10 星艦菁英關', theme:'進階整合', words:[['achieve','達成'],['although','雖然'],['challenge','挑戰'],['communicate','溝通'],['confidence','信心'],['creative','有創意的'],['especially','尤其'],['excellent','優秀的'],['imagination','想像力'],['international','國際的'],['opportunity','機會'],['population','人口'],['responsible','負責任的'],['serious','嚴肅的；嚴重的'],['valuable','有價值的']]}
     ];
 
-    const ADVANCED_KEY_REQUIREMENT = 5;
+    const PASS_SCORE = 12;
     const state = { unlocked: Number(localStorage.getItem('juniorMissionUnlocked') || 1), keys: Number(localStorage.getItem('juniorMissionKeys') || 0), points: Number(localStorage.getItem('juniorMissionPoints') || 0), level: null, index: 0, score: 0, runPoints: 0, answered: false, selected: '', advanced: false, pool: [], missed: [], combo: 0, rescueMode: false };
     const $ = id => document.getElementById(id);
     const allWords = LEVELS.flatMap(l => l.words);
@@ -176,7 +176,7 @@
       $('keyMeter').style.width = `${Math.min(100, state.keys / 10 * 100)}%`;
       const rank = state.keys >= 10 ? 'Galaxy Commander' : state.keys >= 6 ? 'Word Pilot' : state.keys >= 3 ? 'Key Hunter' : 'Cadet Starter';
       $('rankTitle').textContent = rank;
-      $('rankText').textContent = `目前鑰匙：${state.keys} / 10，已擊敗魔王：${state.keys} / 10。${state.keys >= ADVANCED_KEY_REQUIREMENT ? '進階拼字模式已啟動，可以回到已過關星區挑戰拼字。' : `取得 ${ADVANCED_KEY_REQUIREMENT} 把鑰匙後，會開啟進階拼字模式。`}`;
+      $('rankText').textContent = `目前鑰匙：${state.keys} / 10，已擊敗魔王：${state.keys} / 10。${state.keys >= 5 ? '進階拼字模式已啟動，可以挑戰更高難度。' : '取得 5 把鑰匙後，會開啟進階拼字模式。'}`;
       $('bossGrid').innerHTML = Array.from({ length: 10 }, (_, idx) => {
         const defeated = idx < state.keys;
         return `<span class="boss ${defeated ? 'defeated' : ''}" style="--boss-index:${idx}" title="${defeated ? '已擊敗魔王' : '尚未擊敗魔王'}"><i class="bossAvatar" aria-hidden="true"></i></span>`;
@@ -190,38 +190,26 @@
         const n = idx + 1;
         const locked = n > state.unlocked;
         const done = n <= state.keys;
-        const advancedReady = done && state.keys >= ADVANCED_KEY_REQUIREMENT;
         return `<article class="level ${locked ? 'locked' : ''} ${done ? 'done' : ''}" data-level="${n}">
           <div class="badge"><span class="num">${n}</span><span class="lock">${locked ? '🔒' : done ? '✅' : '🔑'}</span></div>
           <h3>${level.name}</h3>
           <p>${level.theme}｜15 題單字任務</p>
-          <div class="keyline">${locked ? '需要上一關鑰匙' : done ? '鑰匙已取得，可回來複習' : '完成 15 題取得鑰匙'}</div>
-          <div class="levelActions">
-            ${locked ? '' : `<button class="miniBtn review" data-mode="normal" data-level="${n}">${done ? '一般複習' : '開始任務'}</button>`}
-            ${done ? `<button class="miniBtn ${advancedReady ? 'advanced' : 'lockedAdv'}" data-mode="advanced" data-level="${n}" ${advancedReady ? '' : 'disabled'}>${advancedReady ? '進階拼字' : `集滿 ${ADVANCED_KEY_REQUIREMENT} 鑰匙`}</button>` : ''}
-          </div>
+          <div class="keyline">${locked ? '需要上一關鑰匙' : done ? '鑰匙已取得' : '可挑戰'}</div>
         </article>`;
       }).join('');
-      document.querySelectorAll('.level').forEach(card => card.addEventListener('click', event => {
-        if (event.target.closest('button')) return;
+      document.querySelectorAll('.level').forEach(card => card.addEventListener('click', () => {
         const n = Number(card.dataset.level);
         if (n <= state.unlocked) startLevel(n);
       }));
-      document.querySelectorAll('.miniBtn').forEach(btn => btn.addEventListener('click', event => {
-        event.stopPropagation();
-        const n = Number(btn.dataset.level);
-        if (btn.disabled || n > state.unlocked) return;
-        startLevel(n, btn.dataset.mode === 'advanced');
-      }));
     }
-    function startLevel(n, forceAdvanced = false){
+    function startLevel(n){
       state.level = n;
       state.index = 0;
       state.score = 0;
       state.runPoints = 0;
       state.answered = false;
       state.selected = '';
-      state.advanced = Boolean(forceAdvanced);
+      state.advanced = state.keys >= 5;
       state.pool = LEVELS[n - 1].words.map(([word, meaning]) => ({word, meaning}));
       state.missed = [];
       state.combo = 0;
@@ -326,8 +314,8 @@
     }
     function finishLevel(){
       $('progressBar').style.width = '100%';
-      const needed = state.pool.length;
-      const passed = state.rescueMode ? state.score >= needed : state.index >= state.pool.length;
+      const needed = state.rescueMode ? state.pool.length : PASS_SCORE;
+      const passed = state.score >= needed;
       if (passed) {
         const justEarned = state.level > state.keys;
         if (justEarned) state.keys = state.level;
@@ -336,12 +324,11 @@
         if (justEarned) playSound('boss');
         saveProgress();
         clearSession();
-        const modalTitle = justEarned ? '取得能量鑰匙！' : state.advanced ? '進階拼字完成！' : '複習任務完成！';
-        showModal('🔑', modalTitle, `本關成績 ${state.score}/${state.pool.length}，本次獲得 ${earnedThisRun} 積分。${justEarned ? `第 ${state.level} 隻魔王已被擊敗！` : state.advanced ? '進階拼字挑戰完成，這個星區更熟了！' : '這關已完成複習任務。'}${state.keys >= ADVANCED_KEY_REQUIREMENT ? '進階拼字模式已啟動，可回到已過關星區挑戰！' : ''}`, justEarned ? { bossIndex: state.level - 1 } : {});
+        showModal('🔑', '取得能量鑰匙！', `本關成績 ${state.score}/${state.pool.length}，本次獲得 ${earnedThisRun} 積分。${justEarned ? `第 ${state.level} 隻魔王已被擊敗！` : '這關已完成複習任務。'}${state.keys >= 5 ? '進階拼字模式已啟動！' : ''}`, justEarned ? { bossIndex: state.level - 1 } : {});
       } else {
         const earnedThisRun = bankRunPoints();
         clearSession();
-        showModal('🛡️', '任務還差一點', `本關成績 ${state.score}/${state.pool.length}，本次獲得 ${earnedThisRun} 積分。補救任務需要全部答對才能完成。可以直接啟動錯題補救任務，不用整關重來。`);
+        showModal('🛡️', '任務還差一點', `本關成績 ${state.score}/${state.pool.length}，本次獲得 ${earnedThisRun} 積分。需要至少 ${needed} 題正確才能取得鑰匙。可以直接啟動錯題補救任務，不用整關重來。`);
       }
       $('game').classList.remove('active');
       renderLevels();
