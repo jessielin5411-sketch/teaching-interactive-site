@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>國中 2000 單字星艦任務</title>
+  <style>
+    :root{--bg:#07111f;--panel:#0d1b31;--panel2:#102846;--cyan:#22d3ee;--blue:#60a5fa;--violet:#a78bfa;--green:#34d399;--pink:#fb7185;--yellow:#facc15;--text:#e6f7ff;--muted:#9fb8cc;--line:rgba(125,211,252,.28)}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;color:var(--text);font-family:"Segoe UI","Noto Sans TC",system-ui,sans-serif;background:radial-gradient(circle at 18% 15%,rgba(96,165,250,.32),transparent 24%),radial-gradient(circle at 80% 10%,rgba(167,139,250,.28),transparent 25%),radial-gradient(circle at 70% 80%,rgba(34,211,238,.18),transparent 28%),linear-gradient(135deg,#050814,#08172b 48%,#0b1024);overflow-x:hidden}
+    body:before{content:"";position:fixed;inset:0;pointer-events:none;background-image:radial-gradient(circle,rgba(255,255,255,.9) 0 1px,transparent 1.8px),radial-gradient(circle,rgba(125,211,252,.8) 0 1px,transparent 1.6px);background-size:90px 90px,140px 140px;background-position:0 0,35px 45px;opacity:.35;animation:stars 18s linear infinite}
+    @keyframes stars{to{background-position:180px 240px,215px 285px}}
+    a{color:inherit;text-decoration:none}.back{position:fixed;top:16px;left:16px;z-index:20;display:inline-flex;gap:8px;align-items:center;padding:11px 16px;border:1px solid var(--line);border-radius:999px;background:rgba(8,18,34,.82);backdrop-filter:blur(10px);font-weight:900;color:#b8f3ff;box-shadow:0 0 24px rgba(34,211,238,.18)}
+    .shell{width:min(1180px,calc(100% - 28px));margin:0 auto;padding:76px 0 46px}.hero{display:grid;grid-template-columns:1.15fr .85fr;gap:22px;align-items:stretch}.panel{border:1px solid var(--line);border-radius:28px;background:linear-gradient(180deg,rgba(13,27,49,.88),rgba(8,18,34,.82));box-shadow:0 18px 50px rgba(0,0,0,.35),inset 0 0 0 1px rgba(255,255,255,.04);backdrop-filter:blur(10px)}
+    .intro{padding:34px}.kicker{display:inline-flex;gap:8px;align-items:center;color:#a5f3fc;border:1px solid rgba(34,211,238,.35);background:rgba(34,211,238,.08);border-radius:999px;padding:8px 13px;font-size:14px;font-weight:900;letter-spacing:.08em}.intro h1{margin:18px 0 12px;font-size:clamp(38px,6vw,74px);line-height:1.02;text-shadow:0 0 26px rgba(34,211,238,.32)}.intro p{margin:0;color:var(--muted);font-size:18px;line-height:1.75;font-weight:650}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:22px}.stat{padding:14px;border:1px solid rgba(255,255,255,.08);border-radius:18px;background:rgba(255,255,255,.05)}.stat b{display:block;font-size:24px;color:#fff}.stat span{color:var(--muted);font-size:13px;font-weight:800}
+    .status{padding:28px;display:flex;flex-direction:column;justify-content:space-between;gap:18px}.rank{font-size:72px;text-align:center;filter:drop-shadow(0 0 18px rgba(250,204,21,.42))}.meter{height:14px;border-radius:999px;overflow:hidden;background:#101827;border:1px solid rgba(255,255,255,.08)}.meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--cyan),var(--green),var(--yellow));box-shadow:0 0 18px rgba(52,211,153,.55);transition:width .4s}.status h2{margin:0;text-align:center;font-size:28px}.status p{margin:0;text-align:center;color:var(--muted);line-height:1.6;font-weight:650}
+    .levels{margin-top:24px;display:grid;grid-template-columns:repeat(5,1fr);gap:14px}.level{position:relative;min-height:150px;padding:18px;border:1px solid rgba(125,211,252,.28);border-radius:22px;background:linear-gradient(160deg,rgba(16,40,70,.94),rgba(11,20,38,.92));box-shadow:0 10px 0 rgba(0,0,0,.22);transition:.18s;cursor:pointer}.level:hover{transform:translateY(-4px);border-color:rgba(34,211,238,.72)}.level.locked{filter:grayscale(.85);opacity:.55;cursor:not-allowed}.level.done{border-color:rgba(52,211,153,.75);box-shadow:0 0 24px rgba(52,211,153,.18),0 10px 0 rgba(0,0,0,.22)}.badge{display:flex;align-items:center;justify-content:space-between;gap:8px}.num{width:42px;height:42px;display:grid;place-items:center;border-radius:14px;background:linear-gradient(135deg,var(--cyan),var(--violet));color:#04111f;font-weight:1000}.lock{font-size:24px}.level h3{margin:15px 0 8px;font-size:20px}.level p{margin:0;color:var(--muted);font-size:14px;line-height:1.5;font-weight:650}.keyline{margin-top:12px;color:#fde68a;font-weight:900}
+    .game{display:none;margin-top:24px;padding:24px}.game.active{display:block}.topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}.pill{display:inline-flex;align-items:center;gap:8px;padding:9px 13px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);font-weight:900;color:#dffbff}.question{margin-top:18px;padding:24px;border-radius:24px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1)}.prompt{font-size:clamp(24px,4vw,42px);font-weight:1000;line-height:1.2;margin:8px 0}.hint{color:#c4d8e8;font-size:17px;line-height:1.65;font-weight:650}.options{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:18px}.option,.primary,.ghost{border:0;border-radius:18px;padding:15px 16px;font:inherit;font-weight:900;cursor:pointer;transition:.16s}.option{text-align:left;color:#eafcff;background:rgba(96,165,250,.11);border:1px solid rgba(96,165,250,.28)}.option:hover{transform:translateY(-2px);background:rgba(34,211,238,.16);border-color:rgba(34,211,238,.62)}.option.correct{background:rgba(52,211,153,.25);border-color:var(--green)}.option.wrong{background:rgba(251,113,133,.22);border-color:var(--pink)}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.primary{color:#04111f;background:linear-gradient(135deg,var(--cyan),var(--green));box-shadow:0 8px 0 rgba(8,145,178,.35)}.ghost{color:#b8f3ff;background:rgba(255,255,255,.06);border:1px solid var(--line)}.feedback{margin-top:16px;min-height:58px;padding:14px 16px;border-radius:18px;background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.09);color:#dbeafe;font-weight:750;line-height:1.55}.inputAnswer{width:100%;margin-top:15px;padding:16px 18px;border-radius:18px;border:1px solid rgba(34,211,238,.46);background:rgba(2,8,23,.72);color:#fff;font-size:22px;font-weight:900;outline:none}.inputAnswer:focus{box-shadow:0 0 0 4px rgba(34,211,238,.16)}
+    .modal{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(2,6,23,.74);backdrop-filter:blur(8px)}.modal.show{display:flex}.modalBox{width:min(560px,100%);padding:30px;text-align:center}.modalBox h2{font-size:38px;margin:8px 0}.modalBox p{color:var(--muted);line-height:1.7;font-weight:700}.bigkey{font-size:88px;filter:drop-shadow(0 0 22px rgba(250,204,21,.58));animation:pulse 1.2s infinite alternate}@keyframes pulse{to{transform:scale(1.08) rotate(5deg)}}
+    @media(max-width:900px){.hero{grid-template-columns:1fr}.levels{grid-template-columns:repeat(2,1fr)}.options{grid-template-columns:1fr}}@media(max-width:560px){.shell{padding-top:70px}.levels{grid-template-columns:1fr}.stats{grid-template-columns:1fr}.intro,.status,.game{padding:20px}.back{position:absolute}}
+  </style>
+</head>
+<body>
+  <a class="back" href="../index.html">← 回英文首頁</a>
+  <main class="shell">
+    <section class="hero">
+      <div class="panel intro">
+        <span class="kicker">MISSION: JUNIOR HIGH 2000 WORDS</span>
+        <h1>星艦單字解鎖任務</h1>
+        <p>為國中生設計的 2000 單字練習挑戰。完成每一關 15 題即可取得能量鑰匙，解鎖下一個星區。累積鑰匙後可啟動進階拼字模式，像玩任務遊戲一樣把單字練熟。</p>
+        <div class="stats">
+          <div class="stat"><b>10</b><span>任務關卡</span></div>
+          <div class="stat"><b>15</b><span>每關題數</span></div>
+          <div class="stat"><b>12+</b><span>過關門檻</span></div>
+        </div>
+      </div>
+      <aside class="panel status">
+        <div>
+          <div class="rank">🔑</div>
+          <h2 id="rankTitle">Cadet Starter</h2>
+          <p id="rankText">目前鑰匙：0 / 10。先完成第 1 關，啟動你的星艦字彙核心。</p>
+        </div>
+        <div>
+          <div class="meter"><i id="keyMeter"></i></div>
+        </div>
+      </aside>
+    </section>
+
+    <section id="levels" class="levels"></section>
+
+    <section id="game" class="panel game">
+      <div class="topbar">
+        <span class="pill" id="missionName">Mission</span>
+        <span class="pill" id="modeName">選擇題模式</span>
+        <span class="pill" id="scoreText">0 / 15</span>
+      </div>
+      <div class="meter" style="margin-top:16px"><i id="progressBar"></i></div>
+      <div class="question">
+        <div class="pill" id="questionNo">Q1</div>
+        <div class="prompt" id="prompt"></div>
+        <div class="hint" id="hint"></div>
+        <div id="answerArea"></div>
+        <div class="feedback" id="feedback">選出正確答案，啟動星艦翻譯核心。</div>
+        <div class="actions">
+          <button class="primary" id="submitBtn" style="display:none">送出答案</button>
+          <button class="primary" id="nextBtn" style="display:none">下一題 →</button>
+          <button class="ghost" id="soundBtn">聽發音</button>
+          <button class="ghost" id="quitBtn">返回關卡艙</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="modal" class="modal">
+    <div class="modalBox panel">
+      <div class="bigkey" id="modalIcon">🔑</div>
+      <h2 id="modalTitle">取得鑰匙！</h2>
+      <p id="modalText"></p>
+      <button class="primary" id="modalBtn">回到任務地圖</button>
+    </div>
+  </div>
+
+  <script>
+    const LEVELS = [
+      {name:'Level 1 基礎生活艙', theme:'校園與日常', words:[['absent','缺席的'],['address','地址'],['afraid','害怕的'],['agree','同意'],['answer','答案；回答'],['arrive','到達'],['borrow','借入'],['busy','忙碌的'],['careful','小心的'],['choose','選擇'],['clean','乾淨的；打掃'],['clothes','衣服'],['country','國家；鄉下'],['dangerous','危險的'],['different','不同的']]},
+      {name:'Level 2 校園補給站', theme:'學校與學習', words:[['dictionary','字典'],['difficult','困難的'],['enough','足夠的'],['example','例子'],['excited','興奮的'],['favorite','最喜愛的'],['finish','完成'],['future','未來'],['grade','年級；成績'],['history','歷史'],['homework','家庭作業'],['important','重要的'],['interest','興趣'],['language','語言'],['library','圖書館']]},
+      {name:'Level 3 城市航線', theme:'交通與地點', words:[['airport','機場'],['bridge','橋'],['building','建築物'],['corner','角落；轉角'],['department','部門；科系'],['direction','方向'],['factory','工廠'],['hospital','醫院'],['island','島嶼'],['market','市場'],['museum','博物館'],['neighbor','鄰居'],['restaurant','餐廳'],['station','車站'],['traffic','交通']]},
+      {name:'Level 4 身心醫療艙', theme:'身體與健康', words:[['accident','意外事故'],['blood','血液'],['breathe','呼吸'],['cough','咳嗽'],['dentist','牙醫'],['exercise','運動'],['fever','發燒'],['healthy','健康的'],['heart','心臟'],['medicine','藥'],['patient','病人；有耐心的'],['shoulder','肩膀'],['stomach','胃；肚子'],['throat','喉嚨'],['toothache','牙痛']]},
+      {name:'Level 5 自然探索艙', theme:'自然與環境', words:[['animal','動物'],['beach','海灘'],['cloud','雲'],['desert','沙漠'],['earth','地球；泥土'],['environment','環境'],['forest','森林'],['insect','昆蟲'],['mountain','山'],['nature','自然'],['ocean','海洋'],['plant','植物；種植'],['river','河流'],['season','季節'],['weather','天氣']]},
+      {name:'Level 6 情緒通訊塔', theme:'情緒與人際', words:[['angry','生氣的'],['believe','相信'],['brave','勇敢的'],['comfortable','舒服的'],['consider','考慮'],['discuss','討論'],['encourage','鼓勵'],['friendship','友誼'],['honest','誠實的'],['invite','邀請'],['lonely','孤單的'],['nervous','緊張的'],['polite','有禮貌的'],['promise','承諾'],['respect','尊重']]},
+      {name:'Level 7 任務動詞庫', theme:'常用動作', words:[['accept','接受'],['appear','出現'],['collect','收集'],['compare','比較'],['continue','繼續'],['decide','決定'],['develop','發展'],['explain','解釋'],['improve','改善'],['include','包含'],['prepare','準備'],['protect','保護'],['receive','收到'],['remember','記得'],['suggest','建議']]},
+      {name:'Level 8 科技研究所', theme:'科技與媒體', words:[['camera','相機'],['computer','電腦'],['engineer','工程師'],['information','資訊'],['Internet','網際網路'],['machine','機器'],['message','訊息'],['program','程式；節目'],['record','記錄'],['robot','機器人'],['screen','螢幕'],['search','搜尋'],['technology','科技'],['video','影片'],['website','網站']]},
+      {name:'Level 9 抽象能量場', theme:'抽象概念', words:[['ability','能力'],['advantage','優點'],['choice','選擇'],['culture','文化'],['experience','經驗'],['freedom','自由'],['knowledge','知識'],['memory','記憶'],['opinion','意見'],['purpose','目的'],['reason','理由'],['relationship','關係'],['result','結果'],['society','社會'],['success','成功']]},
+      {name:'Level 10 星艦菁英關', theme:'進階整合', words:[['achieve','達成'],['although','雖然'],['challenge','挑戰'],['communicate','溝通'],['confidence','信心'],['creative','有創意的'],['especially','尤其'],['excellent','優秀的'],['imagination','想像力'],['international','國際的'],['opportunity','機會'],['population','人口'],['responsible','負責任的'],['serious','嚴肅的；嚴重的'],['valuable','有價值的']]}
+    ];
+
+    const PASS_SCORE = 12;
+    const state = { unlocked: Number(localStorage.getItem('juniorMissionUnlocked') || 1), keys: Number(localStorage.getItem('juniorMissionKeys') || 0), level: null, index: 0, score: 0, answered: false, selected: '', advanced: false, pool: [] };
+    const $ = id => document.getElementById(id);
+    const allWords = LEVELS.flatMap(l => l.words);
+
+    function saveProgress(){
+      localStorage.setItem('juniorMissionUnlocked', state.unlocked);
+      localStorage.setItem('juniorMissionKeys', state.keys);
+    }
+    function shuffle(arr){ return arr.map(v=>[Math.random(),v]).sort((a,b)=>a[0]-b[0]).map(v=>v[1]); }
+    function normalize(s){ return String(s || '').trim().toLowerCase(); }
+    function speak(word){ if (!('speechSynthesis' in window)) return; speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(word); u.lang = 'en-US'; u.rate = .85; speechSynthesis.speak(u); }
+
+    function renderStatus(){
+      $('keyMeter').style.width = `${Math.min(100, state.keys / 10 * 100)}%`;
+      const rank = state.keys >= 10 ? 'Galaxy Commander' : state.keys >= 6 ? 'Word Pilot' : state.keys >= 3 ? 'Key Hunter' : 'Cadet Starter';
+      $('rankTitle').textContent = rank;
+      $('rankText').textContent = `目前鑰匙：${state.keys} / 10。${state.keys >= 5 ? '進階拼字模式已啟動，可以挑戰更高難度。' : '取得 5 把鑰匙後，會開啟進階拼字模式。'}`;
+    }
+    function renderLevels(){
+      renderStatus();
+      $('levels').innerHTML = LEVELS.map((level, idx) => {
+        const n = idx + 1;
+        const locked = n > state.unlocked;
+        const done = n <= state.keys;
+        return `<article class="level ${locked ? 'locked' : ''} ${done ? 'done' : ''}" data-level="${n}">
+          <div class="badge"><span class="num">${n}</span><span class="lock">${locked ? '🔒' : done ? '✅' : '🔑'}</span></div>
+          <h3>${level.name}</h3>
+          <p>${level.theme}｜15 題單字任務</p>
+          <div class="keyline">${locked ? '需要上一關鑰匙' : done ? '鑰匙已取得' : '可挑戰'}</div>
+        </article>`;
+      }).join('');
+      document.querySelectorAll('.level').forEach(card => card.addEventListener('click', () => {
+        const n = Number(card.dataset.level);
+        if (n <= state.unlocked) startLevel(n);
+      }));
+    }
+    function startLevel(n){
+      state.level = n;
+      state.index = 0;
+      state.score = 0;
+      state.answered = false;
+      state.selected = '';
+      state.advanced = state.keys >= 5;
+      state.pool = LEVELS[n - 1].words.map(([word, meaning]) => ({word, meaning}));
+      $('game').classList.add('active');
+      $('game').scrollIntoView({behavior:'smooth', block:'start'});
+      renderQuestion();
+    }
+    function makeOptions(correct){
+      const distractors = shuffle(allWords.filter(([w]) => w !== correct.word)).slice(0, 3).map(([,m]) => m);
+      return shuffle([correct.meaning, ...distractors]);
+    }
+    function renderQuestion(){
+      const q = state.pool[state.index];
+      state.answered = false;
+      state.selected = '';
+      $('missionName').textContent = `${LEVELS[state.level - 1].name}`;
+      $('modeName').textContent = state.advanced ? '進階拼字模式' : '選擇題模式';
+      $('scoreText').textContent = `${state.score} / 15`;
+      $('progressBar').style.width = `${state.index / state.pool.length * 100}%`;
+      $('questionNo').textContent = `Q${state.index + 1} / 15`;
+      $('prompt').textContent = state.advanced ? q.meaning : q.word;
+      $('hint').innerHTML = state.advanced ? `請輸入英文單字。提示：共有 <b>${q.word.length}</b> 個字母。` : `選出 <b>${q.word}</b> 的中文意思。`;
+      $('feedback').textContent = state.advanced ? '輸入英文後送出，星艦會比對答案。' : '選出正確答案，啟動星艦翻譯核心。';
+      $('nextBtn').style.display = 'none';
+      $('submitBtn').style.display = state.advanced ? 'inline-block' : 'none';
+      if (state.advanced) {
+        $('answerArea').innerHTML = `<input id="spellInput" class="inputAnswer" autocomplete="off" placeholder="輸入英文單字，例如: future">`;
+        $('spellInput').addEventListener('keydown', e => { if (e.key === 'Enter') checkAdvanced(); });
+      } else {
+        $('answerArea').innerHTML = `<div class="options">${makeOptions(q).map(opt => `<button class="option" data-answer="${opt}">${opt}</button>`).join('')}</div>`;
+        document.querySelectorAll('.option').forEach(btn => btn.addEventListener('click', () => checkChoice(btn)));
+      }
+    }
+    function checkChoice(btn){
+      if (state.answered) return;
+      const q = state.pool[state.index];
+      state.answered = true;
+      const ok = btn.dataset.answer === q.meaning;
+      if (ok) state.score++;
+      document.querySelectorAll('.option').forEach(b => {
+        if (b.dataset.answer === q.meaning) b.classList.add('correct');
+        else if (b === btn) b.classList.add('wrong');
+      });
+      $('feedback').innerHTML = ok ? `✅ 破解成功：<b>${q.word}</b> = ${q.meaning}` : `⚠️ 答案是 <b>${q.meaning}</b>。單字：${q.word}`;
+      $('scoreText').textContent = `${state.score} / 15`;
+      $('nextBtn').style.display = 'inline-block';
+    }
+    function checkAdvanced(){
+      if (state.answered) return;
+      const q = state.pool[state.index];
+      const input = $('spellInput');
+      const ok = normalize(input.value) === normalize(q.word);
+      state.answered = true;
+      input.disabled = true;
+      if (ok) {
+        state.score++;
+        input.style.borderColor = '#34d399';
+        $('feedback').innerHTML = `✅ 拼字正確：<b>${q.word}</b> = ${q.meaning}`;
+      } else {
+        input.style.borderColor = '#fb7185';
+        $('feedback').innerHTML = `⚠️ 正確拼字是 <b>${q.word}</b>，意思是 ${q.meaning}`;
+      }
+      $('scoreText').textContent = `${state.score} / 15`;
+      $('submitBtn').style.display = 'none';
+      $('nextBtn').style.display = 'inline-block';
+    }
+    function nextQuestion(){
+      if (!state.answered) return;
+      state.index++;
+      if (state.index >= state.pool.length) finishLevel();
+      else renderQuestion();
+    }
+    function finishLevel(){
+      $('progressBar').style.width = '100%';
+      const passed = state.score >= PASS_SCORE;
+      if (passed) {
+        const justEarned = state.level > state.keys;
+        if (justEarned) state.keys = state.level;
+        if (state.unlocked < LEVELS.length && state.level === state.unlocked) state.unlocked++;
+        saveProgress();
+        showModal('🔑', '取得能量鑰匙！', `本關成績 ${state.score}/15。你已解鎖下一個星區。${state.keys >= 5 ? '進階拼字模式已啟動！' : ''}`);
+      } else {
+        showModal('🛡️', '任務還差一點', `本關成績 ${state.score}/15，需要至少 ${PASS_SCORE} 題正確才能取得鑰匙。再挑戰一次就有機會突破！`);
+      }
+      $('game').classList.remove('active');
+      renderLevels();
+    }
+    function showModal(icon,title,text){
+      $('modalIcon').textContent = icon;
+      $('modalTitle').textContent = title;
+      $('modalText').textContent = text;
+      $('modal').classList.add('show');
+    }
+    $('nextBtn').addEventListener('click', nextQuestion);
+    $('submitBtn').addEventListener('click', checkAdvanced);
+    $('soundBtn').addEventListener('click', () => { if (state.level) speak(state.pool[state.index].word); });
+    $('quitBtn').addEventListener('click', () => $('game').classList.remove('active'));
+    $('modalBtn').addEventListener('click', () => $('modal').classList.remove('show'));
+    renderLevels();
+  </script>
+</body>
+</html>
