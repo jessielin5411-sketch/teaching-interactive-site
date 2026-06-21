@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📦 3D 容量與容積互動模擬器 (有蓋/無蓋)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入 Three.js 用於 3D 繪圖 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        body {
+            font-family: '微軟正黑體', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        /* 隱藏數字輸入框的上下箭頭 */
+        input[type="number"]::-webkit-inner-spin-button, 
+        input[type="number"]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+        #canvas-container {
+            cursor: grab;
+        }
+        #canvas-container:active {
+            cursor: grabbing;
+        }
+        .label-3d {
+            position: absolute;
+            background: rgba(15, 23, 42, 0.85);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: bold;
+            pointer-events: none;
+            white-space: nowrap;
+            transform: translate(-50%, -50%);
+            transition: opacity 0.2s;
+        }
+        .label-outer { border: 1px solid #fde047; color: #fde047; }
+        .label-inner { border: 1px solid #fca5a5; color: #fca5a5; }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen p-4 md:p-8 flex justify-center items-start">
+    <a href="../index.html" style="position:fixed;top:16px;left:16px;z-index:50;display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:999px;background:rgba(255,255,255,.95);color:#0f172a;font-weight:800;text-decoration:none;box-shadow:0 8px 18px rgba(15,23,42,.18);border:2px solid rgba(59,130,246,.25);">← 回數學首頁</a>
+
+<div class="max-w-6xl w-full bg-white rounded-2xl shadow-xl overflow-hidden">
+    <!-- 標題區塊 -->
+    <div class="bg-blue-600 text-white p-6 text-center relative overflow-hidden">
+        <h1 class="text-3xl font-bold mb-2 relative z-10">📦 3D 容量與容積互動模擬器</h1>
+        <p class="text-blue-100 font-medium relative z-10">國小五年級數學：有蓋與無蓋容器應用計算</p>
+    </div>
+
+    <!-- 主要內容區 -->
+    <div class="p-6 md:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <!-- 左側：輸入與計算結果 (佔 5 欄) -->
+        <div class="lg:col-span-5 space-y-6">
+            
+            <!-- 容器類型設定 -->
+            <div class="bg-slate-50 p-5 rounded-xl border-l-4 border-blue-500 shadow-sm">
+                <h2 class="font-bold text-slate-700 mb-3 text-lg">1. 選擇容器類型</h2>
+                <div class="flex gap-6">
+                    <label class="flex items-center gap-2 cursor-pointer text-lg">
+                        <input type="radio" name="lid" value="no-lid" class="w-5 h-5 text-blue-600" checked onchange="calculate()"> 
+                        <span>無蓋 <span class="text-sm text-slate-500">(上方開口)</span></span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer text-lg">
+                        <input type="radio" name="lid" value="has-lid" class="w-5 h-5 text-blue-600" onchange="calculate()"> 
+                        <span>有蓋</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- 外部尺寸設定 -->
+            <div class="bg-slate-50 p-5 rounded-xl border-l-4 border-emerald-500 shadow-sm space-y-4">
+                <h2 class="font-bold text-slate-700 text-lg">2. 輸入外部尺寸 (公分)</h2>
+                <div class="grid grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-sm font-bold text-slate-600 mb-1">外面的長</label>
+                        <input type="number" id="outL" value="14" min="1" class="w-full p-2 border border-slate-300 rounded focus:ring-2 focus:ring-emerald-500 focus:outline-none text-center text-lg font-bold" oninput="calculate()">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-slate-600 mb-1">外面的寬</label>
+                        <input type="number" id="outW" value="12" min="1" class="w-full p-2 border border-slate-300 rounded focus:ring-2 focus:ring-emerald-500 focus:outline-none text-center text-lg font-bold" oninput="calculate()">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-slate-600 mb-1">外面的高</label>
+                        <input type="number" id="outH" value="6" min="1" class="w-full p-2 border border-slate-300 rounded focus:ring-2 focus:ring-emerald-500 focus:outline-none text-center text-lg font-bold" oninput="calculate()">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 厚度設定 -->
+            <div class="bg-slate-50 p-5 rounded-xl border-l-4 border-amber-500 shadow-sm">
+                <h2 class="font-bold text-slate-700 text-lg mb-3">3. 輸入容器厚度 (公分)</h2>
+                <div class="flex items-center gap-4">
+                    <input type="number" id="thickness" value="1" min="0.1" step="0.1" class="w-24 p-2 border border-slate-300 rounded focus:ring-2 focus:ring-amber-500 focus:outline-none text-center text-lg font-bold text-amber-600" oninput="calculate()">
+                    <span class="text-slate-600 font-medium">公分</span>
+                </div>
+            </div>
+
+            <!-- 錯誤提示 -->
+            <div id="errorMsg" class="hidden bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded" role="alert">
+                <p class="font-bold">⚠️ 尺寸錯誤</p>
+                <p>容器的厚度太厚了，導致內部已經沒有空間，請重新調整數字！</p>
+            </div>
+
+            <!-- 計算結果與步驟 -->
+            <div id="resultBox" class="bg-blue-50 border-2 border-blue-200 rounded-xl p-5 shadow-inner text-slate-800 text-lg leading-relaxed">
+                <!-- 動態產生內容 -->
+            </div>
+
+        </div>
+
+        <!-- 右側：視覺化圖解 3D (佔 7 欄) -->
+        <div class="lg:col-span-7 bg-slate-900 rounded-xl shadow-lg flex flex-col relative overflow-hidden text-white border-2 border-slate-700">
+            
+            <div class="p-4 flex justify-between items-center bg-slate-800/80 absolute top-0 w-full z-20 backdrop-blur-sm border-b border-slate-700">
+                <div>
+                    <h3 class="font-bold text-lg text-blue-300 flex items-center gap-2">
+                        <span>🔍 3D 立體透視圖</span>
+                    </h3>
+                    <p class="text-xs text-slate-400 mt-1">👆 點擊並拖曳圖形可以 <span class="text-white">旋轉視角</span> 查看厚度</p>
+                </div>
+                <button onclick="startAnimation()" class="bg-blue-600 hover:bg-blue-500 text-white text-sm px-4 py-2 rounded-lg font-bold transition-colors flex items-center gap-2 shadow-sm">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>
+                    重播注水
+                </button>
+            </div>
+            
+            <!-- 3D 繪圖容器 -->
+            <div id="canvas-container" class="w-full flex-grow relative h-[400px] lg:h-[600px] bg-slate-900 mt-16">
+                <!-- Three.js Canvas 會注入於此 -->
+            </div>
+            
+        </div>
+        
+    </div>
+</div>
+
+<script>
+    // --- 3D 全域變數 ---
+    let scene, camera, renderer;
+    let tankGroup, waterMesh;
+    let labelsData = [];
+    
+    // 動畫與互動控制
+    let currentData = null;
+    let animProgress = 0;
+    let isAnimating = false;
+    let isDragging = false;
+    let previousMousePosition = { x: 0, y: 0 };
+    let autoRotate = true; // 剛開始自動旋轉，摸過就停止
+
+    // 初始化應用程式
+    window.onload = () => {
+        init3DScene();
+        setupInteractions();
+        calculate();
+    };
+
+    // --- 計算邏輯與 UI 更新 ---
+    function calculate() {
+        const isHasLid = document.querySelector('input[name="lid"]:checked').value === 'has-lid';
+        const outL = parseFloat(document.getElementById('outL').value) || 0;
+        const outW = parseFloat(document.getElementById('outW').value) || 0;
+        const outH = parseFloat(document.getElementById('outH').value) || 0;
+        const t = parseFloat(document.getElementById('thickness').value) || 0;
+        
+        const errorMsg = document.getElementById('errorMsg');
+        const resultBox = document.getElementById('resultBox');
+
+        // 計算內部尺寸
+        const inL = outL - (t * 2);
+        const inW = outW - (t * 2);
+        const inH = isHasLid ? (outH - (t * 2)) : (outH - t); 
+
+        // 檢查合理性
+        if (inL <= 0 || inW <= 0 || inH <= 0 || t <= 0) {
+            errorMsg.classList.remove('hidden');
+            resultBox.classList.add('hidden');
+            if(tankGroup) tankGroup.visible = false;
+            return;
+        }
+
+        errorMsg.classList.add('hidden');
+        resultBox.classList.remove('hidden');
+        if(tankGroup) tankGroup.visible = true;
+        
+        // 容積與容量計算
+        const volume = parseFloat((inL * inW * inH).toFixed(4)); 
+        let capacityStr = `<span class="text-blue-600 font-bold text-2xl">${volume}</span> 毫升 (mL)`;
+        if (volume >= 1000) {
+            capacityStr = `<span class="text-blue-600 font-bold text-2xl">${volume}</span> 毫升<br>也就是 <span class="text-emerald-600 font-bold text-2xl">${volume / 1000}</span> 公升 (L)`;
+        }
+
+        // 更新步驟文字
+        let html = `
+            <div class="mb-4">
+                <h4 class="font-bold text-blue-700 mb-2 border-b-2 border-blue-200 pb-1">✏️ 步驟一：算出裡面的長、寬、高</h4>
+                <p>裡面的長 = ${outL} - ${t} &times; 2 = <span class="text-red-500 font-bold">${parseFloat(inL.toFixed(2))}</span> 公分</p>
+                <p>裡面的寬 = ${outW} - ${t} &times; 2 = <span class="text-red-500 font-bold">${parseFloat(inW.toFixed(2))}</span> 公分</p>
+        `;
+
+        if (isHasLid) {
+            html += `<p>裡面的高 <span class="text-sm text-slate-500">(有蓋扣上下 2 個厚度)</span> = ${outH} - ${t} &times; 2 = <span class="text-red-500 font-bold">${parseFloat(inH.toFixed(2))}</span> 公分</p>`;
+        } else {
+            html += `<p>裡面的高 <span class="text-sm text-slate-500">(無蓋只扣底部 1 個厚度)</span> = ${outH} - ${t} = <span class="text-red-500 font-bold">${parseFloat(inH.toFixed(2))}</span> 公分</p>`;
+        }
+
+        html += `
+            </div>
+            <div>
+                <h4 class="font-bold text-blue-700 mb-2 border-b-2 border-blue-200 pb-1">✏️ 步驟二：算出容積與容量</h4>
+                <p>容積 = 內部 長 &times; 寬 &times; 高</p>
+                <p>${parseFloat(inL.toFixed(2))} &times; ${parseFloat(inW.toFixed(2))} &times; ${parseFloat(inH.toFixed(2))} = <span class="text-red-500 font-bold text-xl">${volume}</span> 立方公分</p>
+                
+                <div class="mt-4 bg-white p-3 rounded border border-blue-100 text-center">
+                    <span class="text-slate-600 font-bold">答：這個容器的容量是</span><br>
+                    ${capacityStr}
+                </div>
+            </div>
+        `;
+        resultBox.innerHTML = html;
+
+        // 儲存資料並構建 3D 模型
+        currentData = { outL, outW, outH, t, isHasLid, inL, inW, inH };
+        build3DTank();
+        startAnimation();
+    }
+
+    // --- 3D 場景初始化 ---
+    function init3DScene() {
+        const container = document.getElementById('canvas-container');
+        
+        scene = new THREE.Scene();
+        // 加入輕微的霧氣讓背景更有深度
+        scene.fog = new THREE.FogExp2(0x0f172a, 0.0015); 
+
+        // 攝影機 (等角透視風格)
+        camera = new THREE.PerspectiveCamera(40, container.clientWidth / container.clientHeight, 0.1, 2000);
+        camera.position.set(200, 150, 250);
+        camera.lookAt(0, 0, 0);
+
+        renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        container.appendChild(renderer.domElement);
+
+        // 打光 (讓玻璃質感和水體看起來漂亮)
+        const ambient = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambient);
+        
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        dirLight.position.set(100, 200, 150);
+        scene.add(dirLight);
+
+        const dirLight2 = new THREE.DirectionalLight(0xa5f3fc, 0.4);
+        dirLight2.position.set(-100, -50, -100);
+        scene.add(dirLight2);
+
+        tankGroup = new THREE.Group();
+        // 初始給一點傾斜，展示立體感
+        tankGroup.rotation.x = 0.2;
+        tankGroup.rotation.y = -0.6;
+        scene.add(tankGroup);
+
+        // 視窗縮放處理
+        window.addEventListener('resize', () => {
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        });
+
+        // 啟動渲染迴圈
+        requestAnimationFrame(renderLoop);
+    }
+
+    // --- 核心：動態建立 3D 容器牆壁與水體 ---
+    function build3DTank() {
+        const d = currentData;
+        
+        // 清除舊模型與標籤
+        while(tankGroup.children.length > 0){ 
+            tankGroup.remove(tankGroup.children[0]); 
+        }
+        document.querySelectorAll('.label-3d').forEach(el => el.remove());
+        labelsData = [];
+
+        // 為了確保在 3D 空間中不會因為尺寸過大或過小而失真，設定一個顯示縮放比例
+        const maxDim = Math.max(d.outL, d.outW, d.outH);
+        const scale = 120 / maxDim; // 基準大小
+
+        const drawOutL = d.outL * scale;
+        const drawOutW = d.outW * scale;
+        const drawOutH = d.outH * scale;
+        const drawT = Math.max(d.t * scale, 1); // 確保厚度視覺上可見
+        const drawInL = drawOutL - 2 * drawT;
+        const drawInW = drawOutW - 2 * drawT;
+        const drawInH = d.isHasLid ? (drawOutH - 2 * drawT) : (drawOutH - drawT);
+
+        // 材質設定：半透明磨砂玻璃外殼 (模擬課本透視圖)
+        const glassMat = new THREE.MeshPhysicalMaterial({
+            color: 0x94a3b8, // 淡淡的藍灰色
+            transparent: true,
+            opacity: 0.15,
+            roughness: 0.2,
+            metalness: 0.1,
+            side: THREE.DoubleSide,
+            depthWrite: false // 避免玻璃互相遮擋產生閃爍
+        });
+
+        // 邊線材質 (畫出輪廓，像課本的圖解)
+        const edgeMat = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.8 });
+
+        // 建立單片牆壁的共用函式
+        function addWall(w, h, depth, x, y, z) {
+            const geo = new THREE.BoxGeometry(w, h, depth);
+            const mesh = new THREE.Mesh(geo, glassMat);
+            mesh.position.set(x, y, z);
+            
+            const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geo), edgeMat);
+            edges.position.set(x, y, z);
+            
+            tankGroup.add(mesh);
+            tankGroup.add(edges);
+        }
+
+        // 計算底部 Y 座標 (整個容器以中心為 0,0,0)
+        const yBottom = -drawOutH / 2 + drawT / 2;
+        const inCenterY = yBottom + drawT / 2 + drawInH / 2;
+
+        // 1. 底部牆面
+        addWall(drawOutL, drawT, drawOutW, 0, yBottom, 0);
+
+        // 2. 左側牆面
+        addWall(drawT, drawInH, drawOutW, -drawOutL/2 + drawT/2, inCenterY, 0);
+
+        // 3. 右側牆面
+        addWall(drawT, drawInH, drawOutW, drawOutL/2 - drawT/2, inCenterY, 0);
+
+        // 4. 背面牆面 (夾在左右牆面之間)
+        addWall(drawInL, drawInH, drawT, 0, inCenterY, -drawOutW/2 + drawT/2);
+
+        // 5. 前面牆面
+        addWall(drawInL, drawInH, drawT, 0, inCenterY, drawOutW/2 - drawT/2);
+
+        // 6. 頂部蓋子 (如果有)
+        if (d.isHasLid) {
+            addWall(drawOutL, drawT, drawOutW, 0, drawOutH/2 - drawT/2, 0);
+        }
+
+        // --- 建立水體 ---
+        const waterGeo = new THREE.BoxGeometry(drawInL - 0.2, drawInH, drawInW - 0.2); // 稍微縮小一點點避免與牆面 Z-fighting
+        // 將水的原點(中心)移到底部，這樣放大縮小(Scale Y)時就會從底部長上來
+        waterGeo.translate(0, drawInH / 2, 0); 
+        
+        const waterMat = new THREE.MeshPhysicalMaterial({
+            color: 0x0ea5e9, // 亮藍色
+            transparent: true,
+            opacity: 0.75,
+            roughness: 0.1,
+            metalness: 0.1,
+            side: THREE.DoubleSide
+        });
+        
+        waterMesh = new THREE.Mesh(waterGeo, waterMat);
+        // 水的底部對齊內部空間的底部
+        waterMesh.position.set(0, yBottom + drawT / 2, 0);
+        waterMesh.scale.y = 0.001; // 初始沒水
+        tankGroup.add(waterMesh);
+
+        // --- 註冊 3D 空間標籤 (HTML 元素) ---
+        // 外長
+        addLabel(`外長 ${d.outL}`, 0, -drawOutH/2 - 15, drawOutW/2 + 15, 'label-outer');
+        // 外寬
+        addLabel(`外寬 ${d.outW}`, drawOutL/2 + 15, -drawOutH/2 - 15, 0, 'label-outer');
+        // 外高
+        addLabel(`外高 ${d.outH}`, -drawOutL/2 - 15, 0, drawOutW/2 + 15, 'label-outer');
+        
+        // 內高 (標示在水面上方，會隨水位移動，這裡先記錄參考點)
+        labelsData.push({
+            text: `內高 ${parseFloat(d.inH.toFixed(2))}`,
+            pos: new THREE.Vector3(0, yBottom + drawT/2 + drawInH + 10, 0),
+            className: 'label-inner'
+        });
+
+        // 調整攝影機距離以適應不同大小的容器
+        camera.position.set(200, 150, 250); 
+        camera.lookAt(0, 0, 0);
+    }
+
+    function addLabel(text, x, y, z, className) {
+        labelsData.push({ text: text, pos: new THREE.Vector3(x, y, z), className: className });
+    }
+
+    // --- 動畫控制 ---
+    function startAnimation() {
+        if (!currentData) return;
+        animProgress = 0;
+        isAnimating = true;
+    }
+
+    // --- 渲染迴圈與互動 ---
+    function renderLoop() {
+        requestAnimationFrame(renderLoop);
+
+        // 自動旋轉展示
+        if (autoRotate && !isDragging && tankGroup) {
+            tankGroup.rotation.y += 0.003;
+        }
+
+        // 水位上升動畫
+        if (isAnimating && waterMesh) {
+            animProgress += 0.015; // 注水速度
+            if (animProgress >= 1) {
+                animProgress = 1;
+                isAnimating = false;
+            }
+            // 彈性緩動 (Ease-out)
+            const easeProgress = 1 - Math.pow(1 - animProgress, 3);
+            waterMesh.scale.y = Math.max(0.001, easeProgress);
+        }
+
+        // 更新 HTML 標籤位置
+        updateLabels();
+
+        renderer.render(scene, camera);
+    }
+
+    function updateLabels() {
+        const container = document.getElementById('canvas-container');
+        const widthHalf = container.clientWidth / 2;
+        const heightHalf = container.clientHeight / 2;
+
+        labelsData.forEach((label, index) => {
+            // 複製向量以避免修改原始資料
+            const vector = label.pos.clone();
+            
+            // 將點從模型空間轉換到世界空間，再投射到攝影機
+            vector.applyMatrix4(tankGroup.matrixWorld);
+            vector.project(camera);
+
+            // 取得對應的 DOM 元素，如果沒有就建立
+            let el = document.getElementById(`label-${index}`);
+            if (!el) {
+                el = document.createElement('div');
+                el.id = `label-${index}`;
+                el.className = `label-3d ${label.className}`;
+                el.innerHTML = label.text;
+                container.appendChild(el);
+            }
+
+            // 如果在攝影機後方，隱藏標籤
+            if (vector.z > 1) {
+                el.style.opacity = '0';
+                return;
+            }
+
+            // 計算 2D 螢幕座標
+            const x = (vector.x * widthHalf) + widthHalf;
+            const y = -(vector.y * heightHalf) + heightHalf;
+
+            el.style.opacity = '1';
+            el.style.left = `${x}px`;
+            el.style.top = `${y}px`;
+        });
+    }
+
+    // --- 滑鼠與觸控拖曳旋轉控制 ---
+    function setupInteractions() {
+        const container = document.getElementById('canvas-container');
+
+        const onPointerDown = (e) => {
+            isDragging = true;
+            autoRotate = false; // 使用者互動後停止自動旋轉
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            previousMousePosition = { x: clientX, y: clientY };
+        };
+
+        const onPointerMove = (e) => {
+            if (!isDragging || !tankGroup) return;
+            // 防止觸控滑動網頁
+            if (e.touches) e.preventDefault(); 
+            
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            
+            const deltaMove = {
+                x: clientX - previousMousePosition.x,
+                y: clientY - previousMousePosition.y
+            };
+
+            // 控制旋轉 (滑鼠左右 -> Y軸旋轉, 滑鼠上下 -> X軸旋轉)
+            tankGroup.rotation.y += deltaMove.x * 0.01;
+            tankGroup.rotation.x += deltaMove.y * 0.01;
+
+            // 限制 X 軸 (上下) 旋轉角度，不要翻轉到底朝天
+            tankGroup.rotation.x = Math.max(-Math.PI/4, Math.min(Math.PI/2, tankGroup.rotation.x));
+
+            previousMousePosition = { x: clientX, y: clientY };
+        };
+
+        const onPointerUp = () => { isDragging = false; };
+
+        // 滑鼠事件
+        container.addEventListener('mousedown', onPointerDown);
+        container.addEventListener('mousemove', onPointerMove);
+        window.addEventListener('mouseup', onPointerUp);
+        
+        // 觸控事件
+        container.addEventListener('touchstart', onPointerDown, { passive: false });
+        container.addEventListener('touchmove', onPointerMove, { passive: false });
+        window.addEventListener('touchend', onPointerUp);
+    }
+</script>
+
+</body>
+</html>
