@@ -1,0 +1,731 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>成語漫畫資料庫</title>
+  <style>
+    :root {
+      --ink: #26364e;
+      --muted: #667287;
+      --paper: #fff8e8;
+      --line: #e3d7c7;
+      --coral: #ef6f61;
+      --blue: #3977b8;
+      --green: #3f9a71;
+      --yellow: #ffc94a;
+      --purple: #7561b8;
+      --shadow: 0 7px 0 rgba(38, 54, 78, .14);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: "Segoe UI", "Noto Sans TC", system-ui, sans-serif;
+      background:
+        radial-gradient(circle at 12% 18%, rgba(255, 201, 74, .28) 0 5px, transparent 6px),
+        radial-gradient(circle at 86% 16%, rgba(239, 111, 97, .18) 0 7px, transparent 8px),
+        linear-gradient(90deg, rgba(57, 119, 184, .07) 1px, transparent 1px) 0 0 / 30px 30px,
+        linear-gradient(rgba(57, 119, 184, .07) 1px, transparent 1px) 0 0 / 30px 30px,
+        var(--paper);
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      min-height: 62px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 10px clamp(14px, 3vw, 30px);
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, .92);
+      backdrop-filter: blur(10px);
+    }
+
+    .brand {
+      font-size: clamp(18px, 3vw, 24px);
+      font-weight: 950;
+    }
+
+    .home {
+      color: var(--blue);
+      font-weight: 900;
+    }
+
+    .shell {
+      width: min(1120px, calc(100% - 24px));
+      margin: 0 auto;
+      padding: 28px 0 56px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(280px, .8fr);
+      gap: 22px;
+      align-items: stretch;
+      margin-bottom: 22px;
+    }
+
+    .intro, .study-panel, .reader {
+      border: 3px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .94);
+      box-shadow: var(--shadow);
+    }
+
+    .intro {
+      min-height: 310px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: clamp(22px, 4vw, 38px);
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+
+    h1 {
+      margin-bottom: 12px;
+      font-size: clamp(38px, 7vw, 72px);
+      line-height: 1.03;
+      letter-spacing: 0;
+      text-shadow: 0 5px 0 rgba(255, 201, 74, .34);
+    }
+
+    .lead {
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1.72;
+      font-weight: 700;
+    }
+
+    .study-panel {
+      display: grid;
+      align-content: center;
+      gap: 12px;
+      padding: 22px;
+      background: linear-gradient(180deg, #fff, #fff3dd);
+    }
+
+    .mission {
+      display: grid;
+      grid-template-columns: 50px minmax(0, 1fr);
+      gap: 12px;
+      align-items: center;
+      padding: 12px;
+      border: 2px solid #f0d8bd;
+      border-radius: 8px;
+      background: #fffaf1;
+      font-weight: 850;
+      line-height: 1.45;
+    }
+
+    .mission span {
+      width: 50px;
+      height: 50px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      color: #fff;
+      background: var(--coral);
+      font-size: 25px;
+      font-weight: 950;
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: minmax(220px, 1fr) 180px 170px;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .toolbar input, .toolbar select {
+      min-height: 48px;
+      width: 100%;
+      border: 2px solid var(--line);
+      border-radius: 8px;
+      padding: 0 14px;
+      background: #fff;
+      color: var(--ink);
+      font-weight: 750;
+      outline: none;
+    }
+
+    .toolbar input:focus, .toolbar select:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 4px rgba(57, 119, 184, .13);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(260px, .82fr) minmax(0, 1.18fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .library {
+      display: grid;
+      gap: 10px;
+      max-height: 720px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .comic-card {
+      width: 100%;
+      min-height: 112px;
+      display: grid;
+      grid-template-columns: 76px minmax(0, 1fr);
+      gap: 12px;
+      align-items: center;
+      padding: 12px;
+      border: 2px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .92);
+      color: var(--ink);
+      text-align: left;
+      box-shadow: 0 4px 0 rgba(38, 54, 78, .10);
+      transition: transform .16s ease, border-color .16s ease, background .16s ease;
+    }
+
+    .comic-card:hover, .comic-card.active {
+      transform: translateY(-3px);
+      border-color: var(--coral);
+      background: #fff6ed;
+    }
+
+    .thumb {
+      width: 76px;
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+      border: 2px solid #efd8bd;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fff3d1;
+      color: var(--coral);
+      font-size: 29px;
+      font-weight: 950;
+    }
+
+    .thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .comic-card strong {
+      display: block;
+      font-size: 21px;
+      line-height: 1.25;
+    }
+
+    .comic-card small {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      line-height: 1.45;
+      font-weight: 700;
+    }
+
+    .reader {
+      min-height: 720px;
+      overflow: hidden;
+    }
+
+    .comic-stage {
+      min-height: 370px;
+      display: grid;
+      place-items: center;
+      padding: 16px;
+      background: linear-gradient(180deg, #fffaf0, #fff);
+      border-bottom: 3px solid var(--line);
+    }
+
+    .comic-stage img {
+      width: 100%;
+      max-height: 620px;
+      object-fit: contain;
+      display: block;
+      border-radius: 8px;
+      box-shadow: 0 8px 20px rgba(38, 54, 78, .12);
+    }
+
+    .empty-comic {
+      width: min(520px, 100%);
+      min-height: 300px;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      gap: 12px;
+      padding: 16px;
+      border: 4px solid #2f3b4f;
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .empty-comic .caption {
+      padding: 10px;
+      border: 3px solid #2f3b4f;
+      border-radius: 8px;
+      background: #fff2c4;
+      font-size: 22px;
+      font-weight: 950;
+      text-align: center;
+    }
+
+    .panels {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .panels div {
+      min-height: 105px;
+      border: 3px solid #2f3b4f;
+      border-radius: 8px;
+      background:
+        radial-gradient(circle at 30% 35%, rgba(239, 111, 97, .28) 0 22px, transparent 23px),
+        radial-gradient(circle at 70% 58%, rgba(57, 119, 184, .22) 0 26px, transparent 27px),
+        #fffaf1;
+    }
+
+    .reader-body {
+      padding: clamp(18px, 3vw, 28px);
+    }
+
+    .reader-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: start;
+      margin-bottom: 16px;
+    }
+
+    .reader h2 {
+      margin-bottom: 4px;
+      font-size: clamp(30px, 5vw, 50px);
+      line-height: 1.08;
+    }
+
+    .zhuyin {
+      color: var(--muted);
+      font-size: 17px;
+      font-weight: 800;
+    }
+
+    .badge {
+      flex: 0 0 auto;
+      padding: 8px 11px;
+      border-radius: 999px;
+      background: #eef6ff;
+      color: var(--blue);
+      font-size: 14px;
+      font-weight: 950;
+      border: 2px solid #cfe2f5;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .tab {
+      min-height: 40px;
+      padding: 0 14px;
+      border: 2px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--ink);
+      font-weight: 900;
+    }
+
+    .tab.active {
+      color: #fff;
+      border-color: var(--coral);
+      background: var(--coral);
+    }
+
+    .content-box {
+      min-height: 150px;
+      padding: 16px;
+      border: 2px solid var(--line);
+      border-radius: 8px;
+      background: #fffdf8;
+      color: #435068;
+      font-size: 18px;
+      line-height: 1.75;
+      font-weight: 750;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+
+    .btn {
+      min-height: 48px;
+      padding: 0 16px;
+      border: 2px solid var(--ink);
+      border-radius: 8px;
+      color: #fff;
+      background: var(--ink);
+      font-weight: 950;
+      box-shadow: 0 5px 0 rgba(38, 54, 78, .16);
+    }
+
+    .btn.secondary {
+      color: var(--ink);
+      background: #fff;
+      border-color: var(--line);
+    }
+
+    .progress-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .empty {
+      padding: 18px;
+      border: 2px dashed var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .82);
+      color: var(--muted);
+      font-weight: 800;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 900px) {
+      .hero, .layout { grid-template-columns: 1fr; }
+      .reader, .library { max-height: none; }
+      .reader { min-height: auto; }
+    }
+
+    @media (max-width: 640px) {
+      .topbar { align-items: flex-start; flex-direction: column; }
+      .toolbar { grid-template-columns: 1fr; }
+      .comic-card { grid-template-columns: 64px minmax(0, 1fr); }
+      .thumb { width: 64px; }
+      .reader-head { flex-direction: column; }
+      .panels { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">成語漫畫資料庫</div>
+    <a class="home" href="../index.html">返回國語課程</a>
+  </header>
+
+  <main class="shell">
+    <section class="hero">
+      <div class="intro">
+        <h1>看漫畫，學成語</h1>
+        <p class="lead">從漫畫情境出發，先觀察故事，再理解成語意思，最後練習把成語用在生活句子裡。</p>
+      </div>
+      <div class="study-panel" aria-label="學習任務">
+        <div class="mission"><span>1</span><b>看圖：觀察漫畫裡發生了什麼事。</b></div>
+        <div class="mission"><span>2</span><b>讀意：理解成語的意思和典故。</b></div>
+        <div class="mission"><span>3</span><b>試用：想一個自己的生活例句。</b></div>
+      </div>
+    </section>
+
+    <section class="toolbar" aria-label="搜尋與篩選">
+      <input id="searchInput" type="search" placeholder="搜尋成語、意思、故事或標籤">
+      <select id="tagFilter" aria-label="分類">
+        <option value="">全部分類</option>
+      </select>
+      <select id="gradeFilter" aria-label="年級">
+        <option value="">全部年級</option>
+      </select>
+    </section>
+
+    <section class="layout">
+      <aside>
+        <div class="library" id="library"></div>
+      </aside>
+
+      <article class="reader" id="reader" aria-live="polite">
+        <div class="comic-stage" id="comicStage"></div>
+        <div class="reader-body">
+          <div class="reader-head">
+            <div>
+              <h2 id="idiomTitle">讀取中...</h2>
+              <div class="zhuyin" id="zhuyin"></div>
+            </div>
+            <span class="badge" id="gradeBadge"></span>
+          </div>
+
+          <div class="tabs" role="tablist" aria-label="學習內容">
+            <button class="tab active" data-tab="meaning">意思</button>
+            <button class="tab" data-tab="story">故事</button>
+            <button class="tab" data-tab="usage">例句</button>
+          </div>
+          <div class="content-box" id="contentBox"></div>
+
+          <div class="actions">
+            <button class="btn secondary" id="prevBtn">上一則</button>
+            <button class="btn" id="knowBtn">我學會了</button>
+            <button class="btn secondary" id="nextBtn">下一則</button>
+          </div>
+          <div class="progress-line">
+            <span id="countLabel">0 / 0</span>
+            <span id="learnedLabel">已學會 0 則</span>
+          </div>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    const fallbackComics = [
+      {
+        id: "001",
+        idiom: "畫蛇添足",
+        zhuyin: "ㄏㄨㄚˋ ㄕㄜˊ ㄊㄧㄢ ㄗㄨˊ",
+        meaning: "比喻多此一舉，反而把事情弄糟。",
+        story: "大家比賽畫蛇，已經最快完成的人又多畫了腳，結果反而輸了。",
+        usage: "報告已經很清楚，若再加上不相關的裝飾，就像畫蛇添足。",
+        image: "",
+        tags: "做事方法;判斷",
+        grade: "高年級",
+        enabled: "yes"
+      },
+      {
+        id: "002",
+        idiom: "亡羊補牢",
+        zhuyin: "ㄨㄤˊ ㄧㄤˊ ㄅㄨˇ ㄌㄠˊ",
+        meaning: "出了問題後及時補救，仍然不算太晚。",
+        story: "羊圈破洞讓羊跑走，主人趕緊修補，避免更多羊不見。",
+        usage: "這次考試沒準備好，現在開始整理錯題，仍是亡羊補牢。",
+        image: "",
+        tags: "學習態度;改進",
+        grade: "高年級",
+        enabled: "yes"
+      },
+      {
+        id: "003",
+        idiom: "井底之蛙",
+        zhuyin: "ㄐㄧㄥˇ ㄉㄧˇ ㄓ ㄨㄚ",
+        meaning: "比喻見識狹小，不知道外面世界很大。",
+        story: "青蛙住在井底，以為天空只有井口那麼大。",
+        usage: "如果只看一種資料就下結論，可能會變成井底之蛙。",
+        image: "",
+        tags: "視野;思考",
+        grade: "高年級",
+        enabled: "yes"
+      }
+    ];
+
+    const state = {
+      comics: [],
+      filtered: [],
+      selected: 0,
+      tab: "meaning",
+      learned: new Set(JSON.parse(localStorage.getItem("idiomComicLearned") || "[]"))
+    };
+
+    const $ = (id) => document.getElementById(id);
+
+    function parseCsv(text) {
+      const rows = [];
+      let row = [];
+      let cell = "";
+      let quote = false;
+
+      for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        const next = text[i + 1];
+        if (char === '"' && quote && next === '"') {
+          cell += '"';
+          i++;
+        } else if (char === '"') {
+          quote = !quote;
+        } else if (char === "," && !quote) {
+          row.push(cell);
+          cell = "";
+        } else if ((char === "\n" || char === "\r") && !quote) {
+          if (char === "\r" && next === "\n") i++;
+          row.push(cell);
+          if (row.some((value) => value.trim() !== "")) rows.push(row);
+          row = [];
+          cell = "";
+        } else {
+          cell += char;
+        }
+      }
+
+      row.push(cell);
+      if (row.some((value) => value.trim() !== "")) rows.push(row);
+      const headers = rows.shift().map((header) => header.trim());
+      return rows.map((values) => Object.fromEntries(headers.map((header, index) => [header, (values[index] || "").trim()])));
+    }
+
+    async function loadComics() {
+      try {
+        const response = await fetch("idiom-comics.csv", { cache: "no-store" });
+        if (!response.ok) throw new Error("CSV unavailable");
+        const text = await response.text();
+        state.comics = parseCsv(text).filter((item) => item.enabled.toLowerCase() !== "no");
+      } catch (error) {
+        state.comics = fallbackComics;
+      }
+      setupFilters();
+      applyFilters();
+    }
+
+    function setupFilters() {
+      const tags = new Set();
+      const grades = new Set();
+      state.comics.forEach((item) => {
+        splitTags(item.tags).forEach((tag) => tags.add(tag));
+        if (item.grade) grades.add(item.grade);
+      });
+      $("tagFilter").innerHTML = `<option value="">全部分類</option>${[...tags].sort().map((tag) => `<option value="${escapeHtml(tag)}">${escapeHtml(tag)}</option>`).join("")}`;
+      $("gradeFilter").innerHTML = `<option value="">全部年級</option>${[...grades].sort().map((grade) => `<option value="${escapeHtml(grade)}">${escapeHtml(grade)}</option>`).join("")}`;
+    }
+
+    function splitTags(value) {
+      return String(value || "").split(/[;；、]/).map((tag) => tag.trim()).filter(Boolean);
+    }
+
+    function applyFilters() {
+      const query = $("searchInput").value.trim().toLowerCase();
+      const tag = $("tagFilter").value;
+      const grade = $("gradeFilter").value;
+      state.filtered = state.comics.filter((item) => {
+        const haystack = [item.id, item.idiom, item.zhuyin, item.meaning, item.story, item.usage, item.tags, item.grade].join(" ").toLowerCase();
+        const matchQuery = !query || haystack.includes(query);
+        const matchTag = !tag || splitTags(item.tags).includes(tag);
+        const matchGrade = !grade || item.grade === grade;
+        return matchQuery && matchTag && matchGrade;
+      });
+      state.selected = Math.min(state.selected, Math.max(state.filtered.length - 1, 0));
+      renderLibrary();
+      renderReader();
+    }
+
+    function renderLibrary() {
+      const library = $("library");
+      if (!state.filtered.length) {
+        library.innerHTML = `<div class="empty">目前沒有符合條件的成語漫畫。可以換一個關鍵字或分類試試看。</div>`;
+        return;
+      }
+      library.innerHTML = state.filtered.map((item, index) => {
+        const image = item.image ? `<img src="${escapeAttr(item.image)}" alt="">` : "漫";
+        const learned = state.learned.has(item.id) ? " 已學會" : "";
+        return `
+          <button class="comic-card ${index === state.selected ? "active" : ""}" data-index="${index}">
+            <span class="thumb">${image}</span>
+            <span>
+              <strong>${escapeHtml(item.idiom)}</strong>
+              <small>${escapeHtml(item.meaning)}${learned}</small>
+            </span>
+          </button>
+        `;
+      }).join("");
+      library.querySelectorAll(".comic-card").forEach((button) => {
+        button.addEventListener("click", () => {
+          state.selected = Number(button.dataset.index);
+          state.tab = "meaning";
+          renderLibrary();
+          renderReader();
+        });
+      });
+    }
+
+    function renderReader() {
+      const item = state.filtered[state.selected];
+      if (!item) {
+        $("comicStage").innerHTML = "";
+        $("idiomTitle").textContent = "找不到資料";
+        $("zhuyin").textContent = "";
+        $("gradeBadge").textContent = "";
+        $("contentBox").textContent = "請調整搜尋或分類條件。";
+        $("countLabel").textContent = "0 / 0";
+        updateLearnedLabel();
+        return;
+      }
+
+      $("comicStage").innerHTML = item.image
+        ? `<img src="${escapeAttr(item.image)}" alt="${escapeAttr(item.idiom)}漫畫">`
+        : `<div class="empty-comic"><div class="caption">${escapeHtml(item.idiom)}</div><div class="panels"><div></div><div></div><div></div><div></div></div></div>`;
+      $("idiomTitle").textContent = item.idiom;
+      $("zhuyin").textContent = item.zhuyin || "尚未填寫注音";
+      $("gradeBadge").textContent = item.grade || "未分類";
+      document.querySelectorAll(".tab").forEach((tab) => tab.classList.toggle("active", tab.dataset.tab === state.tab));
+      const content = item[state.tab] || "這一欄尚未填寫。";
+      $("contentBox").textContent = content;
+      $("countLabel").textContent = `${state.selected + 1} / ${state.filtered.length}`;
+      $("knowBtn").textContent = state.learned.has(item.id) ? "已學會" : "我學會了";
+      updateLearnedLabel();
+    }
+
+    function updateLearnedLabel() {
+      const count = state.comics.filter((item) => state.learned.has(item.id)).length;
+      $("learnedLabel").textContent = `已學會 ${count} 則`;
+    }
+
+    function moveSelected(offset) {
+      if (!state.filtered.length) return;
+      state.selected = (state.selected + offset + state.filtered.length) % state.filtered.length;
+      state.tab = "meaning";
+      renderLibrary();
+      renderReader();
+    }
+
+    function markLearned() {
+      const item = state.filtered[state.selected];
+      if (!item) return;
+      state.learned.add(item.id);
+      localStorage.setItem("idiomComicLearned", JSON.stringify([...state.learned]));
+      renderLibrary();
+      renderReader();
+    }
+
+    function escapeHtml(value) {
+      return String(value || "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[char]));
+    }
+
+    function escapeAttr(value) {
+      return escapeHtml(value).replace(/`/g, "&#096;");
+    }
+
+    $("searchInput").addEventListener("input", applyFilters);
+    $("tagFilter").addEventListener("change", applyFilters);
+    $("gradeFilter").addEventListener("change", applyFilters);
+    $("prevBtn").addEventListener("click", () => moveSelected(-1));
+    $("nextBtn").addEventListener("click", () => moveSelected(1));
+    $("knowBtn").addEventListener("click", markLearned);
+    document.querySelectorAll(".tab").forEach((tab) => {
+      tab.addEventListener("click", () => {
+        state.tab = tab.dataset.tab;
+        renderReader();
+      });
+    });
+
+    loadComics();
+  </script>
+</body>
+</html>

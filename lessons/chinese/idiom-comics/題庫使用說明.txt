@@ -1,0 +1,25 @@
+成語漫畫資料庫使用說明
+
+資料檔：
+lessons/chinese/idiom-comics/idiom-comics.csv
+
+漫畫圖片資料夾：
+lessons/chinese/idiom-comics/assets/
+
+CSV 欄位：
+id：編號，建議用 001、002、003。
+idiom：成語。
+zhuyin：注音，可留空。
+meaning：成語意思。
+story：漫畫故事或典故摘要。
+usage：生活應用例句。
+image：圖片路徑，例如 assets/yi-ju-liang-de.png。
+tags：分類標籤，可用分號分隔，例如 學習態度;人際互動。
+grade：適合年級，例如 中年級、高年級。
+enabled：yes 才會顯示，no 會隱藏。
+
+整理圖檔建議：
+1. 檔名盡量使用英文或數字，例如 wang-yang-bu-lao.png。
+2. 圖片建議寬度 1200px 以內，網頁載入會比較快。
+3. 一張漫畫對應 CSV 的一列。
+4. 若暫時還沒有圖片，可以先留空 image，網頁會顯示文字學習卡。
