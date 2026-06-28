@@ -1,0 +1,987 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>九九乘法倒數投籃機</title>
+  <style>
+    :root {
+      --ink: #18243a;
+      --court: #f08a31;
+      --court-dark: #c9631e;
+      --navy: #10213f;
+      --blue: #1f7af5;
+      --cyan: #23c9e8;
+      --yellow: #ffd45a;
+      --green: #47d16c;
+      --red: #ef5467;
+      --white: #fffdf7;
+      --line: rgba(255, 255, 255, .72);
+      --shadow: 0 8px 0 rgba(16, 33, 63, .22), 0 18px 42px rgba(16, 33, 63, .22);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--white);
+      font-family: "Segoe UI", "Noto Sans TC", system-ui, sans-serif;
+      background:
+        linear-gradient(90deg, rgba(255,255,255,.08) 1px, transparent 1px) 0 0 / 36px 36px,
+        linear-gradient(rgba(255,255,255,.08) 1px, transparent 1px) 0 0 / 36px 36px,
+        linear-gradient(135deg, #0c1932, #1b2f58 56%, #2a1746);
+    }
+
+    button {
+      font: inherit;
+      cursor: pointer;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .hidden { display: none !important; }
+
+    .topbar {
+      min-height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 24px;
+      border-bottom: 1px solid rgba(35, 201, 232, .36);
+      background: rgba(7, 14, 30, .82);
+      backdrop-filter: blur(12px);
+    }
+
+    .home, .sound {
+      min-height: 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 12px;
+      border: 1px solid rgba(35, 201, 232, .54);
+      border-radius: 8px;
+      color: #d7fbff;
+      background: rgba(35, 201, 232, .12);
+      font-weight: 900;
+    }
+
+    .brand {
+      font-size: 1.55rem;
+      font-weight: 950;
+      text-align: center;
+      text-shadow: 0 0 14px rgba(35, 201, 232, .7);
+    }
+
+    .shell {
+      width: min(1180px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 24px 0 54px;
+    }
+
+    .game {
+      display: grid;
+      grid-template-columns: minmax(310px, .9fr) minmax(330px, 1.1fr);
+      gap: 22px;
+      align-items: stretch;
+    }
+
+    .arena, .control, .result {
+      border: 2px solid rgba(35, 201, 232, .46);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .arena {
+      position: relative;
+      min-height: 650px;
+      background:
+        radial-gradient(ellipse at 50% 110%, rgba(255,255,255,.28) 0 18%, transparent 19%),
+        linear-gradient(rgba(255, 255, 255, .08) 2px, transparent 2px) 0 0 / 100% 80px,
+        linear-gradient(90deg, transparent 0 48%, rgba(255,255,255,.7) 48% 52%, transparent 52%),
+        linear-gradient(180deg, var(--court), var(--court-dark));
+      isolation: isolate;
+      perspective: 900px;
+    }
+
+    .arena::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: 74px;
+      width: 250px;
+      height: 250px;
+      border: 6px solid rgba(255,255,255,.72);
+      border-radius: 50%;
+      transform: translateX(-50%);
+      opacity: .58;
+    }
+
+    .arena::after {
+      content: "";
+      position: absolute;
+      inset: 74px 0 76px;
+      z-index: 1;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse at 0% 54%, rgba(255, 74, 28, .62), transparent 28%),
+        radial-gradient(ellipse at 100% 48%, rgba(255, 116, 25, .58), transparent 30%),
+        linear-gradient(90deg, rgba(255, 45, 20, .18), transparent 24%, transparent 76%, rgba(255, 96, 28, .18));
+      filter: blur(.2px);
+      opacity: .86;
+      mix-blend-mode: screen;
+    }
+
+    .scoreboard {
+      position: relative;
+      z-index: 2;
+      margin: 18px;
+      padding: 14px;
+      border: 3px solid var(--cyan);
+      border-radius: 8px;
+      background: rgba(8, 17, 36, .92);
+      box-shadow: 0 0 20px rgba(35, 201, 232, .42);
+      text-align: center;
+    }
+
+    .scoreboard h1 {
+      margin: 0;
+      color: #eaffff;
+      font-size: 2.4rem;
+      line-height: 1.08;
+      text-shadow: 0 0 16px rgba(35, 201, 232, .9);
+    }
+
+    .scoreboard p {
+      margin: 8px 0 0;
+      color: #ffeaa0;
+      font-weight: 850;
+    }
+
+    .hoop-area {
+      position: absolute;
+      z-index: 2;
+      left: 50%;
+      top: 190px;
+      width: min(360px, 86%);
+      height: 245px;
+      transform: translateX(-50%) rotateX(2deg);
+      filter: drop-shadow(0 26px 22px rgba(16, 33, 63, .34));
+    }
+
+    .backboard {
+      position: absolute;
+      left: 50%;
+      top: 10px;
+      width: 230px;
+      height: 142px;
+      border: 7px solid #eff9ff;
+      border-radius: 8px;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.72), rgba(191, 228, 255, .18) 42%, rgba(255,255,255,.38)),
+        rgba(255,255,255,.2);
+      transform: translateX(-50%) rotateX(4deg);
+      box-shadow: inset 0 0 18px rgba(35, 201, 232, .22), inset -16px -14px 20px rgba(15, 38, 78, .2), 0 18px 24px rgba(16, 33, 63, .36), 0 0 20px rgba(255,255,255,.24);
+    }
+
+    .square {
+      position: absolute;
+      left: 50%;
+      top: 42px;
+      width: 86px;
+      height: 62px;
+      border: 5px solid rgba(255,255,255,.92);
+      border-bottom: 0;
+      transform: translateX(-50%);
+    }
+
+    .rim {
+      position: absolute;
+      left: 50%;
+      top: 126px;
+      width: 132px;
+      height: 22px;
+      border: 7px solid #ff4f3f;
+      border-radius: 50%;
+      background: radial-gradient(ellipse at center, rgba(30, 12, 8, .22), rgba(255,255,255,.08) 60%, transparent);
+      transform: translateX(-50%) rotateX(58deg);
+      box-shadow: 0 9px 0 #9d241d, 0 17px 20px rgba(16, 33, 63, .32), 0 0 16px rgba(255, 79, 63, .35);
+    }
+
+    .net {
+      position: absolute;
+      left: 50%;
+      top: 142px;
+      width: 86px;
+      height: 82px;
+      border-left: 4px solid rgba(255,255,255,.9);
+      border-right: 4px solid rgba(255,255,255,.72);
+      border-bottom: 4px solid rgba(255,255,255,.7);
+      transform: translateX(-50%);
+      clip-path: polygon(0 0, 100% 0, 72% 100%, 28% 100%);
+      opacity: .96;
+      filter: drop-shadow(0 10px 8px rgba(16, 33, 63, .28));
+    }
+
+    .net::before, .net::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(62deg, transparent 46%, rgba(255,255,255,.82) 47% 52%, transparent 53%),
+        linear-gradient(-62deg, transparent 46%, rgba(255,255,255,.82) 47% 52%, transparent 53%);
+      background-size: 24px 28px;
+    }
+
+    .ball {
+      position: absolute;
+      z-index: 5;
+      left: 50%;
+      bottom: 76px;
+      width: 82px;
+      height: 82px;
+      border-radius: 50%;
+      background: url("./assets/basketball-real.png") center / contain no-repeat;
+      transform: translateX(-50%) translateZ(0);
+      filter: drop-shadow(0 22px 16px rgba(16,33,63,.35));
+      --shot-x: 0px;
+      touch-action: none;
+      user-select: none;
+    }
+
+    .ball.draggable-ready {
+      cursor: grab;
+      outline: 4px solid rgba(255, 212, 90, .78);
+      outline-offset: 5px;
+      filter: drop-shadow(0 0 14px rgba(255, 212, 90, .7)) drop-shadow(0 22px 16px rgba(16,33,63,.35));
+      animation: readyBounce .9s ease-in-out infinite;
+    }
+
+    .ball.dragging {
+      cursor: grabbing;
+      animation: none;
+      z-index: 8;
+      transition: none;
+    }
+
+    .ball.shoot {
+      animation: shoot .9s cubic-bezier(.18, .78, .2, 1.05) forwards;
+    }
+
+    .ball.miss {
+      animation: miss .82s ease-out forwards;
+    }
+
+    .ball.from-left { left: 24%; --shot-x: clamp(95px, 22vw, 190px); }
+    .ball.from-center { left: 50%; --shot-x: 0px; }
+    .ball.from-right { left: 76%; --shot-x: clamp(-190px, -22vw, -95px); }
+
+    .shot-guide {
+      margin-top: 14px;
+      padding: 13px 15px;
+      border: 2px solid rgba(255, 212, 90, .55);
+      border-radius: 8px;
+      color: #fff6d4;
+      background: rgba(255, 212, 90, .12);
+      font-weight: 900;
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    .crowd {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 6px;
+      padding: 14px;
+      background: rgba(10, 18, 37, .28);
+    }
+
+    .fan {
+      height: 38px;
+      border-radius: 8px 8px 0 0;
+      background: var(--shirt);
+      opacity: .9;
+      animation: cheer 1.8s ease-in-out infinite;
+      animation-delay: var(--delay);
+    }
+
+    .control {
+      min-height: 650px;
+      padding: 22px;
+      background:
+        linear-gradient(rgba(255,255,255,.045) 50%, transparent 50%) 0 0 / 100% 7px,
+        linear-gradient(180deg, rgba(17, 34, 65, .98), rgba(12, 21, 45, .98));
+    }
+
+    .hud {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .meter {
+      min-height: 72px;
+      display: grid;
+      align-content: center;
+      gap: 4px;
+      padding: 10px;
+      border: 1px solid rgba(35, 201, 232, .38);
+      border-radius: 8px;
+      background: rgba(255,255,255,.08);
+      text-align: center;
+      font-weight: 900;
+    }
+
+    .meter span {
+      color: var(--yellow);
+      font-size: 1.9rem;
+      line-height: 1;
+    }
+
+    .timer.danger span {
+      color: #fff;
+      animation: pulse .5s linear infinite;
+    }
+
+    .stage {
+      margin: 0 0 14px;
+      padding: 12px;
+      border-radius: 8px;
+      color: #0f1f3d;
+      background: linear-gradient(90deg, var(--cyan), var(--yellow));
+      font-size: 1.2rem;
+      font-weight: 950;
+      text-align: center;
+    }
+
+    .question {
+      min-height: 176px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 14px;
+      padding: 20px;
+      border: 3px solid rgba(255, 212, 90, .68);
+      border-radius: 8px;
+      background:
+        linear-gradient(rgba(255,255,255,.05) 50%, transparent 50%) 0 0 / 100% 8px,
+        rgba(0,0,0,.24);
+      box-shadow: inset 0 0 24px rgba(255, 212, 90, .12);
+      text-align: center;
+    }
+
+    .question small {
+      display: block;
+      margin-bottom: 8px;
+      color: #aef8ff;
+      font-weight: 900;
+    }
+
+    .question strong {
+      display: block;
+      color: #fff;
+      font-size: 4.4rem;
+      line-height: 1;
+      text-shadow: 0 0 18px rgba(255, 212, 90, .56);
+    }
+
+    .choices {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .choice {
+      position: relative;
+      min-height: 78px;
+      padding: 12px 12px 12px 56px;
+      border: 2px solid rgba(35, 201, 232, .42);
+      border-radius: 8px;
+      color: #fff;
+      background: linear-gradient(135deg, rgba(31, 73, 135, .92), rgba(44, 31, 96, .92));
+      font-size: 2rem;
+      font-weight: 950;
+      text-align: left;
+      box-shadow: 0 6px 0 rgba(2, 9, 25, .36);
+    }
+
+    .choice::before {
+      content: attr(data-key);
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      width: 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      color: #12213e;
+      background: var(--yellow);
+      font-size: 1rem;
+      transform: translateY(-50%);
+    }
+
+    .choice:hover {
+      border-color: var(--yellow);
+      box-shadow: 0 6px 0 rgba(2, 9, 25, .36), 0 0 18px rgba(255, 212, 90, .32);
+    }
+
+    .choice.correct {
+      color: #083317;
+      border-color: #2dbf5e;
+      background: #96ef9e;
+    }
+
+    .choice.wrong {
+      border-color: #be243a;
+      background: var(--red);
+    }
+
+    .feedback {
+      min-height: 74px;
+      margin-top: 14px;
+      padding: 13px 15px;
+      border: 1px solid rgba(255, 212, 90, .44);
+      border-radius: 8px;
+      color: #fff6d4;
+      background: rgba(255, 138, 49, .14);
+      font-weight: 850;
+      line-height: 1.55;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 14px;
+    }
+
+    .primary, .secondary {
+      min-height: 52px;
+      padding: 0 18px;
+      border-radius: 8px;
+      font-weight: 950;
+      transition: transform .16s ease;
+    }
+
+    .primary {
+      border: 1px solid rgba(35, 201, 232, .7);
+      color: #0f1f3d;
+      background: linear-gradient(90deg, var(--cyan), var(--yellow));
+      box-shadow: 0 7px 0 rgba(2, 9, 25, .32);
+    }
+
+    .secondary {
+      border: 1px solid rgba(255,255,255,.28);
+      color: #fff;
+      background: rgba(255,255,255,.1);
+    }
+
+    .primary:hover, .secondary:hover { transform: translateY(-2px); }
+
+    .result {
+      padding: 30px;
+      background: linear-gradient(180deg, rgba(17, 34, 65, .98), rgba(35, 22, 66, .98));
+      text-align: center;
+    }
+
+    .result h2 {
+      margin: 0 0 8px;
+      color: #fff;
+      font-size: 2.9rem;
+      line-height: 1.08;
+      text-shadow: 0 0 18px rgba(35, 201, 232, .68);
+    }
+
+    .final-score {
+      margin: 0;
+      color: var(--yellow);
+      font-size: 5rem;
+      font-weight: 950;
+    }
+
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin: 20px 0;
+    }
+
+    .badge {
+      width: 126px;
+      min-height: 102px;
+      display: grid;
+      place-items: center;
+      align-content: center;
+      gap: 4px;
+      padding: 10px;
+      border: 2px solid rgba(255,255,255,.18);
+      border-radius: 8px;
+      color: #9eacc5;
+      background: rgba(255,255,255,.08);
+      font-weight: 950;
+    }
+
+    .badge.earned {
+      color: #3c2500;
+      border-color: var(--yellow);
+      background: linear-gradient(180deg, #fff4b8, #ffc640);
+    }
+
+    .badge span:first-child {
+      font-size: 2.2rem;
+      line-height: 1;
+    }
+
+    @keyframes shoot {
+      0% { transform: translate(-50%, 0) rotate(0); }
+      45% { transform: translate(calc(-50% + var(--shot-x)), -310px) rotate(210deg) scale(.82); }
+      70% { transform: translate(calc(-50% + var(--shot-x)), -245px) rotate(330deg) scale(.72); }
+      100% { transform: translate(calc(-50% + var(--shot-x)), -190px) rotate(430deg) scale(.62); opacity: .18; }
+    }
+
+    @keyframes miss {
+      0% { transform: translate(-50%, 0) rotate(0); }
+      50% { transform: translate(80px, -250px) rotate(220deg) scale(.78); }
+      100% { transform: translate(170px, -40px) rotate(440deg) scale(.78); opacity: .2; }
+    }
+
+    @keyframes readyBounce {
+      50% { transform: translateX(-50%) translateY(-7px); }
+    }
+
+    @keyframes cheer {
+      50% { transform: translateY(-8px); }
+    }
+
+    @keyframes pulse {
+      50% { transform: scale(1.13); }
+    }
+
+    @media (max-width: 900px) {
+      .game { grid-template-columns: 1fr; }
+      .arena, .control { min-height: auto; }
+      .arena { height: 560px; }
+    }
+
+    @media (max-width: 560px) {
+      .topbar { flex-wrap: wrap; padding: 10px 14px; }
+      .brand { order: -1; width: 100%; font-size: 1.25rem; }
+      .hud { grid-template-columns: 1fr; }
+      .choices { grid-template-columns: 1fr; }
+      .question strong { font-size: 3.3rem; }
+      .scoreboard h1 { font-size: 1.9rem; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="home" href="../index.html">回數學首頁</a>
+    <div class="brand">九九乘法倒數投籃機</div>
+    <button class="sound" id="soundButton">音效</button>
+  </header>
+
+  <main class="shell">
+    <section class="game" id="gameArea">
+      <section class="arena" aria-label="投籃場">
+        <div class="scoreboard">
+          <h1>乘法投籃挑戰</h1>
+          <p>答對就出手，連續命中加星星</p>
+        </div>
+        <div class="hoop-area" aria-hidden="true">
+          <div class="backboard"><div class="square"></div></div>
+          <div class="rim"></div>
+          <div class="net"></div>
+        </div>
+        <div class="ball" id="ball" role="img" aria-label="籃球"></div>
+        <div class="crowd" aria-hidden="true">
+          <span class="fan" style="--shirt:#23c9e8;--delay:0s"></span>
+          <span class="fan" style="--shirt:#ffd45a;--delay:.2s"></span>
+          <span class="fan" style="--shirt:#47d16c;--delay:.4s"></span>
+          <span class="fan" style="--shirt:#ef5467;--delay:.1s"></span>
+          <span class="fan" style="--shirt:#7aa7ff;--delay:.3s"></span>
+          <span class="fan" style="--shirt:#ff9f45;--delay:.5s"></span>
+          <span class="fan" style="--shirt:#23c9e8;--delay:.15s"></span>
+          <span class="fan" style="--shirt:#ffd45a;--delay:.35s"></span>
+          <span class="fan" style="--shirt:#47d16c;--delay:.55s"></span>
+          <span class="fan" style="--shirt:#ef5467;--delay:.25s"></span>
+          <span class="fan" style="--shirt:#7aa7ff;--delay:.45s"></span>
+          <span class="fan" style="--shirt:#ff9f45;--delay:.05s"></span>
+        </div>
+      </section>
+
+      <section class="control">
+        <div class="hud">
+          <div class="meter timer" id="timerBox">倒數<span id="time">60</span></div>
+          <div class="meter">分數<span id="score">0</span></div>
+          <div class="meter">連中<span id="combo">0</span></div>
+        </div>
+        <div class="stage" id="stageLabel">二年級九九乘法闖關</div>
+        <div class="question">
+          <div>
+            <small id="missionText">按開始進入球場</small>
+            <strong id="questionText">READY</strong>
+          </div>
+        </div>
+        <div class="choices" id="choices"></div>
+        <div class="shot-guide hidden" id="shotSpots">
+          答對了！用手拖曳場上的籃球，往籃框方向放開來投籃。
+        </div>
+        <div class="feedback hidden" id="feedback"></div>
+        <div class="actions">
+          <button class="secondary" id="restartButton">重新開始</button>
+          <button class="primary" id="startButton">開始闖關</button>
+        </div>
+      </section>
+    </section>
+
+    <section class="result hidden" id="resultPanel">
+      <h2 id="resultTitle">比賽結束</h2>
+      <p class="final-score"><span id="finalScore">0</span> 分</p>
+      <p id="resultText"></p>
+      <div class="badges">
+        <div class="badge" id="badgeWarm"><span>★</span><span>暖身成功</span></div>
+        <div class="badge" id="badgeSharp"><span>★</span><span>投籃高手</span></div>
+        <div class="badge" id="badgeCombo"><span>連</span><span>五連中</span></div>
+      </div>
+      <button class="primary" id="againButton">再打一場</button>
+    </section>
+  </main>
+
+  <script>
+    const $ = id => document.getElementById(id);
+    const shuffle = list => [...list].sort(() => Math.random() - .5);
+
+    let score = 0;
+    let combo = 0;
+    let bestCombo = 0;
+    let madeShots = 0;
+    let questionCount = 0;
+    let current = null;
+    let gameActive = false;
+    let locked = false;
+    let shotReady = false;
+    let draggingBall = false;
+    let dragStart = null;
+    let timeLeft = 60;
+    let timerId = null;
+    let audioContext = null;
+    let soundOn = true;
+
+    function initAudio() {
+      if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioContext.state === "suspended") audioContext.resume();
+    }
+
+    function tone(freq, duration = .1, type = "sine", delay = 0) {
+      if (!soundOn || !audioContext) return;
+      const osc = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+      const now = audioContext.currentTime + delay;
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, now);
+      gain.gain.setValueAtTime(.07, now);
+      gain.gain.exponentialRampToValueAtTime(.001, now + duration);
+      osc.connect(gain).connect(audioContext.destination);
+      osc.start(now);
+      osc.stop(now + duration);
+    }
+
+    function playSound(type) {
+      if (type === "start") {
+        tone(262, .1, "square");
+        tone(392, .12, "square", .13);
+        tone(523, .18, "square", .28);
+      }
+      if (type === "score") {
+        tone(523, .1);
+        tone(659, .1, "triangle", .1);
+        tone(784, .16, "triangle", .2);
+      }
+      if (type === "miss") {
+        tone(180, .16, "sawtooth");
+        tone(130, .2, "sawtooth", .12);
+      }
+      if (type === "finish") {
+        tone(330, .12, "triangle");
+        tone(440, .12, "triangle", .12);
+        tone(660, .2, "triangle", .24);
+      }
+    }
+
+    function makeQuestion() {
+      const a = Math.floor(Math.random() * 8) + 2;
+      const b = Math.floor(Math.random() * 9) + 1;
+      const answer = a * b;
+      const wrongs = new Set();
+      while (wrongs.size < 3) {
+        const offset = shuffle([-12, -9, -6, -4, -3, 3, 4, 6, 9, 12])[0];
+        const candidate = answer + offset;
+        if (candidate > 0 && candidate !== answer) wrongs.add(candidate);
+      }
+      return { a, b, answer, options: shuffle([answer, ...wrongs]) };
+    }
+
+    function startGame() {
+      initAudio();
+      playSound("start");
+      score = 0;
+      combo = 0;
+      bestCombo = 0;
+      madeShots = 0;
+      questionCount = 0;
+      timeLeft = 60;
+      gameActive = true;
+      locked = false;
+      shotReady = false;
+      setBallReady(false);
+      $("resultPanel").classList.add("hidden");
+      $("gameArea").classList.remove("hidden");
+      $("startButton").textContent = "比賽中";
+      $("startButton").disabled = true;
+      $("feedback").classList.add("hidden");
+      $("shotSpots").classList.add("hidden");
+      updateHud();
+      nextQuestion();
+      clearInterval(timerId);
+      timerId = setInterval(tick, 1000);
+    }
+
+    function tick() {
+      timeLeft -= 1;
+      updateHud();
+      if (timeLeft <= 0) finishGame();
+    }
+
+    function updateHud() {
+      $("time").textContent = timeLeft;
+      $("score").textContent = score;
+      $("combo").textContent = combo;
+      $("timerBox").classList.toggle("danger", timeLeft <= 10);
+    }
+
+    function nextQuestion() {
+      if (!gameActive) return;
+      locked = false;
+      shotReady = false;
+      resetBallPosition();
+      current = makeQuestion();
+      questionCount += 1;
+      $("missionText").textContent = `第 ${questionCount} 球，選出正確答案`;
+      $("questionText").textContent = `${current.a} × ${current.b}`;
+      $("stageLabel").textContent = madeShots >= 10 ? "加速關卡：保持連中" : "二年級九九乘法闖關";
+      $("feedback").classList.add("hidden");
+      $("shotSpots").classList.add("hidden");
+      $("choices").innerHTML = "";
+      current.options.forEach((value, index) => {
+        const button = document.createElement("button");
+        button.className = "choice";
+        button.dataset.key = ["A", "B", "C", "D"][index];
+        button.textContent = value;
+        button.onclick = () => choose(button, value);
+        $("choices").appendChild(button);
+      });
+    }
+
+    function animateBall(kind, spot = "center") {
+      const ball = $("ball");
+      ball.style.left = "";
+      ball.style.bottom = "";
+      ball.style.transform = "";
+      ball.classList.remove("shoot", "miss", "from-left", "from-center", "from-right");
+      ball.classList.add(`from-${spot}`);
+      void ball.offsetWidth;
+      ball.classList.add(kind);
+      setTimeout(() => ball.classList.remove(kind), 900);
+    }
+
+    function choose(button, value) {
+      if (!gameActive || locked) return;
+      locked = true;
+      const correct = value === current.answer;
+      document.querySelectorAll(".choice").forEach(item => {
+        item.disabled = true;
+        if (Number(item.textContent) === current.answer) item.classList.add("correct");
+      });
+
+      if (correct) {
+        combo += 1;
+        bestCombo = Math.max(bestCombo, combo);
+        button.classList.add("correct");
+        shotReady = true;
+        setBallReady(true);
+        $("shotSpots").classList.remove("hidden");
+        $("feedback").textContent = `答對了！${current.a} × ${current.b} = ${current.answer}。拖曳場上的籃球，往籃框方向放開來投籃。`;
+      } else {
+        combo = 0;
+        button.classList.add("wrong");
+        playSound("miss");
+        setBallReady(false);
+        $("shotSpots").classList.add("hidden");
+        $("feedback").textContent = `差一點！${current.a} × ${current.b} = ${current.answer}。答錯不能投籃，下一球再來。`;
+        setTimeout(nextQuestion, 1150);
+      }
+
+      $("feedback").classList.remove("hidden");
+      updateHud();
+    }
+
+    function setBallReady(ready) {
+      $("ball").classList.toggle("draggable-ready", ready);
+      $("ball").setAttribute("aria-label", ready ? "拖曳籃球投籃" : "籃球");
+    }
+
+    function resetBallPosition() {
+      const ball = $("ball");
+      ball.style.left = "";
+      ball.style.bottom = "";
+      ball.style.transform = "";
+      ball.classList.remove("shoot", "miss", "from-left", "from-right", "dragging", "draggable-ready");
+      ball.classList.add("from-center");
+    }
+
+    function shootFrom(spot) {
+      if (!gameActive || !shotReady) return;
+      shotReady = false;
+      setBallReady(false);
+      $("shotSpots").classList.add("hidden");
+      madeShots += 1;
+      score += combo >= 5 ? 3 : 2;
+      animateBall("shoot", spot);
+      playSound("score");
+      $("feedback").textContent = `命中！${spot === "left" ? "左翼" : spot === "right" ? "右翼" : "罰球線"}投進。${combo >= 5 ? "五連中後每球 3 分！" : "繼續保持手感。"}`;
+      updateHud();
+      setTimeout(nextQuestion, 980);
+    }
+
+    function dragBallStart(event) {
+      if (!gameActive || !shotReady) return;
+      event.preventDefault();
+      const ball = $("ball");
+      const arena = document.querySelector(".arena").getBoundingClientRect();
+      const rect = ball.getBoundingClientRect();
+      draggingBall = true;
+      dragStart = {
+        x: event.clientX,
+        y: event.clientY,
+        arena,
+        width: rect.width,
+        height: rect.height
+      };
+      ball.classList.add("dragging");
+      ball.setPointerCapture(event.pointerId);
+    }
+
+    function dragBallMove(event) {
+      if (!draggingBall || !dragStart) return;
+      event.preventDefault();
+      const ball = $("ball");
+      const arena = dragStart.arena;
+      const halfW = dragStart.width / 2;
+      const halfH = dragStart.height / 2;
+      const centerX = Math.min(Math.max(event.clientX - arena.left, halfW), arena.width - halfW);
+      const bottom = Math.min(Math.max(arena.bottom - event.clientY - halfH, 46), arena.height - halfH - 18);
+      ball.style.left = `${centerX}px`;
+      ball.style.bottom = `${bottom}px`;
+      ball.style.transform = "translateX(-50%)";
+    }
+
+    function dragBallEnd(event) {
+      if (!draggingBall || !dragStart) return;
+      event.preventDefault();
+      const ball = $("ball");
+      const upward = dragStart.y - event.clientY;
+      const arena = dragStart.arena;
+      const releaseHigh = event.clientY < arena.top + arena.height * .58;
+      const shouldShoot = upward > 70 || releaseHigh;
+      const startRatio = (dragStart.x - arena.left) / arena.width;
+      const spot = startRatio < .38 ? "left" : startRatio > .62 ? "right" : "center";
+      draggingBall = false;
+      dragStart = null;
+      ball.classList.remove("dragging");
+      if (shouldShoot) {
+        shootFrom(spot);
+      } else {
+        ball.style.left = "";
+        ball.style.bottom = "";
+        ball.style.transform = "";
+        $("feedback").textContent = "往籃框方向拖曳再放開，就能出手投籃。";
+        $("feedback").classList.remove("hidden");
+      }
+    }
+
+    function finishGame() {
+      if (!gameActive) return;
+      gameActive = false;
+      clearInterval(timerId);
+      playSound("finish");
+      $("gameArea").classList.add("hidden");
+      $("resultPanel").classList.remove("hidden");
+      $("finalScore").textContent = score;
+      $("badgeWarm").classList.toggle("earned", madeShots >= 8);
+      $("badgeSharp").classList.toggle("earned", score >= 24);
+      $("badgeCombo").classList.toggle("earned", bestCombo >= 5);
+
+      if (score >= 30) {
+        $("resultTitle").textContent = "乘法神射手";
+        $("resultText").textContent = `命中 ${madeShots} 球，最佳連中 ${bestCombo} 球。九九乘法反應很快！`;
+      } else if (score >= 18) {
+        $("resultTitle").textContent = "通過投籃挑戰";
+        $("resultText").textContent = `命中 ${madeShots} 球，最佳連中 ${bestCombo} 球。再練幾次會更穩。`;
+      } else {
+        $("resultTitle").textContent = "再打一場會更準";
+        $("resultText").textContent = `命中 ${madeShots} 球。可以先練 2、5、10 的乘法，再挑戰全部九九。`;
+      }
+      $("startButton").disabled = false;
+      $("startButton").textContent = "開始闖關";
+    }
+
+    function resetGame() {
+      clearInterval(timerId);
+      gameActive = false;
+      score = 0;
+      combo = 0;
+      madeShots = 0;
+      questionCount = 0;
+      timeLeft = 60;
+      $("choices").innerHTML = "";
+      $("feedback").classList.add("hidden");
+      $("shotSpots").classList.add("hidden");
+      resetBallPosition();
+      $("missionText").textContent = "按開始進入球場";
+      $("questionText").textContent = "READY";
+      $("stageLabel").textContent = "二年級九九乘法闖關";
+      $("startButton").disabled = false;
+      $("startButton").textContent = "開始闖關";
+      updateHud();
+    }
+
+    $("startButton").onclick = startGame;
+    $("restartButton").onclick = resetGame;
+    $("againButton").onclick = startGame;
+    $("ball").addEventListener("pointerdown", dragBallStart);
+    $("ball").addEventListener("pointermove", dragBallMove);
+    $("ball").addEventListener("pointerup", dragBallEnd);
+    $("ball").addEventListener("pointercancel", dragBallEnd);
+    $("soundButton").onclick = () => {
+      initAudio();
+      soundOn = !soundOn;
+      $("soundButton").textContent = soundOn ? "音效" : "靜音";
+      if (soundOn) tone(660, .12);
+    };
+
+    resetGame();
+  </script>
+</body>
+</html>

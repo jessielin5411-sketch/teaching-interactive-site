@@ -1,0 +1,977 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>形近字扭蛋機</title>
+  <style>
+    :root {
+      --ink: #18283f;
+      --muted: #687892;
+      --panel: rgba(255, 255, 255, .96);
+      --cyan: #22d7e8;
+      --magenta: #ff4fd8;
+      --yellow: #ffd84b;
+      --lime: #60e56f;
+      --orange: #ff8a3d;
+      --red: #f05267;
+      --blue: #3677ff;
+      --line: rgba(34, 215, 232, .45);
+      --shadow: 0 8px 0 rgba(8, 15, 34, .22), 0 18px 46px rgba(8, 15, 34, .22);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: "Segoe UI", "Noto Sans TC", system-ui, sans-serif;
+      background:
+        linear-gradient(90deg, rgba(34, 215, 232, .12) 1px, transparent 1px) 0 0 / 34px 34px,
+        linear-gradient(rgba(255, 79, 216, .10) 1px, transparent 1px) 0 0 / 34px 34px,
+        radial-gradient(circle at 18% 12%, rgba(34, 215, 232, .28), transparent 28%),
+        radial-gradient(circle at 82% 18%, rgba(255, 79, 216, .25), transparent 26%),
+        linear-gradient(135deg, #10172b 0%, #172642 54%, #201336 100%);
+      overflow-x: hidden;
+    }
+
+    button {
+      font: inherit;
+      cursor: pointer;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .hidden { display: none !important; }
+
+    .topbar {
+      min-height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px clamp(14px, 3vw, 30px);
+      color: #f8ffff;
+      background: rgba(9, 15, 32, .78);
+      border-bottom: 1px solid rgba(34, 215, 232, .35);
+      backdrop-filter: blur(12px);
+    }
+
+    .home {
+      display: inline-flex;
+      align-items: center;
+      min-height: 40px;
+      padding: 0 12px;
+      border: 1px solid rgba(34, 215, 232, .45);
+      border-radius: 8px;
+      color: #bffaff;
+      font-weight: 900;
+    }
+
+    .brand {
+      font-size: clamp(19px, 3vw, 28px);
+      font-weight: 950;
+      letter-spacing: 0;
+      text-shadow: 0 0 16px rgba(34, 215, 232, .85);
+    }
+
+    .sound {
+      min-width: 44px;
+      min-height: 40px;
+      border: 1px solid rgba(255, 79, 216, .62);
+      border-radius: 8px;
+      color: #fff;
+      background: rgba(255, 79, 216, .16);
+      font-weight: 900;
+    }
+
+    .shell {
+      width: min(1120px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 26px 0 54px;
+    }
+
+    .machine-layout {
+      display: grid;
+      grid-template-columns: minmax(290px, .95fr) minmax(320px, 1.2fr);
+      gap: 22px;
+      align-items: stretch;
+    }
+
+    .cabinet, .question-panel, .result-panel {
+      border: 2px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .cabinet {
+      position: relative;
+      min-height: 640px;
+      padding: 18px;
+      color: #fff;
+      background: linear-gradient(180deg, rgba(20, 30, 61, .98), rgba(16, 18, 43, .98));
+      overflow: hidden;
+    }
+
+    .cabinet::before {
+      content: "";
+      position: absolute;
+      inset: 10px;
+      border: 2px solid rgba(255, 79, 216, .52);
+      border-radius: 8px;
+      pointer-events: none;
+      box-shadow: inset 0 0 28px rgba(34, 215, 232, .22);
+    }
+
+    .neon-title {
+      position: relative;
+      z-index: 1;
+      margin: 0 0 14px;
+      padding: 12px;
+      border: 3px solid var(--cyan);
+      border-radius: 8px;
+      color: #caffff;
+      background: rgba(0, 0, 0, .28);
+      text-align: center;
+      font-size: clamp(30px, 5vw, 46px);
+      line-height: 1.05;
+      font-weight: 950;
+      text-shadow: 0 0 14px rgba(34, 215, 232, .95);
+      box-shadow: 0 0 18px rgba(34, 215, 232, .62);
+    }
+
+    .gacha-window {
+      position: relative;
+      z-index: 1;
+      min-height: 380px;
+      display: grid;
+      place-items: center;
+      border: 2px solid rgba(255, 255, 255, .18);
+      border-radius: 8px;
+      background: radial-gradient(circle at center, #fff47a 0 18%, #ffbe35 48%, #fb6b5b 100%);
+      overflow: hidden;
+    }
+
+    .dome {
+      position: relative;
+      width: min(310px, 78vw);
+      height: 310px;
+    }
+
+    .glass {
+      position: absolute;
+      inset: 4px 20px 62px;
+      border: 8px solid rgba(255, 255, 255, .72);
+      border-radius: 50% 50% 44% 44%;
+      background: radial-gradient(circle at 34% 24%, rgba(255, 255, 255, .86), rgba(255, 255, 255, .20) 18%, rgba(88, 234, 244, .25) 58%, rgba(44, 76, 143, .22));
+      box-shadow: inset 0 -18px 34px rgba(0, 0, 0, .18);
+    }
+
+    .capsules {
+      position: absolute;
+      inset: 82px 42px 76px;
+    }
+
+    .capsule {
+      position: absolute;
+      width: 54px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border: 3px solid rgba(255, 255, 255, .74);
+      border-radius: 999px;
+      color: #12253d;
+      background: var(--ball);
+      font-size: 20px;
+      font-weight: 950;
+      box-shadow: 0 6px 0 rgba(11, 20, 45, .18);
+      transform: rotate(var(--r));
+    }
+
+    .capsule:nth-child(1) { left: 8px; top: 70px; --ball: #7ee7ff; --r: -9deg; }
+    .capsule:nth-child(2) { left: 56px; top: 34px; --ball: #ff8fb9; --r: 8deg; }
+    .capsule:nth-child(3) { left: 108px; top: 62px; --ball: #ffe36a; --r: -14deg; }
+    .capsule:nth-child(4) { left: 152px; top: 26px; --ball: #94ef84; --r: 12deg; }
+    .capsule:nth-child(5) { left: 186px; top: 86px; --ball: #dba5ff; --r: -5deg; }
+    .capsule:nth-child(6) { left: 30px; top: 112px; --ball: #ffc16f; --r: 14deg; }
+    .capsule:nth-child(7) { left: 96px; top: 112px; --ball: #f06b6b; --r: -8deg; }
+    .capsule:nth-child(8) { left: 156px; top: 122px; --ball: #6ee4c9; --r: 10deg; }
+
+    .base {
+      position: absolute;
+      left: 54px;
+      right: 54px;
+      bottom: 0;
+      height: 108px;
+      border: 7px solid #26364e;
+      border-radius: 8px 8px 18px 18px;
+      background: linear-gradient(180deg, #ff5b91, #d93378);
+      box-shadow: 0 9px 0 rgba(13, 21, 45, .32);
+    }
+
+    .knob {
+      position: absolute;
+      left: 50%;
+      top: 34px;
+      width: 66px;
+      height: 66px;
+      display: grid;
+      place-items: center;
+      border: 7px solid #26364e;
+      border-radius: 50%;
+      color: #203150;
+      background: #d9e9ff;
+      font-weight: 950;
+      transform: translateX(-50%);
+    }
+
+    .tray {
+      position: absolute;
+      left: 50%;
+      bottom: 14px;
+      width: 100px;
+      height: 28px;
+      border: 5px solid #26364e;
+      border-radius: 999px;
+      background: #fff4bf;
+      transform: translateX(-50%);
+    }
+
+    .drop-capsule {
+      position: absolute;
+      left: 50%;
+      bottom: 42px;
+      width: 72px;
+      height: 56px;
+      display: grid;
+      place-items: center;
+      border: 4px solid #fff;
+      border-radius: 999px;
+      color: #18283f;
+      background: linear-gradient(90deg, #ffeb61 0 50%, #63e9ff 50%);
+      font-size: 26px;
+      font-weight: 950;
+      opacity: 0;
+      transform: translate(-50%, -170px) rotate(-22deg);
+      box-shadow: 0 7px 0 rgba(8, 15, 34, .18);
+    }
+
+    .drop-capsule.active {
+      animation: drop .82s cubic-bezier(.2, .75, .2, 1.2) forwards;
+    }
+
+    .start-row {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .primary, .secondary {
+      min-height: 52px;
+      padding: 0 18px;
+      border-radius: 8px;
+      font-weight: 950;
+      transition: transform .16s ease, box-shadow .16s ease;
+    }
+
+    .primary {
+      border: 1px solid rgba(34, 215, 232, .7);
+      color: #0d1730;
+      background: linear-gradient(90deg, var(--cyan), var(--yellow));
+      box-shadow: 0 7px 0 rgba(5, 10, 24, .28), 0 0 20px rgba(34, 215, 232, .4);
+    }
+
+    .secondary {
+      border: 1px solid rgba(255, 79, 216, .5);
+      color: #fff;
+      background: rgba(255, 79, 216, .18);
+    }
+
+    .primary:hover, .secondary:hover {
+      transform: translateY(-2px);
+    }
+
+    .question-panel {
+      position: relative;
+      min-height: 640px;
+      padding: clamp(18px, 3vw, 28px);
+      color: #eefcff;
+      background:
+        linear-gradient(180deg, rgba(12, 23, 51, .98), rgba(22, 16, 48, .98)),
+        #111b36;
+      overflow: hidden;
+      isolation: isolate;
+    }
+
+    .question-panel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background:
+        linear-gradient(rgba(255, 255, 255, .045) 50%, transparent 50%) 0 0 / 100% 6px,
+        radial-gradient(circle at 20% 15%, rgba(34, 215, 232, .22), transparent 30%),
+        radial-gradient(circle at 85% 10%, rgba(255, 79, 216, .20), transparent 28%);
+      opacity: .9;
+    }
+
+    .arena-header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .mission-title {
+      margin: 0;
+      color: #fff;
+      font-size: clamp(24px, 4vw, 34px);
+      line-height: 1.05;
+      font-weight: 950;
+      text-shadow: 0 0 14px rgba(34, 215, 232, .85);
+    }
+
+    .combo {
+      min-width: 96px;
+      min-height: 48px;
+      display: grid;
+      place-items: center;
+      padding: 7px 10px;
+      border: 2px solid rgba(255, 216, 75, .72);
+      border-radius: 8px;
+      color: #fff7c7;
+      background: rgba(255, 138, 61, .18);
+      font-size: 14px;
+      font-weight: 950;
+      text-align: center;
+      box-shadow: 0 0 18px rgba(255, 216, 75, .26);
+    }
+
+    .combo strong {
+      display: block;
+      font-size: 23px;
+      line-height: 1;
+    }
+
+    .hud {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .progress {
+      position: relative;
+      height: 22px;
+      overflow: hidden;
+      border: 2px solid rgba(34, 215, 232, .55);
+      border-radius: 999px;
+      background: rgba(0, 0, 0, .34);
+      box-shadow: inset 0 0 12px rgba(0, 0, 0, .42);
+    }
+
+    .progress::before {
+      content: "MISSION";
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      color: rgba(255, 255, 255, .76);
+      font-size: 11px;
+      font-weight: 950;
+      letter-spacing: 0;
+      pointer-events: none;
+    }
+
+    .progress span {
+      display: block;
+      width: 0;
+      height: 100%;
+      background: linear-gradient(90deg, var(--cyan), var(--magenta), var(--yellow));
+      transition: width .25s ease;
+      box-shadow: 0 0 16px rgba(34, 215, 232, .72);
+    }
+
+    .score, .stars {
+      min-height: 38px;
+      display: inline-flex;
+      align-items: center;
+      padding: 0 10px;
+      border-radius: 8px;
+      color: #f7fbff;
+      border: 1px solid rgba(34, 215, 232, .42);
+      background: rgba(255, 255, 255, .09);
+      font-weight: 950;
+      white-space: nowrap;
+    }
+
+    .stars { color: #ffe37a; }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .tag {
+      padding: 7px 10px;
+      border-radius: 8px;
+      color: #fff;
+      background: #20395e;
+      font-size: 14px;
+      font-weight: 900;
+      box-shadow: 0 0 13px rgba(34, 215, 232, .18);
+    }
+
+    .tag.hot { background: var(--red); }
+    .tag.mode { background: var(--blue); }
+
+    .question-box {
+      position: relative;
+      min-height: 190px;
+      display: grid;
+      align-content: center;
+      gap: 10px;
+      margin: 14px 0;
+      padding: clamp(18px, 3vw, 28px);
+      border: 3px solid rgba(34, 215, 232, .62);
+      border-radius: 8px;
+      color: #f7fbff;
+      background:
+        linear-gradient(rgba(255, 255, 255, .045) 50%, transparent 50%) 0 0 / 100% 7px,
+        radial-gradient(circle at 12% 16%, rgba(96, 229, 111, .14), transparent 28%),
+        linear-gradient(135deg, rgba(18, 40, 76, .98), rgba(27, 18, 60, .98));
+      box-shadow: inset 0 0 24px rgba(34, 215, 232, .18), 0 0 18px rgba(34, 215, 232, .20);
+    }
+
+    .question-box::before {
+      content: "TARGET LOCK";
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      color: rgba(255, 216, 75, .9);
+      font-size: 12px;
+      font-weight: 950;
+    }
+
+    .prompt {
+      margin: 0;
+      color: #a9f8ff;
+      font-size: 18px;
+      line-height: 1.55;
+      font-weight: 800;
+    }
+
+    .sentence {
+      margin: 0;
+      font-size: clamp(26px, 4vw, 42px);
+      line-height: 1.35;
+      font-weight: 950;
+      letter-spacing: 0;
+      text-shadow: 0 0 12px rgba(255, 255, 255, .18);
+    }
+
+    .blank {
+      display: inline-block;
+      min-width: 1.8em;
+      padding: 0 4px;
+      color: #fff;
+      border-bottom: 5px solid var(--yellow);
+      text-shadow: 0 0 16px rgba(255, 79, 216, .9);
+      text-align: center;
+    }
+
+    .answers {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .answer {
+      position: relative;
+      min-height: 78px;
+      padding: 14px 14px 14px 56px;
+      border: 2px solid rgba(34, 215, 232, .42);
+      border-radius: 8px;
+      color: #f7fbff;
+      background: linear-gradient(135deg, rgba(31, 53, 94, .95), rgba(31, 22, 66, .95));
+      font-size: clamp(22px, 3vw, 32px);
+      font-weight: 950;
+      box-shadow: 0 6px 0 rgba(3, 8, 23, .38), inset 0 0 18px rgba(34, 215, 232, .08);
+      text-align: left;
+    }
+
+    .answer::before {
+      content: attr(data-key);
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      width: 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      color: #10172b;
+      background: var(--yellow);
+      font-size: 16px;
+      transform: translateY(-50%);
+    }
+
+    .answer:hover {
+      border-color: var(--yellow);
+      background: linear-gradient(135deg, rgba(34, 215, 232, .34), rgba(255, 79, 216, .22));
+      box-shadow: 0 6px 0 rgba(3, 8, 23, .38), 0 0 18px rgba(255, 216, 75, .32);
+    }
+
+    .answer.correct {
+      color: #073417;
+      border-color: #2eb85f;
+      background: #98f09f;
+      animation: pop .22s ease-out;
+    }
+
+    .answer.wrong {
+      color: #fff;
+      border-color: #b8273a;
+      background: var(--red);
+    }
+
+    .feedback {
+      min-height: 86px;
+      margin-top: 16px;
+      padding: 14px 16px;
+      border-radius: 8px;
+      color: #fff8d9;
+      border: 1px solid rgba(255, 216, 75, .45);
+      background: rgba(255, 138, 61, .16);
+      line-height: 1.6;
+      font-weight: 850;
+      box-shadow: inset 0 0 18px rgba(255, 216, 75, .08);
+    }
+
+    .feedback strong { color: #ffe37a; }
+
+    .next-row {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 14px;
+    }
+
+    .result-panel {
+      padding: clamp(22px, 4vw, 38px);
+      text-align: center;
+      color: #f7fbff;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(255, 216, 75, .20), transparent 32%),
+        linear-gradient(180deg, rgba(12, 23, 51, .98), rgba(31, 18, 58, .98));
+    }
+
+    .badge-case {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      margin: 20px 0;
+    }
+
+    .badge {
+      width: 118px;
+      min-height: 118px;
+      display: grid;
+      place-items: center;
+      align-content: center;
+      gap: 6px;
+      padding: 10px;
+      border: 3px solid #d8e3ef;
+      border-radius: 8px;
+      background: #f4f7fb;
+      color: #8792a5;
+      font-weight: 950;
+    }
+
+    .badge.earned {
+      color: #583600;
+      border-color: #ffbf2f;
+      background: linear-gradient(180deg, #fff6c7, #ffd55d);
+      box-shadow: 0 8px 0 rgba(24, 40, 63, .13);
+    }
+
+    .badge span:first-child {
+      font-size: 42px;
+      line-height: 1;
+    }
+
+    .result-title {
+      margin: 0 0 8px;
+      font-size: clamp(34px, 6vw, 58px);
+      line-height: 1.05;
+      color: #fff;
+      text-shadow: 0 0 16px rgba(34, 215, 232, .72);
+    }
+
+    .result-score {
+      margin: 0;
+      color: #ffe37a;
+      font-size: clamp(48px, 9vw, 86px);
+      font-weight: 950;
+      text-shadow: 0 0 18px rgba(255, 216, 75, .42);
+    }
+
+    .result-text {
+      max-width: 640px;
+      margin: 12px auto 0;
+      color: #cde9f4;
+      font-size: 18px;
+      line-height: 1.65;
+      font-weight: 750;
+    }
+
+    .shake .capsule {
+      animation: shake .45s ease-in-out;
+    }
+
+    @keyframes drop {
+      0% { opacity: 0; transform: translate(-50%, -160px) rotate(-20deg); }
+      55% { opacity: 1; transform: translate(-50%, 0) rotate(12deg); }
+      76% { transform: translate(-50%, -18px) rotate(-8deg); }
+      100% { opacity: 1; transform: translate(-50%, 0) rotate(0); }
+    }
+
+    @keyframes shake {
+      25% { transform: translateX(-7px) rotate(-6deg); }
+      50% { transform: translateX(6px) rotate(5deg); }
+      75% { transform: translateX(-4px) rotate(-3deg); }
+    }
+
+    @keyframes pop {
+      50% { transform: scale(1.04); }
+    }
+
+    @media (max-width: 880px) {
+      .machine-layout { grid-template-columns: 1fr; }
+      .cabinet, .question-panel { min-height: auto; }
+      .gacha-window { min-height: 350px; }
+    }
+
+    @media (max-width: 620px) {
+      .topbar { flex-wrap: wrap; }
+      .brand { order: -1; width: 100%; text-align: center; }
+      .hud { grid-template-columns: 1fr 1fr; }
+      .progress { grid-column: 1 / -1; }
+      .answers { grid-template-columns: 1fr; }
+      .sentence { font-size: 28px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="home" href="../index.html">回國語首頁</a>
+    <div class="brand">形近字扭蛋機</div>
+    <button class="sound" id="soundButton" title="音效開關">音效</button>
+  </header>
+
+  <main class="shell">
+    <section class="machine-layout" id="gameArea">
+      <aside class="cabinet" id="cabinet">
+        <h1 class="neon-title">國語形近字扭蛋機</h1>
+        <div class="gacha-window">
+          <div class="dome" aria-hidden="true">
+            <div class="glass"></div>
+            <div class="capsules">
+              <span class="capsule">責</span>
+              <span class="capsule">辯</span>
+              <span class="capsule">睛</span>
+              <span class="capsule">績</span>
+              <span class="capsule">採</span>
+              <span class="capsule">檢</span>
+              <span class="capsule">燥</span>
+              <span class="capsule">竟</span>
+            </div>
+            <div class="base">
+              <div class="knob">轉</div>
+              <div class="tray"></div>
+            </div>
+            <div class="drop-capsule" id="dropCapsule">題</div>
+          </div>
+        </div>
+        <div class="start-row">
+          <button class="primary" id="drawButton">抽一顆扭蛋</button>
+          <button class="secondary" id="restartButton">重新開始</button>
+        </div>
+      </aside>
+
+      <section class="question-panel" id="questionPanel">
+        <div class="arena-header">
+          <h2 class="mission-title">文字能量戰</h2>
+          <div class="combo">COMBO<strong id="combo">0</strong></div>
+        </div>
+        <div class="hud">
+          <div class="progress" aria-label="答題進度"><span id="progressBar"></span></div>
+          <div class="score">分數 <span id="score">0</span></div>
+          <div class="stars">星星 <span id="stars">0</span></div>
+        </div>
+        <div class="tag-row">
+          <span class="tag mode" id="modeTag">準備抽題</span>
+          <span class="tag hot" id="countTag">第 0 / 10 題</span>
+        </div>
+        <div class="question-box">
+          <p class="prompt" id="prompt">按下「抽一顆扭蛋」，開始高年級形近字挑戰。</p>
+          <p class="sentence" id="sentence">每題依句意選出正確用字。</p>
+        </div>
+        <div class="answers" id="answers"></div>
+        <div class="feedback hidden" id="feedback"></div>
+        <div class="next-row">
+          <button class="primary hidden" id="nextButton">下一題</button>
+        </div>
+      </section>
+    </section>
+
+    <section class="result-panel hidden" id="resultPanel">
+      <h2 class="result-title" id="resultTitle">挑戰完成</h2>
+      <p class="result-score"><span id="finalScore">0</span> 分</p>
+      <p class="result-text" id="resultText"></p>
+      <div class="badge-case">
+        <div class="badge" id="badgeBronze"><span>★</span><span>銅星</span></div>
+        <div class="badge" id="badgeSilver"><span>★</span><span>銀星</span></div>
+        <div class="badge" id="badgeGold"><span>★</span><span>金星</span></div>
+        <div class="badge" id="badgeCombo"><span>連</span><span>三連答</span></div>
+      </div>
+      <button class="primary" id="againButton">再玩一次</button>
+    </section>
+  </main>
+
+  <script>
+    const questions = [
+      { mode: "選字填空", answer: "責", options: ["責", "積", "績", "織"], sentence: "班長做事很有＿任感，大家都很信任他。", explain: "「責任」表示應該承擔的工作或義務。" },
+      { mode: "選字填空", answer: "睛", options: ["晴", "睛", "清", "請"], sentence: "長時間看螢幕後，眼＿容易疲勞。", explain: "和眼睛有關時要用「睛」。" },
+      { mode: "選字填空", answer: "辨", options: ["辨", "辯", "瓣", "辦"], sentence: "閱讀題目時，要先分＿重點再作答。", explain: "「辨」有分辨、辨別的意思。" },
+      { mode: "選字填空", answer: "採", options: ["採", "彩", "踩", "菜"], sentence: "記者＿訪校隊選手，了解他們練習的過程。", explain: "「採訪」是訪問並蒐集資料。" },
+      { mode: "選字填空", answer: "燥", options: ["操", "躁", "燥", "澡"], sentence: "冬天空氣乾＿，皮膚要注意保濕。", explain: "「乾燥」和水分少有關。" },
+      { mode: "找錯別字", answer: "競", options: ["竟", "競", "境", "鏡"], sentence: "校內語文＿賽吸引許多同學報名。", explain: "比賽、競爭要用「競」。" },
+      { mode: "選字填空", answer: "檢", options: ["撿", "檢", "儉", "險"], sentence: "交卷前要仔細＿查，避免粗心錯誤。", explain: "「檢查」是查看是否有問題。" },
+      { mode: "選字填空", answer: "慕", options: ["幕", "墓", "慕", "暮"], sentence: "弟弟很羨＿哥哥能勇敢上台演說。", explain: "「羨慕」表示希望自己也能擁有。" },
+      { mode: "選字填空", answer: "歷", options: ["歷", "曆", "厲", "勵"], sentence: "這本書記錄了臺灣鐵路的發展＿史。", explain: "歷史、經歷要用「歷」。" },
+      { mode: "選字填空", answer: "績", options: ["責", "積", "績", "漬"], sentence: "只要持續努力，成＿一定會慢慢進步。", explain: "「成績」指學習或工作的成果。" },
+      { mode: "選字填空", answer: "辯", options: ["辨", "辯", "瓣", "辮"], sentence: "兩隊針對環保議題展開精采的＿論。", explain: "「辯論」和說理、爭論有關。" },
+      { mode: "選字填空", answer: "清", options: ["晴", "睛", "清", "請"], sentence: "溪水非常＿澈，可以看見水中的石頭。", explain: "「清澈」表示乾淨透明。" },
+      { mode: "選字填空", answer: "既", options: ["即", "既", "暨", "概"], sentence: "＿然答應了，就要準時完成。", explain: "「既然」表示前提已經成立。" },
+      { mode: "選字填空", answer: "厲", options: ["歷", "曆", "厲", "勵"], sentence: "老師用嚴＿的語氣提醒大家注意安全。", explain: "「嚴厲」表示嚴格而認真。" },
+      { mode: "選字填空", answer: "稍", options: ["稍", "梢", "捎", "消"], sentence: "請你＿等一下，老師馬上就來。", explain: "「稍等」表示等一小段時間。" },
+      { mode: "選字填空", answer: "舒", options: ["抒", "舒", "紓", "輸"], sentence: "做完伸展操後，身體感覺很＿服。", explain: "「舒服」表示身心感到安適。" },
+      { mode: "選字填空", answer: "藉", options: ["籍", "藉", "惜", "借"], sentence: "我們可以＿由閱讀認識不同文化。", explain: "「藉由」表示憑藉某種方式。" },
+      { mode: "選字填空", answer: "絕", options: ["決", "絕", "訣", "覺"], sentence: "遇到困難時，不要輕易放棄，才能找到解＿辦法。", explain: "這句要表達解決問題，所以正確詞是「解決」。", displayAnswer: "決" },
+      { mode: "找錯別字", answer: "練", options: ["鍊", "練", "煉", "戀"], sentence: "每天＿習朗讀，可以讓語氣更自然。", explain: "「練習」表示反覆學習或訓練。" },
+      { mode: "選字填空", answer: "維", options: ["唯", "惟", "維", "圍"], sentence: "大家一起＿護教室整潔，學習環境才會更好。", explain: "「維護」表示保持、保護。" }
+    ];
+
+    let round = [];
+    let index = 0;
+    let score = 0;
+    let stars = 0;
+    let streak = 0;
+    let bestStreak = 0;
+    let answered = false;
+    let audioContext = null;
+    let soundOn = true;
+
+    const $ = id => document.getElementById(id);
+    const shuffle = list => [...list].sort(() => Math.random() - .5);
+
+    function initAudio() {
+      if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioContext.state === "suspended") audioContext.resume();
+    }
+
+    function tone(freq, duration = .1, type = "sine", delay = 0) {
+      if (!soundOn || !audioContext) return;
+      const osc = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+      const now = audioContext.currentTime + delay;
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, now);
+      gain.gain.setValueAtTime(.075, now);
+      gain.gain.exponentialRampToValueAtTime(.001, now + duration);
+      osc.connect(gain).connect(audioContext.destination);
+      osc.start(now);
+      osc.stop(now + duration);
+    }
+
+    function playSound(name) {
+      if (name === "draw") {
+        tone(190, .08, "square");
+        tone(260, .08, "square", .1);
+        tone(330, .12, "square", .2);
+      }
+      if (name === "right") {
+        tone(523, .1);
+        tone(659, .12, "triangle", .1);
+        tone(784, .18, "triangle", .22);
+      }
+      if (name === "wrong") {
+        tone(180, .18, "sawtooth");
+        tone(120, .26, "sawtooth", .12);
+      }
+      if (name === "finish") {
+        tone(392, .12, "triangle");
+        tone(523, .12, "triangle", .12);
+        tone(659, .2, "triangle", .24);
+      }
+    }
+
+    function startGame() {
+      round = shuffle(questions).slice(0, 10);
+      index = 0;
+      score = 0;
+      stars = 0;
+      streak = 0;
+      bestStreak = 0;
+      $("resultPanel").classList.add("hidden");
+      $("gameArea").classList.remove("hidden");
+      updateHud();
+      setReady();
+    }
+
+    function setReady() {
+      answered = true;
+      $("modeTag").textContent = "準備抽題";
+      $("countTag").textContent = `第 ${index + 1} / 10 題`;
+      $("prompt").textContent = "按下扭蛋按鈕，抽出這一題。";
+      $("sentence").innerHTML = "看清楚形近字，再依句意選答案。";
+      $("answers").innerHTML = "";
+      $("feedback").classList.add("hidden");
+      $("nextButton").classList.add("hidden");
+      $("drawButton").disabled = false;
+    }
+
+    function drawQuestion() {
+      initAudio();
+      playSound("draw");
+      const cabinet = $("cabinet");
+      const capsule = $("dropCapsule");
+      cabinet.classList.remove("shake");
+      capsule.classList.remove("active");
+      void capsule.offsetWidth;
+      cabinet.classList.add("shake");
+      capsule.classList.add("active");
+      $("drawButton").disabled = true;
+      setTimeout(renderQuestion, 760);
+    }
+
+    function renderQuestion() {
+      const q = round[index];
+      answered = false;
+      $("modeTag").textContent = q.mode;
+      $("countTag").textContent = `第 ${index + 1} / 10 題`;
+      $("prompt").textContent = "依照句子的意思，選出最適合的字。";
+      $("sentence").innerHTML = q.sentence.replace("＿", '<span class="blank">?</span>');
+      $("answers").innerHTML = "";
+      $("feedback").classList.add("hidden");
+      $("nextButton").classList.add("hidden");
+
+      shuffle(q.options).forEach((option, optionIndex) => {
+        const button = document.createElement("button");
+        button.className = "answer";
+        button.dataset.key = ["A", "B", "C", "D"][optionIndex];
+        button.textContent = option;
+        button.onclick = () => chooseAnswer(button, option, q);
+        $("answers").appendChild(button);
+      });
+    }
+
+    function chooseAnswer(button, option, q) {
+      if (answered) return;
+      answered = true;
+      const accepted = q.displayAnswer || q.answer;
+      const correct = option === accepted;
+      document.querySelectorAll(".answer").forEach(item => {
+        item.disabled = true;
+        if (item.textContent === accepted) item.classList.add("correct");
+      });
+
+      if (correct) {
+        score += 10;
+        streak += 1;
+        bestStreak = Math.max(bestStreak, streak);
+        if (streak % 3 === 0) stars += 1;
+        button.classList.add("correct");
+        playSound("right");
+        $("feedback").innerHTML = `答對了！<strong>${accepted}</strong> 用在這裡最合適。${q.explain}`;
+      } else {
+        streak = 0;
+        button.classList.add("wrong");
+        playSound("wrong");
+        $("feedback").innerHTML = `再想想看。這題答案是 <strong>${accepted}</strong>。${q.explain}`;
+      }
+
+      updateHud();
+      $("feedback").classList.remove("hidden");
+      $("nextButton").textContent = index === round.length - 1 ? "看結果" : "下一題";
+      $("nextButton").classList.remove("hidden");
+    }
+
+    function updateHud() {
+      $("score").textContent = score;
+      $("stars").textContent = stars;
+      $("combo").textContent = streak;
+      $("progressBar").style.width = `${index / 10 * 100}%`;
+    }
+
+    function nextQuestion() {
+      if (index === round.length - 1) {
+        finishGame();
+        return;
+      }
+      index += 1;
+      updateHud();
+      setReady();
+    }
+
+    function finishGame() {
+      playSound("finish");
+      $("progressBar").style.width = "100%";
+      $("gameArea").classList.add("hidden");
+      $("resultPanel").classList.remove("hidden");
+      $("finalScore").textContent = score;
+
+      $("badgeBronze").classList.toggle("earned", score >= 50);
+      $("badgeSilver").classList.toggle("earned", score >= 80);
+      $("badgeGold").classList.toggle("earned", score === 100);
+      $("badgeCombo").classList.toggle("earned", bestStreak >= 3);
+
+      if (score === 100) {
+        $("resultTitle").textContent = "形近字滿分高手";
+        $("resultText").textContent = "太漂亮了！你能在句子裡分辨細節，已經很像國語小偵探。";
+      } else if (score >= 80) {
+        $("resultTitle").textContent = "通過高年級挑戰";
+        $("resultText").textContent = "表現穩定，接下來可以增加找錯別字或限時題。";
+      } else {
+        $("resultTitle").textContent = "再抽幾顆就更熟";
+        $("resultText").textContent = "形近字需要慢慢看字形和句意，錯題提示可以再讀一次。";
+      }
+    }
+
+    $("drawButton").onclick = drawQuestion;
+    $("nextButton").onclick = nextQuestion;
+    $("restartButton").onclick = startGame;
+    $("againButton").onclick = startGame;
+    $("soundButton").onclick = () => {
+      initAudio();
+      soundOn = !soundOn;
+      $("soundButton").textContent = soundOn ? "音效" : "靜音";
+      if (soundOn) tone(660, .12);
+    };
+
+    startGame();
+  </script>
+</body>
+</html>
