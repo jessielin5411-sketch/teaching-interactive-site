@@ -3,46 +3,404 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>數學互動學習</title>
+  <meta name="description" content="數學競技場，以七個3D遊戲關卡挑戰乘法、圖形、時間、單位換算、體積與百分率。">
+  <title>數學競技場｜學習冒險王國</title>
   <style>
-    :root{--ink:#26364e;--muted:#68758a;--blue:#3b79bd;--yellow:#efb83f;--paper:#f7fbff;--line:#d6e3ef;--shadow:0 8px 0 rgba(38,54,78,.14)}
-    *{box-sizing:border-box}body{margin:0;min-height:100vh;color:var(--ink);font-family:"Segoe UI","Noto Sans TC",system-ui,sans-serif;background:radial-gradient(circle at 12% 15%,rgba(239,184,63,.22) 0 4px,transparent 5px),linear-gradient(90deg,rgba(59,121,189,.07) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(rgba(59,121,189,.07) 1px,transparent 1px) 0 0/28px 28px,var(--paper);background-size:100px 100px,28px 28px,28px 28px}a{text-decoration:none;color:inherit}.top{padding:16px clamp(16px,4vw,40px);border-bottom:1px solid var(--line);background:rgba(255,255,255,.92)}.top a{color:var(--blue);font-weight:900}.shell{width:min(1280px,calc(100% - 28px));margin:0 auto;padding:38px 0}.head{text-align:center}.head h1{margin:0;font-size:clamp(34px,5vw,58px);text-shadow:0 4px 0 rgba(239,184,63,.3)}.head p{max-width:700px;margin:10px auto;color:var(--muted);font-size:17px;line-height:1.6;font-weight:650}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-top:28px}.card{min-height:250px;display:flex;flex-direction:column;justify-content:space-between;padding:20px;border:3px solid var(--accent);border-radius:20px;background:var(--tint);box-shadow:0 6px 0 rgba(38,54,78,.14);transition:transform .2s,filter .2s}.card:hover{transform:translateY(-5px) rotate(-.6deg);filter:saturate(1.12)}.icon{font-size:52px;line-height:1}.card h2{margin:14px 0 8px;font-size:24px;line-height:1.18}.card p{color:var(--muted);font-size:14px;line-height:1.55;font-weight:650}.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}.tag{padding:5px 8px;border-radius:999px;color:var(--blue);background:#fff;font-size:12px;font-weight:850}.go{align-self:flex-start;margin-top:16px;padding:9px 14px;border-radius:999px;color:#fff;background:var(--accent);font-size:14px;font-weight:900}@media(max-width:1050px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:620px){.grid{grid-template-columns:1fr}.shell{padding:32px 0}.card{min-height:auto}.icon{font-size:48px}}
+    :root {
+      --gold: #ffd86a;
+      --cyan: #62e8ff;
+      --navy: #10283d;
+      --ink: #16324a;
+      --paper: #fff9e9;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: #cce8ea;
+      font-family: "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif;
+    }
+    a { color: inherit; text-decoration: none; }
+    .topbar {
+      position: absolute;
+      z-index: 10;
+      top: 0;
+      left: 0;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px clamp(18px, 4vw, 56px);
+      color: white;
+      text-shadow: 0 2px 4px rgba(9, 23, 35, .8);
+    }
+    .back {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 42px;
+      padding: 0 15px;
+      border: 1px solid rgba(255,255,255,.65);
+      border-radius: 6px;
+      background: rgba(13, 36, 54, .55);
+      backdrop-filter: blur(8px);
+      font-weight: 900;
+    }
+    .player {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-weight: 900;
+    }
+    .player-mark {
+      display: grid;
+      width: 40px;
+      height: 40px;
+      place-items: center;
+      border: 2px solid #fff4bd;
+      border-radius: 50%;
+      background: #e57637;
+      box-shadow: 0 4px 0 rgba(61,31,14,.35);
+    }
+    .arena {
+      position: relative;
+      min-height: min(820px, 100vh);
+      display: flex;
+      align-items: flex-end;
+      overflow: hidden;
+      background:
+        linear-gradient(180deg, rgba(12,28,45,.12) 0%, transparent 30%, rgba(11,29,43,.24) 68%, rgba(8,25,38,.86) 100%),
+        url("../../assets/math-arena-3d.png") center / cover no-repeat;
+    }
+    .arena::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(90deg, rgba(7,25,41,.28), transparent 30%, transparent 70%, rgba(7,25,41,.18));
+    }
+    .hero-copy {
+      position: relative;
+      z-index: 2;
+      width: min(1180px, calc(100% - 36px));
+      margin: 0 auto;
+      padding: 135px 0 48px;
+      color: white;
+      text-shadow: 0 3px 0 rgba(54,38,24,.7), 0 8px 22px rgba(6,20,32,.75);
+    }
+    .eyebrow {
+      margin: 0 0 5px;
+      color: var(--gold);
+      font-size: clamp(13px, 1.5vw, 17px);
+      font-weight: 1000;
+      letter-spacing: 1px;
+    }
+    h1 {
+      max-width: 780px;
+      margin: 0;
+      font-size: clamp(48px, 8vw, 92px);
+      line-height: 1;
+      letter-spacing: 0;
+    }
+    .hero-copy > p:last-of-type {
+      max-width: 640px;
+      margin: 18px 0 25px;
+      font-size: clamp(17px, 2vw, 23px);
+      font-weight: 800;
+      line-height: 1.7;
+    }
+    .start {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 54px;
+      padding: 0 22px;
+      border: 2px solid #fff0a5;
+      border-radius: 7px;
+      color: #172c3e;
+      background: linear-gradient(#ffe98f, #f4b934);
+      box-shadow: 0 6px 0 #9b6420, 0 12px 25px rgba(11,25,37,.35);
+      font-size: 18px;
+      font-weight: 1000;
+      text-shadow: none;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .start:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 9px 0 #9b6420, 0 16px 28px rgba(11,25,37,.4);
+    }
+    .quest-zone {
+      position: relative;
+      padding: 58px 20px 78px;
+      background:
+        radial-gradient(circle at 14% 12%, rgba(255,255,255,.8) 0 2px, transparent 3px),
+        linear-gradient(180deg, #dff7f0, #fff4ce 52%, #c9e7d1);
+    }
+    .quest-zone::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto;
+      height: 7px;
+      background: linear-gradient(90deg, #e79737, var(--gold), var(--cyan), #76c47e);
+    }
+    .quest-inner { width: min(1180px, 100%); margin: auto; }
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 28px;
+    }
+    .section-head h2 {
+      margin: 0;
+      color: #173b55;
+      font-size: clamp(30px, 5vw, 49px);
+      letter-spacing: 0;
+    }
+    .section-head p {
+      max-width: 480px;
+      margin: 0;
+      color: #426579;
+      font-weight: 800;
+      line-height: 1.7;
+    }
+    .quest-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+    .quest {
+      position: relative;
+      min-height: 245px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+      padding: 24px;
+      border: 2px solid rgba(255,255,255,.8);
+      border-radius: 8px;
+      color: white;
+      background:
+        linear-gradient(145deg, color-mix(in srgb, var(--accent) 86%, #17364b), color-mix(in srgb, var(--accent) 45%, #10283d));
+      box-shadow: 0 8px 0 color-mix(in srgb, var(--accent) 42%, #17364b), 0 14px 25px rgba(24,65,76,.18);
+      transition: transform .2s, filter .2s;
+    }
+    .quest::after {
+      content: "";
+      position: absolute;
+      right: -35px;
+      top: -35px;
+      width: 140px;
+      height: 140px;
+      border: 22px solid rgba(255,255,255,.11);
+      border-radius: 50%;
+    }
+    .quest:hover { transform: translateY(-5px); filter: saturate(1.12); }
+    .quest.featured { grid-column: span 2; }
+    .quest-top, .quest-play {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .level {
+      color: #fff3ad;
+      font-size: 13px;
+      font-weight: 1000;
+      letter-spacing: 1px;
+    }
+    .grade-chip {
+      position: relative;
+      z-index: 1;
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      min-height: 32px;
+      margin-top: 18px;
+      padding: 0 12px;
+      border: 1px solid rgba(255,255,255,.65);
+      border-radius: 999px;
+      color: #17364b;
+      background: rgba(255,246,190,.92);
+      box-shadow: 0 3px 0 rgba(35,48,55,.25);
+      font-size: 14px;
+      font-weight: 1000;
+      text-shadow: none;
+    }
+    .icon {
+      display: grid;
+      width: 58px;
+      height: 58px;
+      place-items: center;
+      border: 2px solid rgba(255,255,255,.75);
+      border-radius: 50%;
+      background: rgba(9,34,49,.27);
+      font-size: 29px;
+      box-shadow: inset 0 2px 8px rgba(255,255,255,.18);
+    }
+    .quest h3 {
+      position: relative;
+      z-index: 1;
+      margin: 20px 0 7px;
+      font-size: 25px;
+      letter-spacing: 0;
+    }
+    .quest p {
+      position: relative;
+      z-index: 1;
+      margin: 0 0 24px;
+      color: rgba(255,255,255,.9);
+      font-weight: 700;
+      line-height: 1.6;
+    }
+    .quest-play {
+      justify-content: flex-start;
+      font-weight: 1000;
+    }
+    .arrow {
+      display: grid;
+      width: 31px;
+      height: 31px;
+      place-items: center;
+      border-radius: 50%;
+      color: #17364b;
+      background: #fff5bd;
+      transition: transform .2s;
+    }
+    .quest:hover .arrow { transform: translateX(4px); }
+    .boss { --accent: #a05aba !important; }
+    footer {
+      padding: 22px;
+      color: #d7f5f6;
+      background: #102d40;
+      text-align: center;
+      font-weight: 800;
+    }
+    @media (max-width: 820px) {
+      .arena { min-height: 720px; background-position: 52% center; }
+      .hero-copy { padding-bottom: 40px; }
+      .quest-grid { grid-template-columns: 1fr 1fr; }
+      .quest.featured { grid-column: span 2; }
+      .section-head { align-items: flex-start; flex-direction: column; }
+    }
+    @media (max-width: 560px) {
+      .player span:last-child { display: none; }
+      .arena {
+        min-height: 670px;
+        background-position: 51% center;
+      }
+      h1 { font-size: 53px; }
+      .hero-copy > p:last-of-type { font-size: 16px; }
+      .quest-grid { grid-template-columns: 1fr; }
+      .quest.featured { grid-column: auto; }
+      .quest { min-height: 224px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { transition: none !important; }
+    }
   </style>
 </head>
 <body>
-  <header class="top"><a href="../../index.html">← 返回互動教學站</a></header>
-  <main class="shell">
-    <section class="head"><h1>數學互動學習</h1><p>運用生活情境、圖像與互動練習，逐步理解數學概念。</p></section>
-    <section class="grid">
-      <a class="card" href="./cross-day-calculation/index.html" style="--accent:var(--blue);--tint:#eaf5ff">
-        <div><div class="icon">🌙⏰</div><h2>跨日計算教學</h2><p>學習跨越午夜的經過時間、結束時間與起始時間計算，並完成互動測驗。</p><div class="tags"><span class="tag">四年級數學</span><span class="tag">時間計算</span><span class="tag">隨堂測驗</span></div></div>
-        <span class="go">開始學習</span>
-      </a>
-      <a class="card" href="./perimeter-area-calculation/index.html" style="--accent:#4b9568;--tint:#eff9f1">
-        <div><div class="icon">📐🏝️</div><h2>周長與面積計算</h2><p>透過動畫與方格圖理解周長和面積的差異，挑戰生活應用題與終極魔王關卡。</p><div class="tags"><span class="tag">四年級數學</span><span class="tag">幾何概念</span><span class="tag">冒險挑戰</span></div></div>
-        <span class="go" style="background:#4b9568">開始學習</span>
-      </a>
-      <a class="card" href="./grade5-unit-conversion/index.html" style="--accent:#6b8e23;--tint:#f1fae8">
-        <div><div class="icon">🍃🐘</div><h2>大單位換算</h2><p>透過森林冒險學習公噸、公頃與平方公里等大單位換算，完成闖關取得榮譽證書。</p><div class="tags"><span class="tag">五年級數學</span><span class="tag">單位換算</span><span class="tag">闖關證書</span></div></div>
-        <span class="go" style="background:#6b8e23">開始學習</span>
-      </a>
-      <a class="card" href="./grade5-irregular-volume/index.html" style="--accent:#0ea5e9;--tint:#eefaff">
-        <div><div class="icon">🧪💧</div><h2>不規則體積計算</h2><p>透過互動水槽與排水法觀察水位變化，學習計算不規則物體的體積。</p><div class="tags"><span class="tag">五年級數學</span><span class="tag">體積</span><span class="tag">排水法</span></div></div>
-        <span class="go" style="background:#0ea5e9">開始學習</span>
-      </a>
-      <a class="card" href="./grade5-ratio-percentage/index.html" style="--accent:#6366f1;--tint:#f1f3ff">
-        <div><div class="icon">🚀％</div><h2>比率及百分率</h2><p>透過星際探險任務練習比率、百分率與生活情境應用，逐步完成闖關挑戰。</p><div class="tags"><span class="tag">五年級數學</span><span class="tag">比率</span><span class="tag">百分率</span></div></div>
-        <span class="go" style="background:#6366f1">開始學習</span>
-      </a>
-      <a class="card" href="./multiplication-shot/index.html" style="--accent:#f97316;--tint:#fff2df">
-        <div><div class="icon">投</div><h2>九九乘法倒數投籃機</h2><p>二年級九九乘法闖關，限時答題、答對投籃得分，連續命中加星星。</p><div class="tags"><span class="tag">二年級</span><span class="tag">九九乘法</span><span class="tag">限時闖關</span></div></div>
-        <span class="go" style="background:#f97316">開始投籃</span>
-      </a>
-      <a class="card" href="./grade5-container-surface-area/index.html" style="--accent:#f97316;--tint:#fff7ed">
-        <div><div class="icon">📦🧊</div><h2>有蓋與無蓋容器應用計算</h2><p>透過 3D 容器模擬觀察有蓋與無蓋情境，練習表面積與容量容積的生活應用。</p><div class="tags"><span class="tag">五年級數學</span><span class="tag">容積</span><span class="tag">容量計算</span></div></div>
-        <span class="go" style="background:#f97316">開始學習</span>
-      </a>
+  <header class="topbar">
+    <a class="back" href="../../index.html" aria-label="返回冒險王國首頁">← 返回王國</a>
+    <div class="player"><span class="player-mark" aria-hidden="true">∑</span><span>數學探險隊</span></div>
+  </header>
+
+  <main>
+    <section class="arena">
+      <div class="hero-copy">
+        <p class="eyebrow">MATH ARENA · LEVEL WORLD</p>
+        <h1>數學競技場</h1>
+        <p>沿著發光步道挑戰七座競技關卡，把每一道算式化成前進的能量！</p>
+        <a class="start" href="#quests"><span aria-hidden="true">⚔</span> 選擇第一個任務</a>
+      </div>
+    </section>
+
+    <section class="quest-zone" id="quests">
+      <div class="quest-inner">
+        <div class="section-head">
+          <h2>選擇挑戰地點</h2>
+          <p>每一座建築都是一個數學任務。先看適合年級，再從喜歡的關卡出發，答對題目就能累積星星。</p>
+        </div>
+
+        <div class="quest-grid">
+          <a class="quest featured" href="./multiplication-shot/index.html" style="--accent:#d96b32">
+            <div>
+              <div class="quest-top"><span class="level">LEVEL 01 · 熱門關卡</span><span class="icon" aria-hidden="true">🏀</span></div>
+              <span class="grade-chip">適合二年級</span>
+              <h3>九九乘法投籃賽</h3>
+              <p>限時破解乘法題，答對後親手把籃球投進競技場的籃框。</p>
+            </div>
+            <span class="quest-play"><span class="arrow" aria-hidden="true">→</span> 進入投籃場</span>
+          </a>
+
+          <a class="quest" href="./perimeter-area-calculation/index.html" style="--accent:#2b947d">
+            <div>
+              <div class="quest-top"><span class="level">LEVEL 02</span><span class="icon" aria-hidden="true">△</span></div>
+              <span class="grade-chip">適合四年級</span>
+              <h3>方形面積與周長</h3>
+              <p>運用面積與周長知識，修復競技城的幾何裝置。</p>
+            </div>
+            <span class="quest-play"><span class="arrow" aria-hidden="true">→</span> 啟動工坊</span>
+          </a>
+
+          <a class="quest" href="./cross-day-calculation/index.html" style="--accent:#3979aa">
+            <div>
+              <div class="quest-top"><span class="level">LEVEL 03</span><span class="icon" aria-hidden="true">⏱</span></div>
+              <span class="grade-chip">適合四年級</span>
+              <h3>跨日時間塔</h3>
+              <p>轉動時鐘齒輪，破解跨日與經過時間的謎題。</p>
+            </div>
+            <span class="quest-play"><span class="arrow" aria-hidden="true">→</span> 登上時間塔</span>
+          </a>
+
+          <a class="quest" href="./grade5-unit-conversion/index.html" style="--accent:#7a962e">
+            <div>
+              <div class="quest-top"><span class="level">LEVEL 04</span><span class="icon" aria-hidden="true">↔</span></div>
+              <span class="grade-chip">適合五年級</span>
+              <h3>大單位換算</h3>
+              <p>換算長度、重量與容量，讓失去能源的橋梁重新發光。</p>
+            </div>
+            <span class="quest-play"><span class="arrow" aria-hidden="true">→</span> 穿越天空橋</span>
+          </a>
+
+          <a class="quest" href="./grade5-irregular-volume/index.html" style="--accent:#2499b0">
+            <div>
+              <div class="quest-top"><span class="level">LEVEL 05</span><span class="icon" aria-hidden="true">▱</span></div>
+              <span class="grade-chip">適合五年級</span>
+              <h3>不規則體積實驗室</h3>
+              <p>分割與組合立體空間，找出水晶容器的真正體積。</p>
+            </div>
+            <span class="quest-play"><span class="arrow" aria-hidden="true">→</span> 進入實驗室</span>
+          </a>
+
+          <a class="quest" href="./grade5-ratio-percentage/index.html" style="--accent:#5f62b8">
+            <div>
+              <div class="quest-top"><span class="level">LEVEL 06</span><span class="icon" aria-hidden="true">%</span></div>
+              <span class="grade-chip">適合五年級</span>
+              <h3>比率換算</h3>
+              <p>調整比率與百分率，穩定漂浮島中央的能量水晶。</p>
+            </div>
+            <span class="quest-play"><span class="arrow" aria-hidden="true">→</span> 校準水晶</span>
+          </a>
+
+          <a class="quest boss featured" href="./grade5-container-surface-area/index.html">
+            <div>
+              <div class="quest-top"><span class="level">FINAL BOSS · 立體決戰</span><span class="icon" aria-hidden="true">◇</span></div>
+              <span class="grade-chip">適合五年級</span>
+              <h3>3D 容器容量計算</h3>
+              <p>綜合運用容量與立體概念，破解立方體城堡的最終機關。</p>
+            </div>
+            <span class="quest-play"><span class="arrow" aria-hidden="true">→</span> 挑戰最終關卡</span>
+          </a>
+        </div>
+      </div>
     </section>
   </main>
+  <footer>每一次計算，都是讓冒險世界前進的一步。</footer>
 </body>
 </html>

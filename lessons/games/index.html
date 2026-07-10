@@ -3,30 +3,350 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>綜合小遊戲</title>
+  <meta name="description" content="益智遊園，以動漫風格3D遊戲關卡挑戰節慶與主題猜謎。">
+  <title>益智遊園｜學習冒險王國</title>
   <style>
-    :root{--ink:#49351d;--muted:#79664d;--orange:#e88624;--red:#d84b45;--paper:#fff9e9;--shadow:0 9px 0 rgba(73,53,29,.16)}
-    *{box-sizing:border-box}body{margin:0;min-height:100vh;color:var(--ink);font-family:"Segoe UI","Noto Sans TC",system-ui,sans-serif;background:radial-gradient(circle at 15% 20%,rgba(232,134,36,.18) 0 5px,transparent 6px),linear-gradient(90deg,rgba(216,75,69,.06) 1px,transparent 1px) 0 0/30px 30px,linear-gradient(rgba(216,75,69,.06) 1px,transparent 1px) 0 0/30px 30px,var(--paper);background-size:110px 110px,30px 30px,30px 30px}
-    a{text-decoration:none;color:inherit}.top{padding:18px clamp(16px,4vw,40px);background:#fff;border-bottom:1px solid #f0dfc3}.top a{color:var(--red);font-weight:900}.shell{width:min(1000px,calc(100% - 28px));margin:0 auto;padding:55px 0}.head{text-align:center}.head h1{margin:0;font-size:clamp(38px,7vw,68px)}.head p{max-width:700px;margin:14px auto;color:var(--muted);font-size:19px;line-height:1.7;font-weight:650}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px;margin-top:38px}.card{min-height:300px;display:flex;flex-direction:column;justify-content:space-between;padding:28px;border:3px solid var(--accent);border-radius:24px;background:var(--card);box-shadow:var(--shadow);transition:transform .2s,box-shadow .2s}.card:hover{transform:translateY(-7px) rotate(-1deg);box-shadow:0 15px 25px rgba(73,53,29,.17)}.icon{font-size:78px}.card h2{margin:10px 0 8px;font-size:31px}.card p{color:var(--muted);font-size:17px;line-height:1.65;font-weight:650}.go{align-self:flex-start;margin-top:20px;padding:10px 17px;border-radius:999px;color:#fff;background:var(--accent);font-weight:900}@media(max-width:700px){.grid{grid-template-columns:1fr}}
+    :root {
+      --gold: #ffd96c;
+      --coral: #ff7363;
+      --cyan: #5fe8ff;
+      --ink: #26324b;
+      --deep: #1d2941;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: #fff1d8;
+      font-family: "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif;
+    }
+    a { color: inherit; text-decoration: none; }
+    .topbar {
+      position: absolute;
+      z-index: 10;
+      top: 0;
+      left: 0;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px clamp(18px, 4vw, 56px);
+      color: white;
+      text-shadow: 0 2px 5px rgba(35, 27, 45, .78);
+    }
+    .back {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 42px;
+      padding: 0 15px;
+      border: 1px solid rgba(255,244,198,.78);
+      border-radius: 6px;
+      background: rgba(47, 35, 61, .52);
+      backdrop-filter: blur(8px);
+      font-weight: 900;
+    }
+    .player {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-weight: 900;
+    }
+    .player-mark {
+      display: grid;
+      width: 40px;
+      height: 40px;
+      place-items: center;
+      border: 2px solid #fff2bf;
+      border-radius: 50%;
+      background: #ff8b42;
+      box-shadow: 0 4px 0 rgba(91,49,29,.36);
+    }
+    .park {
+      position: relative;
+      min-height: min(820px, 100vh);
+      display: flex;
+      align-items: flex-end;
+      overflow: hidden;
+      background:
+        linear-gradient(180deg, rgba(34,28,55,.02) 0%, transparent 32%, rgba(47,40,69,.16) 62%, rgba(29,41,65,.88) 100%),
+        url("../../assets/puzzle-amusement-park-3d.png") center / cover no-repeat;
+    }
+    .park::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 43% 42%, rgba(255,217,108,.13), transparent 30%),
+        linear-gradient(90deg, rgba(28,25,50,.2), transparent 34%, transparent 72%, rgba(28,25,50,.12));
+    }
+    .hero-copy {
+      position: relative;
+      z-index: 2;
+      width: min(1180px, calc(100% - 36px));
+      margin: 0 auto;
+      padding: 132px 0 48px;
+      color: white;
+      text-shadow: 0 3px 0 rgba(93,52,27,.68), 0 8px 22px rgba(25,25,42,.7);
+    }
+    .eyebrow {
+      margin: 0 0 6px;
+      color: var(--gold);
+      font-size: clamp(13px, 1.5vw, 17px);
+      font-weight: 1000;
+      letter-spacing: 1px;
+    }
+    h1 {
+      max-width: 820px;
+      margin: 0;
+      font-size: clamp(48px, 7.5vw, 88px);
+      line-height: 1.04;
+      letter-spacing: 0;
+    }
+    .hero-copy > p:last-of-type {
+      max-width: 670px;
+      margin: 18px 0 25px;
+      font-size: clamp(17px, 2vw, 23px);
+      font-weight: 800;
+      line-height: 1.75;
+    }
+    .start {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 54px;
+      padding: 0 22px;
+      border: 2px solid #fff2be;
+      border-radius: 7px;
+      color: #26324b;
+      background: linear-gradient(#ffe994, #ffac4f);
+      box-shadow: 0 6px 0 #ae612c, 0 12px 25px rgba(35,31,50,.32);
+      font-size: 18px;
+      font-weight: 1000;
+      text-shadow: none;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .start:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 9px 0 #ae612c, 0 16px 28px rgba(35,31,50,.38);
+    }
+    .quest-zone {
+      position: relative;
+      padding: 58px 20px 78px;
+      background:
+        radial-gradient(circle at 14% 12%, rgba(255,255,255,.9) 0 2px, transparent 3px),
+        linear-gradient(180deg, #fff1d8, #eaf7ff 48%, #fff0cb);
+    }
+    .quest-zone::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto;
+      height: 7px;
+      background: linear-gradient(90deg, var(--coral), var(--gold), var(--cyan), #9f8dff);
+    }
+    .quest-inner { width: min(980px, 100%); margin: auto; }
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 28px;
+    }
+    .section-head h2 {
+      margin: 0;
+      color: #27334d;
+      font-size: clamp(30px, 5vw, 49px);
+      letter-spacing: 0;
+    }
+    .section-head p {
+      max-width: 500px;
+      margin: 0;
+      color: #62617b;
+      font-weight: 800;
+      line-height: 1.7;
+    }
+    .quest-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+    }
+    .quest {
+      position: relative;
+      min-height: 260px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+      padding: 24px;
+      border: 2px solid rgba(255,255,255,.86);
+      border-radius: 8px;
+      color: white;
+      background:
+        linear-gradient(145deg, color-mix(in srgb, var(--accent) 86%, #26324b), color-mix(in srgb, var(--accent) 43%, #1d2941));
+      box-shadow: 0 8px 0 color-mix(in srgb, var(--accent) 42%, #26324b), 0 14px 25px rgba(48,55,77,.18);
+      transition: transform .2s, filter .2s;
+    }
+    .quest::after {
+      content: "";
+      position: absolute;
+      right: -35px;
+      top: -35px;
+      width: 140px;
+      height: 140px;
+      border: 22px solid rgba(255,255,255,.12);
+      border-radius: 50%;
+    }
+    .quest:hover { transform: translateY(-5px); filter: saturate(1.12); }
+    .quest-top, .quest-play {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .level {
+      color: #fff3ad;
+      font-size: 13px;
+      font-weight: 1000;
+      letter-spacing: 1px;
+    }
+    .bonus-chip {
+      position: relative;
+      z-index: 1;
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      min-height: 32px;
+      margin-top: 18px;
+      padding: 0 12px;
+      border: 1px solid rgba(255,255,255,.68);
+      border-radius: 999px;
+      color: #26324b;
+      background: rgba(255,246,194,.95);
+      box-shadow: 0 3px 0 rgba(69,55,65,.2);
+      font-size: 14px;
+      font-weight: 1000;
+      text-shadow: none;
+    }
+    .icon {
+      display: grid;
+      width: 58px;
+      height: 58px;
+      place-items: center;
+      border: 2px solid rgba(255,255,255,.75);
+      border-radius: 50%;
+      background: rgba(39,42,60,.25);
+      font-size: 29px;
+      box-shadow: inset 0 2px 8px rgba(255,255,255,.18);
+    }
+    .quest h3 {
+      position: relative;
+      z-index: 1;
+      margin: 20px 0 7px;
+      font-size: 25px;
+      letter-spacing: 0;
+    }
+    .quest p {
+      position: relative;
+      z-index: 1;
+      margin: 0 0 24px;
+      color: rgba(255,255,255,.92);
+      font-weight: 700;
+      line-height: 1.6;
+    }
+    .quest-play {
+      justify-content: flex-start;
+      font-weight: 1000;
+    }
+    .arrow {
+      display: grid;
+      width: 31px;
+      height: 31px;
+      place-items: center;
+      border-radius: 50%;
+      color: #26324b;
+      background: #fff5bd;
+      transition: transform .2s;
+    }
+    .quest:hover .arrow { transform: translateX(4px); }
+    footer {
+      padding: 22px;
+      color: #e9faff;
+      background: #1d2941;
+      text-align: center;
+      font-weight: 800;
+    }
+    @media (max-width: 760px) {
+      .section-head { align-items: flex-start; flex-direction: column; }
+      .quest-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 560px) {
+      .player span:last-child { display: none; }
+      .park {
+        min-height: 680px;
+        background-position: 50% center;
+      }
+      h1 { font-size: 50px; }
+      .hero-copy > p:last-of-type { font-size: 16px; }
+      .quest { min-height: 224px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { transition: none !important; }
+    }
   </style>
 </head>
 <body>
-  <header class="top"><a href="../../index.html">← 返回互動教學站</a></header>
-  <main class="shell">
-    <section class="head">
-      <h1>🎲 綜合小遊戲</h1>
-      <p>動動腦、找線索，在趣味猜謎中發現生活中的新知識！</p>
+  <header class="topbar">
+    <a class="back" href="../../index.html" aria-label="返回冒險王國首頁">← 返回王國</a>
+    <div class="player"><span class="player-mark" aria-hidden="true">?</span><span>Bonus Puzzle Team</span></div>
+  </header>
+
+  <main>
+    <section class="park">
+      <div class="hero-copy">
+        <p class="eyebrow">PUZZLE FUN FAIR · BONUS WORLD</p>
+        <h1>益智遊園</h1>
+        <p>這裡沒有考卷，只有好奇心。走進動漫風格的謎題遊樂園，用線索、觀察和一點想像力破解每個驚喜關卡。</p>
+        <a class="start" href="#quests"><span aria-hidden="true">★</span> 挑一個遊樂設施</a>
+      </div>
     </section>
-    <section class="grid">
-      <a class="card" href="./new-year-riddles/index.html" style="--accent:#d84b45;--card:#fff0e8">
-        <div><div class="icon">🧧🏮</div><h2>新年猜謎</h2><p>挑戰新春冷知識，看看誰最了解過年的傳統與習俗。</p></div>
-        <span class="go">開始猜謎</span>
-      </a>
-      <a class="card" href="./horse-riddles/index.html" style="--accent:#8b623e;--card:#fff7d8">
-        <div><div class="icon">🐴❓</div><h2>有關馬的猜謎</h2><p>逐步取得線索，猜出藏在題目裡的各種「馬」。</p></div>
-        <span class="go">開始挑戰</span>
-      </a>
+
+    <section class="quest-zone" id="quests">
+      <div class="quest-inner">
+        <div class="section-head">
+          <h2>選擇益智挑戰</h2>
+          <p>猜錯也沒有關係，每一次嘗試都會讓你更會觀察線索。</p>
+        </div>
+
+        <div class="quest-grid">
+          <a class="quest" href="./new-year-riddles/index.html" style="--accent:#df5d4e">
+            <div>
+              <div class="quest-top"><span class="level">限定活動 · 節慶謎題</span><span class="icon" aria-hidden="true">燈</span></div>
+              <span class="bonus-chip">新春活動</span>
+              <h3>新年猜謎</h3>
+              <p>挑戰新春冷知識，發現過年傳統與習俗的小祕密。</p>
+            </div>
+            <span class="quest-play"><span class="arrow" aria-hidden="true">→</span> 開始猜謎</span>
+          </a>
+
+          <a class="quest" href="./horse-riddles/index.html" style="--accent:#9a6a43">
+            <div>
+              <div class="quest-top"><span class="level">主題挑戰 · 線索謎題</span><span class="icon" aria-hidden="true">?</span></div>
+              <span class="bonus-chip">提示解謎</span>
+              <h3>有關馬的猜謎</h3>
+              <p>逐步打開提示，猜出藏在題目裡的各種答案。</p>
+            </div>
+            <span class="quest-play"><span class="arrow" aria-hidden="true">→</span> 揭開謎題</span>
+          </a>
+        </div>
+      </div>
     </section>
   </main>
+
+  <footer>保持好奇，就是破解謎題最棒的超能力。</footer>
 </body>
 </html>

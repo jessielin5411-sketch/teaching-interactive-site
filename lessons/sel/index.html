@@ -3,208 +3,350 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>SEL 社會情緒學習</title>
+  <meta name="description" content="心情精靈村，以療癒的3D遊戲關卡認識情緒、需要與人際互動。">
+  <title>心情精靈村｜學習冒險王國</title>
   <style>
     :root {
-      --ink: #243f3a;
-      --muted: #64736d;
-      --green: #348c67;
-      --purple: #6f5bb8;
-      --amber: #e7a93c;
-      --coral: #e66b5b;
-      --paper: #f3faf5;
-      --line: #d8e8dd;
-      --shadow: 0 8px 0 rgba(36, 63, 58, .14);
+      --gold: #ffd77a;
+      --mint: #86e8c3;
+      --rose: #ff9fb2;
+      --ink: #244056;
+      --deep: #183644;
     }
-
     * { box-sizing: border-box; }
-
+    html { scroll-behavior: smooth; }
     body {
       margin: 0;
-      min-height: 100vh;
       color: var(--ink);
-      font-family: "Segoe UI", "Noto Sans TC", system-ui, sans-serif;
-      background:
-        radial-gradient(circle at 14% 18%, rgba(111, 91, 184, .15) 0 5px, transparent 6px),
-        radial-gradient(circle at 86% 24%, rgba(231, 169, 60, .20) 0 6px, transparent 7px),
-        linear-gradient(90deg, rgba(52, 140, 103, .06) 1px, transparent 1px) 0 0 / 28px 28px,
-        linear-gradient(rgba(52, 140, 103, .06) 1px, transparent 1px) 0 0 / 28px 28px,
-        var(--paper);
+      background: #e9f7df;
+      font-family: "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif;
     }
-
     a { color: inherit; text-decoration: none; }
-
-    .top {
-      padding: 18px clamp(16px, 4vw, 40px);
-      background: rgba(255, 255, 255, .92);
-      border-bottom: 1px solid var(--line);
-      backdrop-filter: blur(10px);
+    .topbar {
+      position: absolute;
+      z-index: 10;
+      top: 0;
+      left: 0;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px clamp(18px, 4vw, 56px);
+      color: white;
+      text-shadow: 0 2px 5px rgba(40, 42, 45, .75);
     }
-
-    .top a {
-      color: var(--green);
+    .back {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 42px;
+      padding: 0 15px;
+      border: 1px solid rgba(255,246,219,.76);
+      border-radius: 6px;
+      background: rgba(44, 62, 54, .48);
+      backdrop-filter: blur(8px);
       font-weight: 900;
     }
-
-    .shell {
-      width: min(1060px, calc(100% - 28px));
-      margin: 0 auto;
-      padding: 52px 0 70px;
-    }
-
-    .head {
-      display: grid;
-      grid-template-columns: minmax(0, 1.1fr) minmax(280px, .9fr);
-      gap: 30px;
+    .player {
+      display: flex;
       align-items: center;
+      gap: 9px;
+      font-weight: 900;
     }
-
-    .head h1 {
+    .player-mark {
+      display: grid;
+      width: 40px;
+      height: 40px;
+      place-items: center;
+      border: 2px solid #fff5d6;
+      border-radius: 50%;
+      background: #f58da0;
+      box-shadow: 0 4px 0 rgba(88,52,55,.34);
+    }
+    .village {
+      position: relative;
+      min-height: min(820px, 100vh);
+      display: flex;
+      align-items: flex-end;
+      overflow: hidden;
+      background:
+        linear-gradient(180deg, rgba(55,74,58,.02) 0%, transparent 32%, rgba(45,72,62,.18) 62%, rgba(26,55,64,.84) 100%),
+        url("../../assets/feeling-fairy-village-3d.png") center / cover no-repeat;
+    }
+    .village::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 42% 43%, rgba(255,214,145,.13), transparent 30%),
+        linear-gradient(90deg, rgba(31,53,51,.22), transparent 34%, transparent 72%, rgba(31,53,51,.16));
+    }
+    .hero-copy {
+      position: relative;
+      z-index: 2;
+      width: min(1180px, calc(100% - 36px));
+      margin: 0 auto;
+      padding: 132px 0 48px;
+      color: white;
+      text-shadow: 0 3px 0 rgba(94,63,44,.62), 0 8px 22px rgba(24,38,42,.65);
+    }
+    .eyebrow {
+      margin: 0 0 6px;
+      color: var(--gold);
+      font-size: clamp(13px, 1.5vw, 17px);
+      font-weight: 1000;
+      letter-spacing: 1px;
+    }
+    h1 {
+      max-width: 820px;
       margin: 0;
-      font-size: clamp(38px, 7vw, 70px);
-      line-height: 1.03;
+      font-size: clamp(48px, 7.5vw, 88px);
+      line-height: 1.04;
       letter-spacing: 0;
     }
-
-    .head p {
-      max-width: 680px;
-      margin: 18px 0 0;
-      color: var(--muted);
-      font-size: 19px;
+    .hero-copy > p:last-of-type {
+      max-width: 670px;
+      margin: 18px 0 25px;
+      font-size: clamp(17px, 2vw, 23px);
+      font-weight: 800;
       line-height: 1.75;
-      font-weight: 650;
     }
-
-    .scene {
+    .start {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 54px;
+      padding: 0 22px;
+      border: 2px solid #fff1c4;
+      border-radius: 7px;
+      color: #244056;
+      background: linear-gradient(#fff2b5, #ffc6a8);
+      box-shadow: 0 6px 0 #b87662, 0 12px 25px rgba(36,55,58,.28);
+      font-size: 18px;
+      font-weight: 1000;
+      text-shadow: none;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .start:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 9px 0 #b87662, 0 16px 28px rgba(36,55,58,.34);
+    }
+    .quest-zone {
+      position: relative;
+      padding: 58px 20px 78px;
+      background:
+        radial-gradient(circle at 14% 12%, rgba(255,255,255,.9) 0 2px, transparent 3px),
+        linear-gradient(180deg, #edf8df, #fff2d3 50%, #d9f0e6);
+    }
+    .quest-zone::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto;
+      height: 7px;
+      background: linear-gradient(90deg, var(--mint), var(--gold), var(--rose), #bfa4ff);
+    }
+    .quest-inner { width: min(980px, 100%); margin: auto; }
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 28px;
+    }
+    .section-head h2 {
+      margin: 0;
+      color: #275144;
+      font-size: clamp(30px, 5vw, 49px);
+      letter-spacing: 0;
+    }
+    .section-head p {
+      max-width: 500px;
+      margin: 0;
+      color: #5b7469;
+      font-weight: 800;
+      line-height: 1.7;
+    }
+    .quest-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+    }
+    .quest {
+      position: relative;
       min-height: 260px;
-      border: 3px solid #b9dcc8;
-      border-radius: 24px;
-      background: linear-gradient(180deg, #e9fff2, #fff9e8);
-      box-shadow: var(--shadow);
-      display: grid;
-      place-items: center;
-      overflow: hidden;
-    }
-
-    .scene svg {
-      width: min(100%, 460px);
-      height: auto;
-      display: block;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 22px;
-      margin-top: 42px;
-    }
-
-    .card {
-      min-height: 300px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 28px;
-      border: 3px solid var(--accent);
-      border-radius: 22px;
-      background: var(--bg);
-      box-shadow: var(--shadow);
-      transition: transform .2s ease, box-shadow .2s ease;
+      overflow: hidden;
+      padding: 24px;
+      border: 2px solid rgba(255,255,255,.86);
+      border-radius: 8px;
+      color: white;
+      background:
+        linear-gradient(145deg, color-mix(in srgb, var(--accent) 84%, #244056), color-mix(in srgb, var(--accent) 42%, #183644));
+      box-shadow: 0 8px 0 color-mix(in srgb, var(--accent) 40%, #244056), 0 14px 25px rgba(45,78,71,.18);
+      transition: transform .2s, filter .2s;
     }
-
-    .card:hover {
-      transform: translateY(-7px) rotate(-1deg);
-      box-shadow: 0 12px 0 rgba(36, 63, 58, .14);
+    .quest::after {
+      content: "";
+      position: absolute;
+      right: -35px;
+      top: -35px;
+      width: 140px;
+      height: 140px;
+      border: 22px solid rgba(255,255,255,.12);
+      border-radius: 50%;
     }
-
+    .quest:hover { transform: translateY(-5px); filter: saturate(1.1); }
+    .quest-top, .quest-play {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .level {
+      color: #fff3ad;
+      font-size: 13px;
+      font-weight: 1000;
+      letter-spacing: 1px;
+    }
+    .care-chip {
+      position: relative;
+      z-index: 1;
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      min-height: 32px;
+      margin-top: 18px;
+      padding: 0 12px;
+      border: 1px solid rgba(255,255,255,.68);
+      border-radius: 999px;
+      color: #244056;
+      background: rgba(255,246,211,.94);
+      box-shadow: 0 3px 0 rgba(69,69,65,.2);
+      font-size: 14px;
+      font-weight: 1000;
+      text-shadow: none;
+    }
     .icon {
-      font-size: 74px;
-      line-height: 1;
+      display: grid;
+      width: 58px;
+      height: 58px;
+      place-items: center;
+      border: 2px solid rgba(255,255,255,.75);
+      border-radius: 50%;
+      background: rgba(42,57,60,.24);
+      font-size: 29px;
+      box-shadow: inset 0 2px 8px rgba(255,255,255,.18);
     }
-
-    .card h2 {
-      margin: 14px 0 8px;
-      font-size: 31px;
+    .quest h3 {
+      position: relative;
+      z-index: 1;
+      margin: 20px 0 7px;
+      font-size: 25px;
       letter-spacing: 0;
     }
-
-    .card p {
-      color: var(--muted);
-      font-size: 17px;
-      line-height: 1.68;
-      font-weight: 650;
-      margin: 0;
+    .quest p {
+      position: relative;
+      z-index: 1;
+      margin: 0 0 24px;
+      color: rgba(255,255,255,.92);
+      font-weight: 700;
+      line-height: 1.6;
     }
-
-    .go {
-      align-self: flex-start;
-      margin-top: 24px;
-      padding: 11px 16px;
-      border-radius: 999px;
-      color: #fff;
-      background: var(--accent);
-      font-weight: 900;
+    .quest-play {
+      justify-content: flex-start;
+      font-weight: 1000;
     }
-
-    .emotion { --accent: var(--purple); --bg: #f7f4ff; }
-    .detective { --accent: var(--coral); --bg: #fff6ee; }
-
-    @media (max-width: 800px) {
-      .head { grid-template-columns: 1fr; }
-      .scene { min-height: 220px; }
+    .arrow {
+      display: grid;
+      width: 31px;
+      height: 31px;
+      place-items: center;
+      border-radius: 50%;
+      color: #244056;
+      background: #fff5bd;
+      transition: transform .2s;
     }
-
-    @media (max-width: 700px) {
-      .grid { grid-template-columns: 1fr; }
-      .card { min-height: 260px; }
+    .quest:hover .arrow { transform: translateX(4px); }
+    footer {
+      padding: 22px;
+      color: #e7fff8;
+      background: #183644;
+      text-align: center;
+      font-weight: 800;
+    }
+    @media (max-width: 760px) {
+      .section-head { align-items: flex-start; flex-direction: column; }
+      .quest-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 560px) {
+      .player span:last-child { display: none; }
+      .village {
+        min-height: 680px;
+        background-position: 50% center;
+      }
+      h1 { font-size: 50px; }
+      .hero-copy > p:last-of-type { font-size: 16px; }
+      .quest { min-height: 224px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { transition: none !important; }
     }
   </style>
 </head>
 <body>
-  <header class="top"><a href="../../index.html">返回互動教學站</a></header>
-  <main class="shell">
-    <section class="head">
-      <div>
-        <h1>SEL 社會情緒學習</h1>
-        <p>認識情緒、練習同理與溝通，學會在真實的人際情境中照顧自己，也尊重別人。</p>
-      </div>
-      <div class="scene" aria-hidden="true">
-        <svg viewBox="0 0 520 310" role="img">
-          <rect x="40" y="210" width="440" height="34" rx="17" fill="#b8e3c8" />
-          <path d="M92 214 C120 142 170 106 230 128 C286 78 388 98 424 206" fill="#d8f4e2" stroke="#348c67" stroke-width="6" />
-          <circle cx="175" cy="128" r="38" fill="#ffd166" stroke="#d9961f" stroke-width="5" />
-          <path d="M154 126 Q164 116 174 126 M187 126 Q197 116 207 126 M166 145 Q181 158 198 145" fill="none" stroke="#394240" stroke-width="5" stroke-linecap="round" />
-          <circle cx="325" cy="133" r="42" fill="#a8d8ff" stroke="#3a8fc7" stroke-width="5" />
-          <path d="M306 128 Q315 136 324 128 M337 128 Q346 136 355 128 M316 151 Q326 146 338 151" fill="none" stroke="#394240" stroke-width="5" stroke-linecap="round" />
-          <path d="M258 70 Q260 40 291 39 Q318 38 323 65 Q329 94 286 98 L258 124 L266 93 Q246 87 258 70Z" fill="#fff" stroke="#6f5bb8" stroke-width="5" />
-          <circle cx="278" cy="69" r="5" fill="#6f5bb8" />
-          <circle cx="297" cy="69" r="5" fill="#6f5bb8" />
-          <path d="M276 86 Q287 93 300 86" fill="none" stroke="#6f5bb8" stroke-width="4" stroke-linecap="round" />
-          <path d="M105 224 L105 270 M405 224 L405 270" stroke="#6f5bb8" stroke-width="10" stroke-linecap="round" />
-          <path d="M140 244 C190 282 330 282 380 244" fill="none" stroke="#e66b5b" stroke-width="10" stroke-linecap="round" />
-        </svg>
+  <header class="topbar">
+    <a class="back" href="../../index.html" aria-label="返回冒險王國首頁">← 返回王國</a>
+    <div class="player"><span class="player-mark" aria-hidden="true">♥</span><span>心情守護隊</span></div>
+  </header>
+
+  <main>
+    <section class="village">
+      <div class="hero-copy">
+        <p class="eyebrow">FEELING FAIRY VILLAGE · SEL QUEST</p>
+        <h1>心情精靈村</h1>
+        <p>所有感受都可以在這裡慢慢停靠。和溫柔的心情精靈一起辨認情緒、找到需要，再選一個舒服的下一步。</p>
+        <a class="start" href="#quests"><span aria-hidden="true">♥</span> 選擇今天的心情任務</a>
       </div>
     </section>
 
-    <section class="grid" aria-label="SEL 課程遊戲">
-      <a class="card emotion" href="./emotion-map/index.html">
-        <div>
-          <div class="icon">🗺️💗</div>
-          <h2>情緒地圖</h2>
-          <p>探索情緒島嶼、辨認身體訊號，運用策略安撫情緒怪獸。</p>
+    <section class="quest-zone" id="quests">
+      <div class="quest-inner">
+        <div class="section-head">
+          <h2>今天想拜訪哪裡？</h2>
+          <p>不用答得完美，也不用急著變好。願意看見自己的感受，就是很勇敢的開始。</p>
         </div>
-        <span class="go">開始探索</span>
-      </a>
 
-      <a class="card detective" href="./social-detective/index.html">
-        <div>
-          <div class="icon">🕵️‍♀️🧭</div>
-          <h2>人際情境偵探</h2>
-          <p>面對誤會、分組衝突與網路訊息，判讀線索，選出更成熟的回應方式。</p>
+        <div class="quest-grid">
+          <a class="quest" href="./emotion-map/index.html" style="--accent:#7f69c8">
+            <div>
+              <div class="quest-top"><span class="level">旅程 01 · 心情花園</span><span class="icon" aria-hidden="true">♡</span></div>
+              <span class="care-chip">認識自己</span>
+              <h3>情緒地圖</h3>
+              <p>選擇感受、找到需要，再決定一個照顧自己的行動。</p>
+            </div>
+            <span class="quest-play"><span class="arrow" aria-hidden="true">→</span> 探索心情</span>
+          </a>
+
+          <a class="quest" href="./social-detective/index.html" style="--accent:#e67872">
+            <div>
+              <div class="quest-top"><span class="level">旅程 02 · 線索小屋</span><span class="icon" aria-hidden="true">?</span></div>
+              <span class="care-chip">理解別人</span>
+              <h3>人際情境偵探</h3>
+              <p>觀察表情與情境線索，練習理解他人並選擇回應。</p>
+            </div>
+            <span class="quest-play"><span class="arrow" aria-hidden="true">→</span> 調查線索</span>
+          </a>
         </div>
-        <span class="go">開始辦案</span>
-      </a>
+      </div>
     </section>
   </main>
+
+  <footer>感受沒有對錯。慢慢看見自己，就是一種很溫柔的力量。</footer>
 </body>
 </html>

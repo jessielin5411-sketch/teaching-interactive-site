@@ -3,107 +3,88 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="整合數學、國語、自然、社會與英文的互動教學網站。">
-  <title>互動教學站</title>
+  <meta name="description" content="進入學習冒險王國，挑戰數學、國語、英文、SEL 與益智遊戲。">
+  <title>學習冒險王國</title>
   <style>
     :root {
-      --ink: #17334a;
-      --muted: #5d7080;
-      --paper: #fffdf8;
+      --ink: #263755;
       --white: #fff;
-      --line: #dce5e8;
-      --teal: #147d82;
-      --teal-dark: #0d6266;
-      --coral: #ef6f61;
-      --yellow: #efb83f;
-      --green: #4b9568;
-      --blue: #3b79bd;
-      --shadow: 0 18px 50px rgba(23, 51, 74, 0.13);
+      --navy: #354d77;
+      --sky: #7ed8f6;
+      --grass: #7bc96f;
+      --yellow: #ffd95a;
+      --coral: #ff745f;
+      --purple: #8867d9;
+      --shadow: 0 10px 0 rgba(49, 67, 98, .14), 0 18px 35px rgba(56, 76, 112, .14);
     }
 
     * { box-sizing: border-box; }
-
     html { scroll-behavior: smooth; }
-
     body {
       margin: 0;
+      overflow-x: hidden;
       color: var(--ink);
-      background: linear-gradient(90deg, rgba(59, 121, 189, 0.05) 1px, transparent 1px) 0 0 / 28px 28px, linear-gradient(rgba(59, 121, 189, 0.05) 1px, transparent 1px) 0 0 / 28px 28px, var(--paper);
-      font-family: "Segoe UI", "Noto Sans TC", system-ui, sans-serif;
+      background: #effbea;
+      font-family: "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif;
     }
-
     a { color: inherit; text-decoration: none; }
-
     button { font: inherit; }
 
-    .site-header {
-      position: sticky;
+    .topbar {
+      position: absolute;
       z-index: 10;
-      top: 0;
-      border-bottom: 1px solid rgba(220, 229, 232, 0.88);
-      background: rgba(255, 253, 248, 0.92);
-      backdrop-filter: blur(14px);
+      inset: 0 0 auto;
     }
-
     .nav {
       width: min(1180px, calc(100% - 32px));
-      min-height: 68px;
+      min-height: 76px;
       margin: 0 auto;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 20px;
     }
-
     .brand {
       display: inline-flex;
       align-items: center;
       gap: 10px;
-      font-size: 19px;
-      font-weight: 900;
+      color: #3b537b;
+      font-size: 21px;
+      font-weight: 950;
     }
-
     .brand-mark {
-      width: 38px;
-      height: 38px;
+      width: 44px;
+      height: 44px;
       display: grid;
       place-items: center;
-      border-radius: 8px;
-      color: var(--white);
-      background: var(--teal);
+      border: 3px solid #fff;
+      border-radius: 50%;
+      background: var(--yellow);
+      box-shadow: 0 4px 0 rgba(50, 72, 105, .18);
+      font-size: 22px;
     }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .nav-links a {
-      min-height: 40px;
+    .nav-jump {
+      min-height: 42px;
       display: inline-flex;
       align-items: center;
-      padding: 0 12px;
+      gap: 7px;
+      padding: 0 15px;
+      border: 2px solid rgba(53, 77, 119, .13);
       border-radius: 8px;
-      color: var(--muted);
-      font-weight: 750;
-    }
-
-    .nav-links a:hover {
-      color: var(--teal-dark);
-      background: #eaf6f4;
+      background: rgba(255, 255, 255, .88);
+      box-shadow: 0 4px 0 rgba(53, 77, 119, .13);
+      font-weight: 900;
     }
 
     .hero {
       position: relative;
-      min-height: min(720px, calc(100vh - 68px));
+      min-height: min(760px, 94vh);
       display: flex;
       align-items: center;
       overflow: hidden;
       isolation: isolate;
-      background: #dceff0;
+      background: #fffae9;
     }
-
     .hero-image {
       position: absolute;
       z-index: -2;
@@ -113,322 +94,829 @@
       object-fit: cover;
       object-position: center;
     }
-
     .hero::after {
       content: "";
       position: absolute;
       z-index: -1;
       inset: 0;
-      background: linear-gradient(90deg, rgba(255, 253, 248, 0.98) 0%, rgba(255, 253, 248, 0.92) 34%, rgba(255, 253, 248, 0.35) 64%, rgba(255, 253, 248, 0.04) 100%);
+      background: linear-gradient(90deg, rgba(255, 251, 235, .98) 0%, rgba(255, 251, 235, .91) 34%, rgba(255, 251, 235, .13) 64%);
     }
-
     .hero-inner {
       width: min(1180px, calc(100% - 32px));
       margin: 0 auto;
-      padding: 72px 0 88px;
+      padding: 120px 0 94px;
     }
-
-    .hero-copy { max-width: 610px; }
-
-    .eyebrow {
-      display: inline-flex;
-      margin: 0 0 16px;
-      padding: 7px 11px;
-      border: 2px solid var(--teal);
-      border-radius: 999px;
-      color: var(--teal-dark);
-      background: #eaf8f5;
-      font-size: 16px;
-      font-weight: 900;
+    .hero-copy { max-width: 570px; }
+    .quest-label {
+      width: fit-content;
+      margin: 0 0 15px;
+      padding: 8px 13px;
+      border: 2px solid #e7b832;
+      border-radius: 8px;
+      background: #fff4b8;
+      box-shadow: 0 4px 0 rgba(133, 100, 22, .12);
+      color: #765619;
+      font-size: 15px;
+      font-weight: 950;
     }
-
     h1 {
-      max-width: 600px;
       margin: 0;
-      font-size: clamp(46px, 7vw, 78px);
-      line-height: 1.05;
+      color: #334d78;
+      font-size: clamp(48px, 7vw, 82px);
+      line-height: 1.03;
       letter-spacing: 0;
+      text-shadow: 0 4px 0 #fff, 0 7px 0 rgba(53, 77, 119, .13);
     }
-
-    .lead {
-      max-width: 560px;
+    .hero-lead {
+      max-width: 520px;
       margin: 22px 0 0;
-      color: #405b6d;
+      color: #53647d;
       font-size: clamp(18px, 2vw, 22px);
-      line-height: 1.7;
-      font-weight: 650;
+      line-height: 1.65;
+      font-weight: 750;
     }
-
     .hero-actions {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 30px;
+      align-items: center;
+      gap: 14px;
+      margin-top: 29px;
     }
-
-    .button {
-      min-height: 48px;
+    .start-button {
+      min-height: 58px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      padding: 0 18px;
-      border: 1px solid transparent;
+      gap: 10px;
+      padding: 0 24px;
+      border: 3px solid #d95043;
       border-radius: 8px;
-      font-weight: 850;
-      transition: transform 160ms ease, box-shadow 160ms ease;
-    }
-
-    .button:hover {
-      transform: translateY(-2px);
-    }
-
-    .button-primary {
-      color: var(--white);
+      color: #fff;
       background: var(--coral);
-      border-color: #d9584c;
-      box-shadow: 0 7px 0 rgba(23, 51, 74, 0.14);
+      box-shadow: 0 7px 0 #bd4339, 0 12px 22px rgba(188, 67, 57, .22);
+      font-size: 18px;
+      font-weight: 950;
+      transition: transform .16s ease, box-shadow .16s ease;
     }
-
-    .button-secondary {
-      border-color: var(--line);
-      background: rgba(255, 255, 255, 0.9);
-    }
-
-    .section {
-      width: min(1180px, calc(100% - 32px));
-      margin: 0 auto;
-      padding: 72px 0;
-    }
-
-    .section-head {
-      display: flex;
-      align-items: end;
-      justify-content: space-between;
-      gap: 28px;
-      margin-bottom: 24px;
-    }
-
-    h2 {
-      margin: 0;
-      font-size: clamp(30px, 4vw, 44px);
-      line-height: 1.15;
-      letter-spacing: 0;
-    }
-
-    .section-note {
-      max-width: 520px;
-      margin: 0;
-      color: var(--muted);
-      line-height: 1.65;
-      font-weight: 650;
-    }
-
-    .subject-grid {
-      display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-      gap: 14px;
-    }
-
-    .subject-card {
-      min-height: 244px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      padding: 18px;
-      border: 1px solid var(--line);
-      border: 2px solid var(--accent);
+    .start-button:hover { transform: translateY(-3px); }
+    .start-button:active { transform: translateY(4px); box-shadow: 0 2px 0 #bd4339; }
+    .player-chip {
+      min-height: 52px;
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 0 14px;
+      border: 2px solid rgba(53, 77, 119, .13);
       border-radius: 8px;
-      background: var(--card-bg);
-      box-shadow: 0 7px 0 rgba(23, 51, 74, 0.13);
-      transition: transform 180ms ease, box-shadow 180ms ease;
-    }
-
-    .subject-card:hover {
-      transform: translateY(-5px) rotate(-1deg);
-      box-shadow: var(--shadow);
-    }
-
-    .subject-icon {
-      width: 52px;
-      height: 52px;
-      display: grid;
-      place-items: center;
-      border-radius: 8px;
-      color: var(--white);
-      background: var(--accent);
-      font-size: 23px;
+      background: rgba(255, 255, 255, .9);
       font-weight: 900;
     }
+    .player-chip strong { color: #e49c17; font-size: 19px; }
+    .scroll-hint {
+      position: absolute;
+      bottom: 18px;
+      left: 50%;
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      border: 2px solid rgba(53, 77, 119, .16);
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .86);
+      animation: bounce 1.5s ease-in-out infinite;
+    }
 
-    .subject-card h3 {
-      margin: 18px 0 7px;
-      font-size: 24px;
+    .world {
+      position: relative;
+      overflow: hidden;
+      padding: 70px 0 90px;
+      background:
+        radial-gradient(circle at 14% 12%, #fff 0 5px, transparent 6px),
+        radial-gradient(circle at 86% 17%, #fff 0 7px, transparent 8px),
+        linear-gradient(#9ee4f7 0 17%, #dff7cf 17% 100%);
+    }
+    .world::before {
+      content: "";
+      position: absolute;
+      top: 125px;
+      left: -3%;
+      width: 106%;
+      height: 105px;
+      background: #79c76d;
+      clip-path: polygon(0 65%, 8% 28%, 18% 56%, 30% 12%, 43% 62%, 57% 24%, 70% 67%, 84% 18%, 100% 57%, 100% 100%, 0 100%);
+    }
+    .world-inner {
+      position: relative;
+      z-index: 1;
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+    .world-head { text-align: center; }
+    .world-kicker {
+      margin: 0;
+      color: #39745e;
+      font-weight: 950;
+    }
+    h2 {
+      margin: 7px 0 8px;
+      color: #314b74;
+      font-size: clamp(34px, 5vw, 54px);
+      line-height: 1.1;
       letter-spacing: 0;
     }
-
-    .subject-card p {
+    .world-subtitle {
       margin: 0;
-      color: var(--muted);
-      line-height: 1.55;
-      font-weight: 620;
+      color: #52677b;
+      font-weight: 750;
+    }
+    .map {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 78px 18px;
+      margin-top: 50px;
+      padding: 34px 10px 20px;
+    }
+    .map::before {
+      content: "";
+      position: absolute;
+      inset: 16% 9% 20%;
+      border: 7px dashed rgba(255, 255, 255, .86);
+      border-radius: 48%;
+      transform: rotate(-4deg);
+      filter: drop-shadow(0 3px 0 rgba(60, 105, 74, .12));
+    }
+    .subject {
+      --accent: #498ad0;
+      --soft: #eaf5ff;
+      position: relative;
+      min-height: 274px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 35px 34px 31px;
+      border: 0;
+      border-radius: 48% 52% 46% 54% / 55% 48% 52% 45%;
+      background:
+        radial-gradient(ellipse at 49% 20%, rgba(255,255,255,.35) 0 8%, transparent 9%),
+        radial-gradient(ellipse at 24% 56%, #419f52 0 5%, transparent 5.5%),
+        radial-gradient(ellipse at 79% 38%, #53af58 0 4%, transparent 4.5%),
+        radial-gradient(ellipse at 70% 72%, rgba(255,235,149,.38) 0 5%, transparent 5.5%),
+        linear-gradient(145deg, #8bd978 0%, #61bd67 62%, #45a95c 100%);
+      box-shadow:
+        0 0 0 8px #f8df8f,
+        0 0 0 14px rgba(255,255,255,.78),
+        0 15px 0 #a77a4f,
+        0 25px 0 #79553d,
+        0 36px 24px rgba(42, 77, 78, .3);
+      text-align: center;
+      transition: transform .18s ease, box-shadow .18s ease;
+      animation: island-float 4.2s ease-in-out infinite;
+      will-change: translate;
+    }
+    .subject::before,
+    .subject::after {
+      content: "";
+      position: absolute;
+      z-index: 0;
+      pointer-events: none;
+    }
+    .subject::before {
+      width: 46px;
+      height: 34px;
+      left: 54px;
+      bottom: -37px;
+      background: linear-gradient(135deg, #9d734f, #5f4135);
+      clip-path: polygon(0 0, 100% 8%, 78% 100%, 52% 73%, 28% 96%);
+      box-shadow:
+        92px 10px 0 -5px #76503c,
+        178px -4px 0 -9px #916746;
+      transform: rotate(4deg);
+      opacity: .95;
+    }
+    .subject::after {
+      right: 24px;
+      bottom: 38px;
+      width: 25px;
+      height: 13px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.36);
+      box-shadow:
+        -210px -8px 0 -3px rgba(255,255,255,.3),
+        -188px -173px 0 -4px #438f45,
+        -163px -183px 0 -6px #6fbe62;
+      transform: rotate(-15deg);
+    }
+    .subject > * {
+      position: relative;
+      z-index: 1;
+    }
+    .subject:hover {
+      z-index: 2;
+      animation-play-state: paused;
+      transform: translateY(-10px) rotate(-1deg);
+      box-shadow:
+        0 0 0 8px #ffe7a1,
+        0 0 0 16px rgba(255,255,255,.9),
+        0 17px 0 #ad7d51,
+        0 28px 0 #76513b,
+        0 42px 28px rgba(42, 77, 78, .32);
+    }
+    .subject:active { transform: translateY(-1px); }
+    .subject:nth-child(1) { grid-column: 1 / span 2; border-radius: 39% 61% 48% 52% / 56% 43% 57% 44%; animation-delay: -.4s; }
+    .subject:nth-child(2) { grid-column: 3 / span 2; border-radius: 57% 43% 39% 61% / 44% 58% 42% 56%; transform: translateY(26px); animation-delay: -1.7s; }
+    .subject:nth-child(2):hover { transform: translateY(18px) rotate(1deg); }
+    .subject:nth-child(3) { grid-column: 5 / span 2; border-radius: 46% 54% 62% 38% / 61% 45% 55% 39%; animation-delay: -2.8s; }
+    .subject:nth-child(4) { grid-column: 2 / span 2; border-radius: 62% 38% 49% 51% / 43% 54% 46% 57%; animation-delay: -1.1s; }
+    .subject:nth-child(5) { grid-column: 4 / span 2; border-radius: 43% 57% 37% 63% / 55% 39% 61% 45%; transform: translateY(20px); animation-delay: -3.4s; }
+    .subject:nth-child(5):hover { transform: translateY(12px) rotate(-1deg); }
+    .level {
+      position: absolute;
+      top: 4px;
+      left: 17px;
+      padding: 7px 11px;
+      border: 3px solid #fff;
+      border-radius: 6px;
+      color: #fff;
+      background: var(--accent);
+      box-shadow: 0 4px 0 rgba(44, 61, 91, .2);
+      font-size: 12px;
+      font-weight: 950;
+      transform: rotate(-5deg);
+    }
+    .level::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 12px;
+      width: 4px;
+      height: 27px;
+      border-radius: 2px;
+      background: #7a5b3e;
+    }
+    .subject-icon {
+      width: 76px;
+      height: 76px;
+      display: grid;
+      place-items: center;
+      margin: 4px auto 0;
+      border: 4px solid #fff;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 7px 0 rgba(45, 88, 62, .2);
+      font-size: 36px;
+      animation: float 3s ease-in-out infinite;
+    }
+    .subject:nth-child(even) .subject-icon { animation-delay: -.9s; }
+    .subject h3 {
+      width: fit-content;
+      margin: 9px auto 5px;
+      padding: 4px 12px;
+      border: 2px solid rgba(75, 80, 54, .16);
+      border-radius: 6px;
+      color: #314b74;
+      background: rgba(255, 253, 229, .92);
+      box-shadow: 0 3px 0 rgba(55, 83, 68, .13);
+      font-size: 22px;
+      letter-spacing: 0;
+    }
+    .subject p {
+      margin: 0;
+      color: #304e4b;
+      line-height: 1.45;
+      font-size: 14px;
+      font-weight: 800;
+      text-shadow: 0 1px 0 rgba(255,255,255,.55);
+    }
+    .enter {
+      width: calc(100% - 50px);
+      min-height: 39px;
+      display: grid;
+      place-items: center;
+      margin-top: 10px;
+      border: 3px solid #fff;
+      border-radius: 6px;
+      color: #fff;
+      background: var(--accent);
+      box-shadow: 0 5px 0 rgba(45, 82, 61, .22);
+      font-weight: 950;
+      transform: rotate(-1deg);
     }
 
-    .status {
-      align-self: flex-start;
-      margin-top: 18px;
-      padding: 6px 9px;
-      border-radius: 999px;
-      color: var(--white);
-      background: var(--accent);
-      font-size: 13px;
+    .mission {
+      padding: 66px 0 74px;
+      background: #fff9e9;
+    }
+    .mission-board {
+      width: min(940px, calc(100% - 32px));
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: .8fr 1.2fr;
+      align-items: center;
+      gap: 30px;
+      padding: 30px;
+      border: 4px solid #e6aa4c;
+      border-radius: 8px;
+      background: #fffdf5;
+      box-shadow: 0 10px 0 #c77e38, 0 18px 30px rgba(107, 73, 42, .14);
+    }
+    .mission-title { text-align: center; }
+    .mission-icon { font-size: 62px; }
+    .mission-title h2 { font-size: clamp(29px, 4vw, 42px); }
+    .quests { display: grid; gap: 10px; }
+    .quest {
+      display: grid;
+      grid-template-columns: 42px 1fr auto;
+      align-items: center;
+      gap: 12px;
+      min-height: 58px;
+      padding: 8px 12px;
+      border: 2px solid #f0dfb8;
+      border-radius: 8px;
+      background: #fff8e8;
       font-weight: 850;
     }
-
-    .roadmap {
+    .quest-number {
+      width: 36px;
+      height: 36px;
       display: grid;
-      grid-template-columns: 0.8fr 1.2fr;
-      gap: 28px;
-      padding: 32px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: #edf7f5;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--coral);
     }
-
-    .roadmap p {
-      margin: 0;
-      color: var(--muted);
-      line-height: 1.7;
-      font-weight: 650;
-    }
-
+    .stars { color: #e49c17; white-space: nowrap; }
     footer {
-      padding: 26px 16px 34px;
-      border-top: 1px solid var(--line);
-      color: var(--muted);
+      padding: 25px 16px;
+      color: #fff;
+      background: #3c5578;
       text-align: center;
-      font-weight: 650;
+      font-weight: 750;
     }
-
-    @media (max-width: 1020px) {
-      .subject-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(-2deg); }
+      50% { transform: translateY(-7px) rotate(2deg); }
     }
-
-    @media (max-width: 760px) {
-      .nav-links a:not(:last-child) { display: none; }
-
-      .hero {
-        min-height: 690px;
-        align-items: end;
-      }
-
+    @keyframes island-float {
+      0%, 100% { translate: 0 0; }
+      50% { translate: 0 -10px; }
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translate(-50%, 0); }
+      50% { transform: translate(-50%, 7px); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      * { scroll-behavior: auto !important; animation: none !important; transition: none !important; }
+    }
+    @media (max-width: 820px) {
+      .hero { min-height: 730px; align-items: end; }
       .hero-image { object-position: 65% center; }
-
-      .hero::after {
-        background: linear-gradient(180deg, rgba(255, 253, 248, 0.08) 0%, rgba(255, 253, 248, 0.78) 45%, rgba(255, 253, 248, 0.99) 70%);
-      }
-
-      .hero-inner { padding: 280px 0 52px; }
-      .section-head { display: block; }
-      .section-note { margin-top: 10px; }
-      .subject-grid { grid-template-columns: 1fr 1fr; }
-      .roadmap { grid-template-columns: 1fr; padding: 24px; }
+      .hero::after { background: linear-gradient(180deg, rgba(255,251,235,.05) 0%, rgba(255,251,235,.34) 36%, rgba(255,251,235,.98) 65%); }
+      .hero-inner { padding: 320px 0 70px; }
+      .hero-copy { max-width: 620px; }
+      .map { grid-template-columns: 1fr 1fr; gap: 48px 26px; padding-inline: 12px; }
+      .map::before { display: none; }
+      .subject:nth-child(n) { grid-column: auto; transform: none; }
+      .subject:nth-child(n):hover { transform: translateY(-6px); }
+      .subject:nth-child(5) { grid-column: 1 / -1; width: calc(50% - 8px); justify-self: center; }
+      .mission-board { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 540px) {
+      .nav-jump { display: none; }
+      .brand { font-size: 18px; }
+      .hero { min-height: 700px; }
+      .hero-inner { padding-top: 300px; }
+      h1 { font-size: 47px; }
+      .hero-lead { font-size: 17px; }
+      .player-chip { display: none; }
+      .start-button { width: 100%; }
+      .world { padding-top: 55px; }
+      .map { grid-template-columns: 1fr; gap: 46px; padding-inline: 16px; }
+      .subject:nth-child(n) { grid-column: auto; width: 100%; min-height: 256px; }
+      .subject-icon { width: 72px; height: 72px; font-size: 34px; }
+      .mission-board { padding: 22px 15px; }
+      .quest { grid-template-columns: 38px 1fr; }
+      .stars { display: none; }
     }
 
-    @media (max-width: 520px) {
-      .subject-grid { grid-template-columns: 1fr; }
-      .subject-card { min-height: 210px; }
+    /* Immersive 3D adventure map */
+    .world {
+      width: 100%;
+      padding: 0;
+      background: #f4c78d;
+      overflow: hidden;
+    }
+    .world::before { display: none; }
+    .world-inner {
+      width: 100%;
+      max-width: none;
+      margin: 0;
+      overflow: hidden;
+      border: 0;
+      border-radius: 0;
+      background: #f4c78d;
+      box-shadow: none;
+    }
+    .world-head {
+      position: relative;
+      width: 100%;
+      min-height: 220px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      padding: 30px 18px 35px;
+      border: 0;
+      border-radius: 0;
+      background:
+        linear-gradient(90deg, rgba(24,35,52,.34), rgba(42,34,30,.48), rgba(24,35,52,.34)),
+        url("./assets/adventure-sunrise-glow-3d.png") center 58% / cover no-repeat;
+      box-shadow: none;
+      isolation: isolate;
+      text-align: center;
+    }
+    .world-head::before {
+      display: none;
+    }
+    .world-head::after {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      inset: auto 0 -1px;
+      height: 62px;
+      color: transparent;
+      background: linear-gradient(180deg, transparent, rgba(255,221,163,.28));
+      transform: none;
+      pointer-events: none;
+    }
+    .world-kicker {
+      position: relative;
+      margin-bottom: 8px;
+      padding: 0;
+      border: 0;
+      color: #ffe79b;
+      background: transparent;
+      box-shadow: none;
+      font-size: 13px;
+      letter-spacing: 1px;
+      text-shadow: 0 2px 5px rgba(48,31,17,.9), 0 0 14px rgba(255,220,126,.32);
+    }
+    .world-head h2 {
+      color: #fff9df;
+      text-shadow:
+        0 2px 0 #8d6536,
+        0 5px 0 rgba(17,24,38,.72),
+        0 0 20px rgba(255,220,129,.25);
+    }
+    .world-subtitle {
+      margin-top: 5px;
+      padding: 0;
+      border: 0;
+      color: #fff3d2;
+      background: transparent;
+      box-shadow: none;
+      text-shadow: 0 2px 5px rgba(25,20,18,.9), 0 0 12px rgba(65,39,18,.4);
+    }
+    .map {
+      position: relative;
+      display: block;
+      width: 100%;
+      max-width: none;
+      aspect-ratio: 16 / 9;
+      margin-top: 0;
+      padding: 0;
+      overflow: hidden;
+      border: 0;
+      border-radius: 0;
+      background: url("./assets/adventure-world-3d.png") center / cover no-repeat;
+      box-shadow:
+        inset 0 30px 34px -34px rgba(255,239,205,.9),
+        inset 0 -20px 36px -34px rgba(21,33,47,.4);
+      isolation: isolate;
+    }
+    .map::before {
+      content: "";
+      position: absolute;
+      z-index: 0;
+      inset: 0;
+      display: block;
+      border: 0;
+      border-radius: 0;
+      background:
+        radial-gradient(circle at 14% 26%, rgba(255,235,168,.8) 0 2px, transparent 3px),
+        radial-gradient(circle at 45% 13%, rgba(255,255,255,.7) 0 1px, transparent 2px),
+        radial-gradient(circle at 82% 38%, rgba(255,222,128,.75) 0 2px, transparent 3px),
+        radial-gradient(circle at 63% 76%, rgba(255,255,255,.55) 0 1px, transparent 2px);
+      background-size: 210px 170px, 170px 140px, 240px 190px, 155px 125px;
+      opacity: .7;
+      animation: dust-drift 9s linear infinite;
+      pointer-events: none;
+      filter: none;
+      transform: none;
+    }
+    .map::after {
+      content: "";
+      position: absolute;
+      z-index: 0;
+      inset: auto 0 0;
+      height: 26%;
+      background: linear-gradient(180deg, transparent, rgba(225, 237, 241, .18));
+      animation: mist-breathe 6s ease-in-out infinite;
+      pointer-events: none;
+    }
+    .subject {
+      position: absolute;
+      z-index: 2;
+      width: 27%;
+      min-height: 0;
+      display: block;
+      padding: 13px;
+      border: 2px solid rgba(255,255,255,.7);
+      border-radius: 7px;
+      background: linear-gradient(145deg, rgba(71,70,67,.94), rgba(37,40,43,.9));
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.35),
+        inset 0 -5px 0 rgba(0,0,0,.2),
+        0 8px 16px rgba(0,0,0,.32);
+      color: #fff;
+      text-align: center;
+      animation: panel-hover 4s ease-in-out infinite;
+      translate: none;
+      will-change: transform;
+    }
+    .subject::before,
+    .subject::after { display: none; }
+    .subject:nth-child(1) {
+      top: 31%;
+      left: 3.5%;
+      border-radius: 7px;
+      background:
+        linear-gradient(120deg, rgba(255,255,255,.16), transparent 38%),
+        linear-gradient(145deg, rgba(93,88,78,.96), rgba(45,44,43,.93));
+      animation-delay: -.5s;
+    }
+    .subject:nth-child(2) {
+      top: 31%;
+      left: 36.5%;
+      border-color: #d9a96a;
+      border-radius: 7px;
+      background:
+        repeating-linear-gradient(3deg, rgba(80,40,15,.12) 0 2px, transparent 2px 7px),
+        linear-gradient(145deg, rgba(119,72,35,.96), rgba(65,36,22,.94));
+      animation-delay: -1.4s;
+    }
+    .subject:nth-child(3) {
+      top: 31%;
+      right: 3.5%;
+      left: auto;
+      border-color: #7ee7ff;
+      border-radius: 7px;
+      background:
+        linear-gradient(120deg, rgba(114,225,255,.2), transparent 40%),
+        linear-gradient(145deg, rgba(31,73,98,.96), rgba(13,32,55,.94));
+      animation-delay: -2.2s;
+    }
+    .subject:nth-child(4) {
+      top: 69%;
+      left: 11%;
+      width: 31%;
+      border-color: #ffb7cf;
+      border-radius: 7px;
+      background:
+        repeating-linear-gradient(90deg, rgba(255,255,255,.06) 0 1px, transparent 1px 4px),
+        linear-gradient(145deg, rgba(143,74,92,.96), rgba(82,43,66,.94));
+      animation-delay: -2.9s;
+    }
+    .subject:nth-child(5) {
+      top: 69%;
+      right: 11%;
+      left: auto;
+      width: 31%;
+      border-color: #f0b55e;
+      border-radius: 7px;
+      background:
+        radial-gradient(circle at 88% 18%, #d9a44d 0 3px, transparent 4px),
+        linear-gradient(145deg, rgba(120,70,31,.97), rgba(61,38,27,.95));
+      animation-delay: -3.5s;
+    }
+    .subject:hover,
+    .subject:nth-child(n):hover {
+      z-index: 4;
+      animation-play-state: paused;
+      transform: translateY(-7px) scale(1.03);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.4),
+        inset 0 -5px 0 rgba(0,0,0,.2),
+        0 14px 24px rgba(0,0,0,.42);
+    }
+    .subject > div { display: block; }
+    .subject-icon { display: none; }
+    .level {
+      top: -17px;
+      left: 10px;
+      padding: 5px 8px;
+      border-width: 2px;
+      border-radius: 5px;
+      font-size: 10px;
+      transform: rotate(-2deg);
+    }
+    .level::after { display: none; }
+    .subject h3 {
+      width: auto;
+      margin: 2px 0 4px;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      color: #fff8df;
+      background: transparent;
+      box-shadow: none;
+      font-size: clamp(15px, 1.55vw, 24px);
+      text-shadow: 0 2px 0 rgba(0,0,0,.45);
+    }
+    .subject p {
+      margin: 0;
+      color: #f2eadb;
+      font-size: clamp(9px, .88vw, 13px);
+      line-height: 1.35;
+      text-shadow: 0 1px 0 rgba(0,0,0,.55);
+    }
+    .enter {
+      width: 100%;
+      min-height: 31px;
+      margin-top: 8px;
+      border: 1px solid rgba(255,255,255,.68);
+      border-radius: 5px;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.35),
+        0 4px 0 rgba(0,0,0,.28);
+      font-size: clamp(10px, .95vw, 14px);
+      transform: none;
+    }
+    @keyframes panel-hover {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+    @keyframes dust-drift {
+      from { background-position: 0 0, 0 0, 0 0, 0 0; }
+      to { background-position: 50px -30px, -35px -40px, 55px -28px, -40px -34px; }
+    }
+    @keyframes mist-breathe {
+      0%, 100% { opacity: .55; transform: translateY(5px); }
+      50% { opacity: .85; transform: translateY(-4px); }
+    }
+    @media (max-width: 820px) {
+      .world { padding-top: 0; }
+      .world-head { min-height: 190px; }
+      .map {
+        aspect-ratio: auto;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        padding: 57% 16px 22px;
+        overflow: visible;
+        background-position: center top;
+        background-size: 100% auto;
+        background-color: #223448;
+      }
+      .map::before { height: 55vw; bottom: auto; }
+      .map::after { top: 35vw; bottom: auto; height: 22vw; }
+      .subject:nth-child(n) {
+        position: relative;
+        inset: auto;
+        width: auto;
+        min-height: 174px;
+        display: flex;
+        border-radius: 7px;
+        transform: none;
+        animation: none;
+      }
+      .subject:nth-child(5) { grid-column: 1 / -1; width: calc(50% - 8px); justify-self: center; }
+      .subject h3 { font-size: 20px; }
+      .subject p { font-size: 12px; }
+    }
+    @media (max-width: 540px) {
+      .world-inner { width: 100%; }
+      .world-head {
+        min-height: 178px;
+        padding: 26px 16px 30px;
+        background-position: center top;
+      }
+      .world-head h2 { font-size: 34px; }
+      .world-kicker { font-size: 10px; }
+      .world-subtitle { font-size: 13px; }
+      .map { grid-template-columns: 1fr; padding: 58% 12px 16px; }
+      .subject:nth-child(n) { grid-column: auto; width: 100%; min-height: 158px; }
     }
   </style>
 </head>
 <body>
-  <header class="site-header">
+  <header class="topbar">
     <nav class="nav" aria-label="主要導覽">
-      <a class="brand" href="./index.html" aria-label="回到首頁">
-        <span class="brand-mark">學</span>
-        <span>互動教學站</span>
+      <a class="brand" href="./index.html">
+        <span class="brand-mark" aria-hidden="true">★</span>
+        <span>學習冒險王國</span>
       </a>
-      <div class="nav-links">
-        <a href="#subjects">教學單元</a>
-        <a href="#subjects">開始探索</a>
-      </div>
+      <a class="nav-jump" href="#adventure-map"><span aria-hidden="true">🗺️</span> 打開冒險地圖</a>
     </nav>
   </header>
 
   <main>
     <section class="hero" aria-labelledby="hero-title">
-      <img class="hero-image" src="./assets/hero-classroom.png" alt="學生與老師一起進行互動學習">
+      <img class="hero-image" src="./assets/hero-classroom.png" alt="老師和學生們在明亮教室裡一起探索學習">
       <div class="hero-inner">
         <div class="hero-copy">
-          <p class="eyebrow">從探索開始，把知識學得更清楚</p>
-          <h1 id="hero-title">每一堂課，都能成為一次互動體驗。</h1>
-          <p class="lead">整合數學、國語、自然、社會與英文教學內容，讓學生透過操作、觀察與挑戰，主動建立自己的理解。</p>
+          <p class="quest-label">今日任務：選一座島嶼開始挑戰</p>
+          <h1 id="hero-title">學習冒險<br>現在出發！</h1>
+          <p class="hero-lead">每一道題目都是新關卡。準備好你的勇氣和好奇心，一起收集知識星星吧！</p>
           <div class="hero-actions">
-            <a class="button button-primary" href="#subjects">開始學習闖關 <span aria-hidden="true">↓</span></a>
+            <a class="start-button" href="#adventure-map">開始冒險 <span aria-hidden="true">▶</span></a>
+            <span class="player-chip"><strong>★ 0</strong> 等你來收集</span>
           </div>
+        </div>
+      </div>
+      <a class="scroll-hint" href="#adventure-map" aria-label="前往冒險地圖">↓</a>
+    </section>
+
+    <section class="world" id="adventure-map" aria-labelledby="map-title">
+      <div class="world-inner">
+        <div class="world-head">
+          <p class="world-kicker">CHOOSE YOUR ADVENTURE</p>
+          <h2 id="map-title">選擇今天的冒險島</h2>
+          <p class="world-subtitle">點選一座島嶼，馬上進入學習關卡！</p>
+        </div>
+
+        <div class="map">
+          <a class="subject" href="./lessons/math/index.html" style="--accent:#478cd4;--soft:#eaf5ff">
+            <span class="level">LEVEL 01</span>
+            <div>
+              <div class="subject-icon" aria-hidden="true">🏀</div>
+              <h3>數學競技場</h3>
+              <p>乘法投籃、圖形與計算挑戰</p>
+            </div>
+            <span class="enter">進入關卡 →</span>
+          </a>
+
+          <a class="subject" href="./lessons/chinese/index.html" style="--accent:#ef6d63;--soft:#fff0ee">
+            <span class="level">LEVEL 02</span>
+            <div>
+              <div class="subject-icon" aria-hidden="true">📖</div>
+              <h3>國語魔法森林</h3>
+              <p>成語、閱讀與形近字大挑戰</p>
+            </div>
+            <span class="enter">進入關卡 →</span>
+          </a>
+
+          <a class="subject" href="./lessons/english/index.html" style="--accent:#7c63cf;--soft:#f2efff">
+            <span class="level">LEVEL 03</span>
+            <div>
+              <div class="subject-icon" aria-hidden="true">🚀</div>
+              <h3>英文太空站</h3>
+              <p>單字任務與英語闖關訓練</p>
+            </div>
+            <span class="enter">進入關卡 →</span>
+          </a>
+
+          <a class="subject" href="./lessons/sel/index.html" style="--accent:#42a77d;--soft:#eaf9f1">
+            <span class="level">LEVEL 04</span>
+            <div>
+              <div class="subject-icon" aria-hidden="true">💛</div>
+              <h3>心情精靈村</h3>
+              <p>認識感受，找到勇敢的下一步</p>
+            </div>
+            <span class="enter">進入關卡 →</span>
+          </a>
+
+          <a class="subject" href="./lessons/games/index.html" style="--accent:#e5a52c;--soft:#fff8dc">
+            <span class="level">BONUS</span>
+            <div>
+              <div class="subject-icon" aria-hidden="true">🎮</div>
+              <h3>益智遊樂園</h3>
+              <p>猜謎、動腦與節慶特別任務</p>
+            </div>
+            <span class="enter">進入關卡 →</span>
+          </a>
         </div>
       </div>
     </section>
 
-    <section class="section" id="subjects" aria-labelledby="subjects-title">
-      <div class="section-head">
-        <div>
-          <p class="eyebrow">教學單元入口</p>
-          <h2 id="subjects-title">今天想挑戰哪一科？</h2>
+    <section class="mission" aria-labelledby="mission-title">
+      <div class="mission-board">
+        <div class="mission-title">
+          <div class="mission-icon" aria-hidden="true">🏆</div>
+          <p class="world-kicker">DAILY QUEST</p>
+          <h2 id="mission-title">今日冒險任務</h2>
         </div>
-        <p class="section-note">每個科目之後都會建立獨立分頁，放入主題課程、互動練習與學習挑戰。</p>
-      </div>
-
-      <div class="subject-grid">
-        <a class="subject-card" href="./lessons/math/index.html" style="--accent: var(--blue); --card-bg: #eef6ff">
-          <div>
-            <div class="subject-icon">數</div>
-            <h3>數學</h3>
-            <p>從圖形、數量與生活情境中理解數學概念。</p>
-          </div>
-          <span class="status">開始學習</span>
-        </a>
-
-        <a class="subject-card" href="./lessons/chinese/index.html" style="--accent: var(--coral); --card-bg: #fff1ef">
-          <div>
-            <div class="subject-icon">國</div>
-            <h3>國語</h3>
-            <p>挑戰成語、閱讀理解與文字推理任務。</p>
-          </div>
-          <span class="status">開始闖關</span>
-        </a>
-
-        <a class="subject-card" href="./lessons/sel/index.html" style="--accent: var(--green); --card-bg: #eff9f1">
-          <div>
-            <div class="subject-icon">SEL</div>
-            <h3>SEL 課程</h3>
-            <p>認識情緒、練習同理與溝通，培養良好的人際互動能力。</p>
-          </div>
-          <span class="status">開始探索</span>
-        </a>
-
-        <a class="subject-card" href="./lessons/games/index.html" style="--accent: var(--yellow); --card-bg: #fff8df">
-          <div>
-            <div class="subject-icon">玩</div>
-            <h3>綜合小遊戲</h3>
-            <p>透過趣味任務與生活挑戰，練習合作、思考與解決問題。</p>
-          </div>
-          <span class="status">開始遊戲</span>
-        </a>
-
-        <a class="subject-card" href="./lessons/english/index.html" style="--accent: var(--teal); --card-bg: #eaf8f6">
-          <div>
-            <div class="subject-icon">EN</div>
-            <h3>英文</h3>
-            <p>用聽、說、讀與情境挑戰累積英語能力。</p>
-          </div>
-          <span class="status">開始練習</span>
-        </a>
+        <div class="quests">
+          <div class="quest"><span class="quest-number">1</span><span>挑選一個喜歡的學習關卡</span><span class="stars">★</span></div>
+          <div class="quest"><span class="quest-number">2</span><span>專心完成一次挑戰</span><span class="stars">★★</span></div>
+          <div class="quest"><span class="quest-number">3</span><span>勇敢再挑戰一次自己的紀錄</span><span class="stars">★★★</span></div>
+        </div>
       </div>
     </section>
-
   </main>
 
-  <footer>互動教學站 · 教學單元持續建置中</footer>
+  <footer>學習冒險王國 · 每天前進一小步，知識能量就會更強！</footer>
 </body>
 </html>
