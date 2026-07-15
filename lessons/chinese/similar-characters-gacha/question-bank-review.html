@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>國語扭蛋機正式題庫</title>
+  <style>
+    :root {
+      --ink: #172033;
+      --muted: #5d6d86;
+      --line: #d9e2ef;
+      --panel: #ffffff;
+      --bg: #f5f7fb;
+      --cyan: #1fc7dc;
+      --yellow: #f4c84d;
+      --green: #55c779;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--bg);
+      font-family: "Segoe UI", "Microsoft JhengHei", "Noto Sans TC", system-ui, sans-serif;
+      line-height: 1.65;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      padding: 18px clamp(16px, 4vw, 40px);
+      background: rgba(255, 255, 255, .94);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(12px);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(26px, 4vw, 40px);
+      line-height: 1.15;
+    }
+
+    .summary {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .summary span {
+      padding: 4px 10px;
+      border-radius: 8px;
+      background: #edf4fb;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    button, input {
+      min-height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink);
+      font: inherit;
+      font-weight: 850;
+    }
+
+    button {
+      padding: 0 12px;
+      cursor: pointer;
+    }
+
+    button.active {
+      border-color: transparent;
+      background: linear-gradient(90deg, var(--cyan), var(--yellow));
+    }
+
+    input {
+      flex: 1 1 260px;
+      padding: 0 12px;
+      font-weight: 700;
+    }
+
+    main {
+      width: min(1120px, calc(100% - 28px));
+      margin: 22px auto 48px;
+    }
+
+    .question {
+      margin: 14px 0;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      box-shadow: 0 8px 22px rgba(18, 32, 55, .08);
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-bottom: 10px;
+    }
+
+    .chip {
+      padding: 3px 8px;
+      border-radius: 8px;
+      background: #edf4fb;
+      color: #31415c;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .chip.ok {
+      background: #e8fff0;
+      color: #176333;
+    }
+
+    .prompt {
+      margin: 0 0 8px;
+      font-size: 18px;
+      font-weight: 950;
+    }
+
+    .sentence {
+      margin: 0 0 12px;
+      color: #27384f;
+      font-size: 17px;
+      font-weight: 750;
+    }
+
+    .options {
+      display: grid;
+      gap: 6px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .options li {
+      padding: 8px 10px;
+      border: 1px solid #e6edf5;
+      border-radius: 8px;
+      background: #fbfdff;
+    }
+
+    .options li.correct {
+      border-color: #83d9a1;
+      background: #ecfff2;
+      font-weight: 950;
+    }
+
+    .answer, .explain, .reference {
+      margin: 12px 0 0;
+    }
+
+    .answer strong, .explain strong, .reference strong {
+      color: #0f6f7b;
+    }
+
+    .empty {
+      padding: 30px;
+      text-align: center;
+      color: var(--muted);
+      font-weight: 900;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>國語扭蛋機正式題庫</h1>
+    <div class="summary" id="summary"></div>
+    <div class="toolbar">
+      <button class="active" data-filter="all">全部</button>
+      <button data-filter="形近字">形近字</button>
+      <button data-filter="多音字">多音字／讀音</button>
+      <input id="search" type="search" placeholder="搜尋題目、答案、字詞或參考來源">
+    </div>
+  </header>
+  <main id="list"></main>
+
+  <script src="question-bank-data.js"></script>
+  <script>
+    const list = document.getElementById("list");
+    const summary = document.getElementById("summary");
+    const search = document.getElementById("search");
+    let activeFilter = "all";
+
+    function questionType(q) {
+      if (q.category === "多音字" || q.category === "讀音") return "多音字";
+      return "形近字";
+    }
+
+    function allAnswers(q) {
+      return q.acceptedAnswers || [q.displayAnswer || q.answer];
+    }
+
+    function escapeHtml(value) {
+      return String(value || "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      }[char]));
+    }
+
+    function matches(q) {
+      const text = [
+        q.mode, q.category, q.difficulty, q.focus, q.prompt,
+        q.sentence, q.answer, q.explain, q.reference,
+        ...(q.options || []), ...(q.acceptedAnswers || [])
+      ].join(" ");
+      const keyword = search.value.trim();
+      const filterOk = activeFilter === "all" || questionType(q) === activeFilter;
+      const searchOk = !keyword || text.includes(keyword);
+      return filterOk && searchOk;
+    }
+
+    function updateSummary(questions) {
+      const counts = questions.reduce((acc, q) => {
+        acc.total += 1;
+        acc[questionType(q)] += 1;
+        return acc;
+      }, { total: 0, "形近字": 0, "多音字": 0 });
+
+      summary.innerHTML = `
+        <span>正式題庫 ${counts.total} 題</span>
+        <span>形近字 ${counts["形近字"]} 題</span>
+        <span>多音字／讀音 ${counts["多音字"]} 題</span>
+      `;
+    }
+
+    function render() {
+      const questions = window.QUESTION_BANK || [];
+      updateSummary(questions);
+
+      const filtered = questions.filter(matches);
+      if (!filtered.length) {
+        list.innerHTML = '<div class="empty">沒有符合條件的題目</div>';
+        return;
+      }
+
+      list.innerHTML = filtered.map((q, index) => {
+        const accepted = allAnswers(q);
+        const options = (q.options || []).map(option => {
+          const correct = accepted.includes(option) || accepted.some(answer => option.startsWith(answer));
+          return `<li class="${correct ? "correct" : ""}">${correct ? "✓ " : ""}${escapeHtml(option)}</li>`;
+        }).join("");
+
+        return `
+          <article class="question">
+            <div class="meta">
+              <span class="chip">#${index + 1}</span>
+              <span class="chip ok">正式題庫</span>
+              <span class="chip">${escapeHtml(questionType(q))}</span>
+              <span class="chip">${escapeHtml(q.difficulty || "未分級")}</span>
+              <span class="chip">${escapeHtml(q.focus || "")}</span>
+              <span class="chip">${escapeHtml(q.mode || "")}</span>
+            </div>
+            <p class="prompt">${escapeHtml(q.prompt || q.mode || "")}</p>
+            <p class="sentence">${escapeHtml(q.sentence || "")}</p>
+            <ul class="options">${options}</ul>
+            <p class="answer"><strong>答案：</strong>${escapeHtml(accepted.join("、"))}</p>
+            ${q.explain ? `<p class="explain"><strong>說明：</strong>${escapeHtml(q.explain)}</p>` : ""}
+            ${q.reference ? `<p class="reference"><strong>來源：</strong>${escapeHtml(q.reference)}</p>` : ""}
+          </article>
+        `;
+      }).join("");
+    }
+
+    document.querySelectorAll("button[data-filter]").forEach(button => {
+      button.addEventListener("click", () => {
+        activeFilter = button.dataset.filter;
+        document.querySelectorAll("button[data-filter]").forEach(item => item.classList.toggle("active", item === button));
+        render();
+      });
+    });
+
+    search.addEventListener("input", render);
+    render();
+  </script>
+</body>
+</html>

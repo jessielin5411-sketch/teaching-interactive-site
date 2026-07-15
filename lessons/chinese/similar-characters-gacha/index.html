@@ -159,48 +159,66 @@
 
     .dome {
       position: relative;
-      width: min(310px, 78vw);
-      height: 310px;
+      width: min(330px, 80vw);
+      height: 330px;
+      overflow: hidden;
+      border-radius: 8px;
     }
 
-    .glass {
+    .machine-photo {
       position: absolute;
-      inset: 4px 20px 62px;
-      border: 8px solid rgba(255, 255, 255, .72);
-      border-radius: 50% 50% 44% 44%;
-      background: radial-gradient(circle at 34% 24%, rgba(255, 255, 255, .86), rgba(255, 255, 255, .20) 18%, rgba(88, 234, 244, .25) 58%, rgba(44, 76, 143, .22));
-      box-shadow: inset 0 -18px 34px rgba(0, 0, 0, .18);
+      z-index: 2;
+      left: 50%;
+      top: 0;
+      width: auto;
+      max-width: none;
+      height: 330px;
+      transform: translateX(-50%);
+      filter: saturate(1.05) contrast(1.04);
     }
 
-    .capsules {
+    .machine-balls-photo {
       position: absolute;
-      inset: 82px 42px 76px;
+      z-index: 3;
+      left: 50%;
+      top: 0;
+      width: auto;
+      max-width: none;
+      height: 330px;
+      clip-path: ellipse(39% 33% at 50% 34%);
+      transform: translateX(-50%);
+      transform-origin: 50% 34%;
+      filter: saturate(1.14) contrast(1.06);
+      pointer-events: none;
     }
 
-    .capsule {
+    .handle-overlay {
       position: absolute;
-      width: 54px;
-      height: 42px;
-      display: grid;
-      place-items: center;
-      border: 3px solid rgba(255, 255, 255, .74);
+      z-index: 5;
+      left: 50%;
+      top: 234px;
+      width: 62px;
+      height: 62px;
+      border: 5px solid #e9eef2;
+      border-radius: 50%;
+      background: radial-gradient(circle at 34% 28%, #ffffff 0 7%, #b9c3ca 8% 44%, #67727b 45% 53%, #e8edf0 54% 100%);
+      box-shadow: 0 3px 8px rgba(18, 22, 31, .42), inset 0 2px 4px rgba(255, 255, 255, .72);
+      transform: translateX(-50%);
+      transform-origin: 50% 50%;
+      pointer-events: none;
+    }
+
+    .handle-overlay::after {
+      content: "";
+      position: absolute;
+      left: 7px;
+      right: 7px;
+      top: 23px;
+      height: 10px;
       border-radius: 999px;
-      color: #12253d;
-      background: var(--ball);
-      font-size: 20px;
-      font-weight: 950;
-      box-shadow: 0 6px 0 rgba(11, 20, 45, .18);
-      transform: rotate(var(--r));
+      background: linear-gradient(180deg, #ffffff, #9ba6ad 58%, #69747c);
+      box-shadow: 0 1px 2px rgba(18, 22, 31, .36);
     }
-
-    .capsule:nth-child(1) { left: 8px; top: 70px; --ball: #7ee7ff; --r: -9deg; }
-    .capsule:nth-child(2) { left: 56px; top: 34px; --ball: #ff8fb9; --r: 8deg; }
-    .capsule:nth-child(3) { left: 108px; top: 62px; --ball: #ffe36a; --r: -14deg; }
-    .capsule:nth-child(4) { left: 152px; top: 26px; --ball: #94ef84; --r: 12deg; }
-    .capsule:nth-child(5) { left: 186px; top: 86px; --ball: #dba5ff; --r: -5deg; }
-    .capsule:nth-child(6) { left: 30px; top: 112px; --ball: #ffc16f; --r: 14deg; }
-    .capsule:nth-child(7) { left: 96px; top: 112px; --ball: #f06b6b; --r: -8deg; }
-    .capsule:nth-child(8) { left: 156px; top: 122px; --ball: #6ee4c9; --r: 10deg; }
 
     .base {
       position: absolute;
@@ -212,6 +230,7 @@
       border-radius: 8px 8px 18px 18px;
       background: linear-gradient(180deg, #ff5b91, #d93378);
       box-shadow: 0 9px 0 rgba(13, 21, 45, .32);
+      opacity: 0;
     }
 
     .knob {
@@ -228,6 +247,7 @@
       background: #d9e9ff;
       font-weight: 950;
       transform: translateX(-50%);
+      transform-origin: 50% 50%;
     }
 
     .tray {
@@ -244,25 +264,41 @@
 
     .drop-capsule {
       position: absolute;
+      z-index: 6;
       left: 50%;
-      bottom: 42px;
-      width: 72px;
-      height: 56px;
-      display: grid;
-      place-items: center;
-      border: 4px solid #fff;
+      bottom: 40px;
+      width: 58px;
+      height: 50px;
+      border: 4px solid rgba(255, 255, 255, .92);
       border-radius: 999px;
-      color: #18283f;
-      background: linear-gradient(90deg, #ffeb61 0 50%, #63e9ff 50%);
-      font-size: 26px;
-      font-weight: 950;
+      background:
+        radial-gradient(circle at 30% 22%, rgba(255, 255, 255, .92), rgba(255, 255, 255, .24) 22%, transparent 44%),
+        linear-gradient(90deg, #ffdf42 0 50%, #45ddeb 50%);
+      box-shadow: inset 0 -9px 14px rgba(0, 0, 0, .16), 0 7px 12px rgba(8, 15, 34, .25);
       opacity: 0;
-      transform: translate(-50%, -170px) rotate(-22deg);
-      box-shadow: 0 7px 0 rgba(8, 15, 34, .18);
+      transform: translate(-50%, -54px) scale(.64) rotate(-28deg);
+      pointer-events: none;
     }
 
-    .drop-capsule.active {
-      animation: drop .82s cubic-bezier(.2, .75, .2, 1.2) forwards;
+    .drawing .handle-overlay {
+      animation: knobTurn .72s cubic-bezier(.18, .82, .24, 1.04) both;
+    }
+
+    .drawing .machine-balls-photo {
+      animation: photoBallShuffle 1.35s cubic-bezier(.36, 0, .18, 1) both;
+    }
+
+    .drawing .drop-capsule {
+      animation: capsuleRollOut .9s cubic-bezier(.2, .75, .2, 1.05) .62s both;
+    }
+
+    .dispensed .drop-capsule {
+      opacity: 1;
+      transform: translate(8%, 18px) scale(1) rotate(360deg);
+    }
+
+    .drawing .base {
+      animation: basePulse 1.15s ease-in-out both;
     }
 
     .start-row {
@@ -271,6 +307,57 @@
       display: grid;
       gap: 10px;
       margin-top: 16px;
+    }
+
+    .setup-panel {
+      display: grid;
+      gap: 10px;
+      padding: 12px;
+      border: 1px solid rgba(34, 215, 232, .38);
+      border-radius: 8px;
+      background: rgba(7, 16, 35, .58);
+      box-shadow: inset 0 0 18px rgba(34, 215, 232, .08);
+    }
+
+    .setup-group {
+      display: grid;
+      gap: 7px;
+    }
+
+    .setup-label {
+      color: #caffff;
+      font-size: 13px;
+      font-weight: 950;
+    }
+
+    .segmented {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 6px;
+    }
+
+    .choice {
+      min-height: 38px;
+      padding: 0 8px;
+      border: 1px solid rgba(255, 255, 255, .24);
+      border-radius: 8px;
+      color: #eafcff;
+      background: rgba(255, 255, 255, .08);
+      font-size: 14px;
+      font-weight: 950;
+      transition: transform .16s ease, border-color .16s ease, background .16s ease;
+    }
+
+    .choice:hover {
+      transform: translateY(-1px);
+      border-color: rgba(255, 216, 75, .7);
+    }
+
+    .choice.active {
+      color: #10172b;
+      border-color: rgba(255, 255, 255, .84);
+      background: linear-gradient(90deg, var(--cyan), var(--yellow));
+      box-shadow: 0 0 16px rgba(34, 215, 232, .32);
     }
 
     .primary, .secondary {
@@ -512,7 +599,8 @@
     }
 
     .answer::before {
-      content: attr(data-key);
+      content: none;
+      display: none;
       position: absolute;
       left: 14px;
       top: 50%;
@@ -636,21 +724,32 @@
       font-weight: 750;
     }
 
-    .shake .capsule {
-      animation: shake .45s ease-in-out;
+    @keyframes knobTurn {
+      0% { transform: translateX(-50%) rotate(0deg); }
+      72% { transform: translateX(-50%) rotate(390deg); }
+      100% { transform: translateX(-50%) rotate(360deg); }
     }
 
-    @keyframes drop {
-      0% { opacity: 0; transform: translate(-50%, -160px) rotate(-20deg); }
-      55% { opacity: 1; transform: translate(-50%, 0) rotate(12deg); }
-      76% { transform: translate(-50%, -18px) rotate(-8deg); }
-      100% { opacity: 1; transform: translate(-50%, 0) rotate(0); }
+    @keyframes photoBallShuffle {
+      0%, 100% { transform: translateX(-50%) translate(0, 0) rotate(0deg) scale(1); }
+      14% { transform: translateX(-50%) translate(7px, -5px) rotate(4deg) scale(1.025); }
+      30% { transform: translateX(-50%) translate(-8px, 5px) rotate(-4.5deg) scale(1.022); }
+      48% { transform: translateX(-50%) translate(6px, 4px) rotate(3.2deg) scale(1.018); }
+      66% { transform: translateX(-50%) translate(-5px, -3px) rotate(-2.6deg) scale(1.014); }
+      84% { transform: translateX(-50%) translate(2px, 1px) rotate(1deg) scale(1.006); }
     }
 
-    @keyframes shake {
-      25% { transform: translateX(-7px) rotate(-6deg); }
-      50% { transform: translateX(6px) rotate(5deg); }
-      75% { transform: translateX(-4px) rotate(-3deg); }
+    @keyframes capsuleRollOut {
+      0% { opacity: 0; transform: translate(-50%, -62px) scale(.55) rotate(-38deg); }
+      24% { opacity: 1; transform: translate(-50%, -20px) scale(.78) rotate(36deg); }
+      52% { opacity: 1; transform: translate(-50%, 12px) scale(1) rotate(142deg); }
+      74% { opacity: 1; transform: translate(-26%, 20px) scale(1) rotate(238deg); }
+      100% { opacity: 1; transform: translate(8%, 18px) scale(1) rotate(360deg); }
+    }
+
+    @keyframes basePulse {
+      0%, 100% { filter: brightness(1); }
+      45% { filter: brightness(1.22); }
     }
 
     @keyframes pop {
@@ -671,9 +770,1352 @@
       .answers { grid-template-columns: 1fr; }
       .sentence { font-size: 28px; }
     }
+
+    /* Full-screen game stage based on the approved visual direction. */
+    body {
+      min-height: 100svh;
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      background: #171717;
+    }
+
+    .topbar { display: none; }
+
+    .shell {
+      width: min(1280px, 100%);
+      padding: 0;
+    }
+
+    .machine-layout {
+      position: relative;
+      display: block;
+      min-height: 0;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      border-radius: 18px;
+      background: url("assets/quiz-energy-battle-landscape.png") center / cover no-repeat;
+      box-shadow: 0 18px 56px rgba(0, 0, 0, .48);
+    }
+
+    .cabinet {
+      position: absolute;
+      z-index: 1;
+      inset: 0;
+      min-height: 0;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+      cursor: pointer;
+    }
+
+    .cabinet::before,
+    .cabinet .neon-title,
+    .cabinet .gacha-window,
+    .cabinet .start-row {
+      display: none;
+    }
+
+    .question-panel {
+      position: absolute;
+      z-index: 2;
+      top: 25.2%;
+      right: 5.1%;
+      width: 49.8%;
+      min-height: 0;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .22s ease;
+    }
+
+    .question-panel.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .question-panel .arena-header,
+    .question-panel .hud,
+    .question-panel .tag-row {
+      display: none;
+    }
+
+    .question-box {
+      min-height: 0;
+      margin: 0;
+      padding: 5.2% 7%;
+      border: 0;
+      border-radius: 18px;
+      background: rgba(247, 251, 255, .92);
+      box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .84), 0 5px 16px rgba(56, 73, 131, .22);
+    }
+
+    .prompt {
+      margin: 0;
+      color: #183d78;
+      font-size: clamp(15px, 2.15vw, 30px);
+      line-height: 1.35;
+      font-weight: 900;
+      text-align: center;
+    }
+
+    .sentence { display: none; }
+
+    .answers {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: clamp(10px, 1.65vw, 22px);
+      margin-top: clamp(16px, 2.5vw, 32px);
+    }
+
+    .answer {
+      min-height: clamp(48px, 7vw, 86px);
+      padding: 8px 12px;
+      border: 3px solid rgba(255, 255, 255, .92);
+      border-radius: 18px;
+      color: #fff;
+      font-size: clamp(15px, 2vw, 29px);
+      font-weight: 950;
+      text-shadow: 0 2px 2px rgba(30, 50, 94, .35);
+      box-shadow: inset 0 3px 5px rgba(255, 255, 255, .56), 0 4px 10px rgba(32, 58, 110, .27);
+    }
+
+    .answer:nth-child(4n + 1) { background: linear-gradient(180deg, #47d8ff, #168ee9); }
+    .answer:nth-child(4n + 2) { background: linear-gradient(180deg, #ff8dc1, #e84187); }
+    .answer:nth-child(4n + 3) { background: linear-gradient(180deg, #ffd55b, #e99a11); }
+    .answer:nth-child(4n + 4) { background: linear-gradient(180deg, #b8ed4b, #58a90b); }
+
+    .feedback {
+      margin-top: 14px;
+      padding: 11px 14px;
+      border-radius: 14px;
+      color: #183d78;
+      background: rgba(255, 255, 255, .95);
+      font-size: clamp(13px, 1.45vw, 20px);
+      font-weight: 800;
+      box-shadow: 0 4px 12px rgba(32, 58, 110, .22);
+    }
+
+    .feedback strong { color: #c62e68; }
+
+    .answer.correct {
+      background: linear-gradient(180deg, #7ce84e, #2f9e22) !important;
+      outline: 4px solid #fff7a1;
+      box-shadow: inset 0 3px 5px rgba(255, 255, 255, .6), 0 0 0 4px #2f9e22, 0 5px 12px rgba(30, 104, 43, .35);
+    }
+
+    .answer.wrong {
+      background: linear-gradient(180deg, #ff8e9d, #d93b52) !important;
+      opacity: .7;
+    }
+
+    .next-row { justify-content: center; }
+
+    .machine-layout {
+      overflow: visible;
+      margin-bottom: 118px;
+    }
+
+    .machine-layout {
+      overflow: hidden;
+      margin-bottom: 0;
+    }
+
+    .question-panel.active {
+      top: 19%;
+      right: 4.4%;
+      bottom: 12%;
+      width: 53.5%;
+      padding: clamp(10px, 1.5vw, 20px);
+      border: 2px solid rgba(255, 255, 255, .9);
+      border-radius: 24px;
+      background: rgba(231, 240, 255, .98);
+      box-shadow: inset 0 0 0 2px rgba(183, 204, 251, .8), 0 8px 22px rgba(48, 75, 145, .28);
+      overflow-y: auto;
+    }
+
+    .question-panel.active .question-box {
+      background: #fff;
+    }
+
+    .cabinet .start-row {
+      position: absolute;
+      z-index: 4;
+      top: auto;
+      bottom: 0;
+      left: 2%;
+      width: 96%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin: 0;
+      padding: 10px 12px;
+      border: 1px solid rgba(255, 255, 255, .45);
+      border-radius: 14px 14px 0 0;
+      color: #193d74;
+      background: rgba(246, 251, 255, .94);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, .22);
+      cursor: default;
+    }
+
+    .cabinet .setup-panel {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .cabinet .setup-group {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .cabinet .setup-label {
+      color: #244a83;
+      font-size: 14px;
+      font-weight: 950;
+    }
+
+    .cabinet .segmented { display: flex; gap: 4px; }
+
+    .cabinet .choice,
+    .cabinet .primary,
+    .cabinet .secondary {
+      min-height: 34px;
+      padding: 4px 10px;
+      border-radius: 9px;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .cabinet .choice {
+      border: 1px solid #bdcbe9;
+      color: #35578d;
+      background: #fff;
+    }
+
+    .cabinet .choice.active { color: #fff; background: #398ee2; }
+    .cabinet .primary { border: 0; color: #fff; background: #e95191; }
+    .cabinet .secondary { border: 1px solid #bdcbe9; color: #35578d; background: #fff; }
+
+    @media (max-width: 700px) {
+      body { padding: 0; place-items: start stretch; }
+      .machine-layout { border-radius: 0; min-height: 100svh; aspect-ratio: auto; background-position: 34% top; }
+      .question-panel { top: 29%; right: 5%; width: 58%; }
+      .question-box { border-radius: 12px; }
+      .answers { gap: 8px; margin-top: 10px; }
+      .answer { min-height: 44px; border-radius: 12px; }
+      .cabinet .start-row { align-items: stretch; flex-wrap: wrap; }
+      .cabinet .setup-panel { flex-wrap: wrap; justify-content: center; gap: 8px; }
+      .cabinet .setup-group { flex-wrap: wrap; justify-content: center; }
+    }
+    .accuracy {
+      color: #244a83;
+      font-weight: 950;
+    }
+
+    .question-panel.active .hud {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin: 0 0 12px;
+    }
+
+    .question-panel.active .progress,
+    .question-panel.active .stars { display: none; }
+
+    .question-panel.active .score,
+    .question-panel.active .accuracy {
+      min-width: 112px;
+      padding: 7px 10px;
+      border-radius: 10px;
+      text-align: center;
+      color: #244a83;
+      background: #fff;
+      box-shadow: 0 2px 7px rgba(48, 75, 145, .16);
+    }
+
+    .machine-layout::after {
+      content: "點選左側扭蛋機，抽出今天的題目！";
+      position: absolute;
+      z-index: 2;
+      top: 48%;
+      right: 9%;
+      width: 40%;
+      color: #31568d;
+      font-size: clamp(20px, 3vw, 40px);
+      font-weight: 950;
+      line-height: 1.35;
+      text-align: center;
+      text-shadow: 0 2px 0 #fff;
+      pointer-events: none;
+    }
+
+    .machine-layout:has(.question-panel.active)::after { opacity: 0; }
+
+    .stage-drop-capsule {
+      position: absolute;
+      z-index: 3;
+      left: 18.2%;
+      top: 74.5%;
+      width: clamp(30px, 5.2vw, 72px);
+      aspect-ratio: 1.15;
+      border: 4px solid rgba(255, 255, 255, .92);
+      border-radius: 999px;
+      background:
+        radial-gradient(circle at 31% 24%, #fff 0 8%, rgba(255,255,255,.3) 9% 23%, transparent 24%),
+        linear-gradient(90deg, #ffca2e 0 50%, #42c8e8 50%);
+      box-shadow: inset 0 -8px 12px rgba(0,0,0,.16), 0 7px 10px rgba(21, 36, 67, .34);
+      opacity: 0;
+      transform: translate(-50%, -56px) scale(.6) rotate(-25deg);
+      pointer-events: none;
+    }
+
+    .cabinet.drawing + .stage-drop-capsule {
+      animation: stageCapsuleDrop 1.35s cubic-bezier(.2,.75,.2,1.05) .45s both;
+    }
+
+    .cabinet.dispensed + .stage-drop-capsule {
+      opacity: 1;
+      transform: translate(42%, 25px) scale(1) rotate(410deg);
+    }
+
+    @keyframes stageCapsuleDrop {
+      0% { opacity: 0; transform: translate(-50%, -58px) scale(.55) rotate(-35deg); }
+      22% { opacity: 1; transform: translate(-50%, -20px) scale(.8) rotate(28deg); }
+      54% { opacity: 1; transform: translate(-48%, 6px) scale(1) rotate(130deg); }
+      78% { opacity: 1; transform: translate(6%, 24px) scale(1) rotate(275deg); }
+      100% { opacity: 1; transform: translate(42%, 25px) scale(1) rotate(410deg); }
+    }
+
+    body { display: block; padding: 0; }
+    .shell { width: 100%; }
+    .machine-layout {
+      width: 100vw;
+      min-height: 100svh;
+      aspect-ratio: auto;
+      border-radius: 0;
+      background-position: center;
+    }
+
+    @media (max-width: 700px) {
+      .machine-layout { background-position: 32% center; }
+      .machine-layout::after { top: 38%; right: 5%; width: 49%; font-size: clamp(18px, 5vw, 28px); }
+      .question-panel.active { top: 17%; right: 4%; bottom: 16%; width: 59%; padding: 9px; }
+      .question-panel.active .hud { gap: 5px; margin-bottom: 7px; }
+      .question-panel.active .score,
+      .question-panel.active .accuracy { min-width: 0; padding: 5px 7px; font-size: 12px; }
+      .stage-drop-capsule { left: 19%; top: 72%; }
+    }
+
+    /* Landscape 16:9 game frame. */
+    body {
+      min-height: 100svh;
+      display: grid;
+      place-items: center;
+      background: #14151b;
+      overflow: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      z-index: -1;
+      inset: -28px;
+      background: url("assets/quiz-energy-battle-landscape.png") center / cover no-repeat;
+      filter: blur(18px) brightness(.62);
+      transform: scale(1.08);
+    }
+
+    .back-button {
+      position: fixed;
+      z-index: 20;
+      top: max(12px, env(safe-area-inset-top));
+      left: max(12px, env(safe-area-inset-left));
+      display: inline-flex;
+      align-items: center;
+      min-height: 38px;
+      padding: 7px 12px;
+      border: 2px solid rgba(255, 255, 255, .84);
+      border-radius: 10px;
+      color: #234878;
+      background: rgba(255, 255, 255, .9);
+      box-shadow: 0 4px 12px rgba(17, 40, 75, .28);
+      font-size: 15px;
+      font-weight: 950;
+    }
+
+    .back-button:hover { background: #fff; transform: translateY(-1px); }
+
+    .shell {
+      width: min(100vw, calc(100svh * 16 / 9));
+      height: min(100svh, calc(100vw * 9 / 16));
+    }
+
+    .machine-layout {
+      width: 100%;
+      min-height: 0;
+      height: auto;
+      aspect-ratio: 16 / 9;
+      background-position: center;
+      background-size: 100% 100%;
+    }
+
+    .machine-layout::after {
+      top: 48%;
+      right: 9%;
+      width: 40%;
+      font-size: clamp(20px, 3vw, 40px);
+    }
+
+    .question-panel.active {
+      top: 19%;
+      right: 4.4%;
+      bottom: 12%;
+      width: 53.5%;
+      padding: clamp(10px, 1.5vw, 20px);
+      border-radius: 24px;
+    }
+
+    .question-panel.active .arena-header {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 6px;
+    }
+
+    .question-panel.active .mission-title { display: none; }
+
+    .question-panel.active .combo {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      min-height: 27px;
+      padding: 3px 8px;
+      border-radius: 9px;
+      color: #fff;
+      font-size: 12px;
+      background: #e95291;
+    }
+
+    .question-panel.active .combo strong { font-size: 18px; }
+
+    .question-panel.active .combo[data-bonus]:not([data-bonus=""])::after {
+      content: attr(data-bonus);
+      padding-left: 3px;
+      color: #fff4a6;
+      font-weight: 950;
+    }
+
+    .question-panel.active .question-box { padding: 5.2% 7%; }
+    .question-panel.active .answers { gap: clamp(10px, 1.65vw, 22px); margin-top: clamp(16px, 2.5vw, 32px); }
+    .question-panel.active .answer { min-height: clamp(48px, 7vw, 86px); padding: 8px 12px; border-radius: 18px; font-size: clamp(15px, 2vw, 29px); }
+    .question-panel.active .feedback { margin-top: 14px; padding: 11px 14px; border-radius: 14px; font-size: clamp(13px, 1.45vw, 20px); }
+
+    .stage-drop-capsule {
+      left: 22%;
+      top: 77.5%;
+      width: clamp(29px, 5.5vw, 60px);
+      z-index: 5;
+    }
+
+    .cabinet.dispensed + .stage-drop-capsule {
+      animation: capsuleAtExit .72s ease-in-out infinite alternate;
+    }
+
+    @keyframes capsuleAtExit {
+      from { opacity: 1; transform: translate(-50%, 0) scale(1) rotate(360deg); }
+      to { opacity: 1; transform: translate(-50%, 6px) scale(1) rotate(390deg); }
+    }
+
+    @keyframes stageCapsuleDrop {
+      0% { opacity: 0; transform: translate(-50%, -56px) scale(.55) rotate(-35deg); }
+      24% { opacity: 1; transform: translate(-50%, -22px) scale(.8) rotate(28deg); }
+      58% { opacity: 1; transform: translate(-50%, -4px) scale(1) rotate(150deg); }
+      100% { opacity: 1; transform: translate(-50%, 0) scale(1) rotate(360deg); }
+    }
+
+    @keyframes stageCapsuleDrop {
+      0% { opacity: 0; transform: translate(-50%, -56px) scale(.55) rotate(-35deg); }
+      22% { opacity: 1; transform: translate(-50%, -20px) scale(.8) rotate(28deg); }
+      54% { opacity: 1; transform: translate(-48%, 6px) scale(1) rotate(130deg); }
+      78% { opacity: 1; transform: translate(-50%, 19px) scale(1) rotate(275deg); }
+      100% { opacity: 1; transform: translate(-50%, 25px) scale(1) rotate(410deg); }
+    }
+
+    .cabinet:not(.drawing):not(.dispensed) + .stage-drop-capsule {
+      animation: idleCapsuleDrop 1.35s cubic-bezier(.2,.75,.2,1.05) .7s both;
+    }
+
+    @keyframes idleCapsuleDrop {
+      0% { opacity: 0; transform: translate(-50%, -56px) scale(.55) rotate(-35deg); }
+      35% { opacity: 1; transform: translate(-50%, 2px) scale(1) rotate(150deg); }
+      72% { opacity: 1; transform: translate(-50%, 25px) scale(1) rotate(410deg); }
+      100% { opacity: 0; transform: translate(-50%, 35px) scale(.92) rotate(470deg); }
+    }
+
+    /* Two distinct game modes: inviting setup, then focused answering. */
+    #gameArea:not(.playing) .question-panel { display: none; }
+
+    #gameArea:not(.playing) .cabinet .start-row {
+      top: 20%;
+      bottom: auto;
+      left: 50%;
+      width: min(60%, 680px);
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 12px;
+      padding: clamp(12px, 2vw, 22px);
+      border-radius: 20px;
+      background: rgba(250, 253, 255, .86);
+    }
+
+    #gameArea:not(.playing) .cabinet .start-row::before {
+      content: "選擇今天的挑戰";
+      color: #274b84;
+      font-size: clamp(18px, 2.4vw, 31px);
+      font-weight: 950;
+      text-align: center;
+    }
+
+    #gameArea:not(.playing) .cabinet .setup-panel {
+      display: grid;
+      gap: 10px;
+    }
+
+    #gameArea:not(.playing) .cabinet .setup-group {
+      justify-content: space-between;
+    }
+
+    #gameArea:not(.playing) .cabinet .primary,
+    #gameArea:not(.playing) .cabinet .secondary {
+      width: 100%;
+      min-height: 42px;
+      font-size: clamp(15px, 1.7vw, 22px);
+    }
+
+    #gameArea:not(.playing)::after { display: none; }
+
+    #gameArea.playing::after { display: none; }
+    #gameArea.playing .cabinet .start-row { display: none; }
+
+    #gameArea.playing .question-panel.active {
+      top: 9%;
+      right: 3.8%;
+      bottom: 7%;
+      width: 56%;
+      padding: clamp(12px, 1.7vw, 22px);
+      border-radius: 22px;
+      background: rgba(247, 251, 255, .98);
+      box-shadow: inset 0 0 0 2px rgba(197, 213, 249, .9), 0 12px 28px rgba(31, 57, 113, .28);
+    }
+
+    #gameArea.playing .question-panel.active .arena-header {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 6px;
+    }
+
+    #gameArea.playing .question-panel.active .mission-title { display: none; }
+    #gameArea.playing .question-panel.active .hud { display: flex; margin: 0 0 10px; }
+    #gameArea.playing .question-panel.active .tag-row { display: flex; justify-content: center; margin-bottom: 10px; }
+    #gameArea.playing .question-panel.active .sentence {
+      display: block;
+      margin: 10px 0 0;
+      color: #274b84;
+      font-size: clamp(15px, 1.7vw, 23px);
+      font-weight: 800;
+      line-height: 1.42;
+      text-align: center;
+    }
+
+    #gameArea.playing .question-panel.active .prompt {
+      font-size: clamp(17px, 2vw, 27px);
+    }
+
+    #gameArea.playing .question-panel.active .next-row { gap: 10px; margin-top: 10px; }
+    #gameArea.playing .question-panel.active .next-row .primary { min-height: 40px; }
+
+    /* Polished start-screen controls. */
+    #gameArea:not(.playing) .cabinet .start-row {
+      top: 23%;
+      left: 66%;
+      width: min(43%, 590px);
+      padding: clamp(20px, 2.5vw, 32px);
+      gap: 18px;
+      border: 2px solid rgba(255, 255, 255, .86);
+      border-radius: 26px;
+      background: rgba(247, 252, 255, .93);
+      box-shadow: 0 14px 34px rgba(29, 57, 104, .28), inset 0 1px 0 #fff;
+    }
+
+    #gameArea:not(.playing) .cabinet .start-row::before {
+      font-size: clamp(24px, 2.8vw, 38px);
+      text-shadow: 0 2px 0 #fff;
+    }
+
+    #gameArea:not(.playing) .cabinet .setup-panel { gap: 15px; }
+
+    #gameArea:not(.playing) .cabinet .setup-group {
+      display: grid;
+      grid-template-columns: 76px minmax(0, 1fr);
+      align-items: center;
+      gap: 12px;
+    }
+
+    #gameArea:not(.playing) .cabinet .setup-label {
+      font-size: clamp(16px, 1.7vw, 22px);
+      text-align: right;
+    }
+
+    #gameArea:not(.playing) .cabinet .segmented {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    #gameArea:not(.playing) .cabinet .choice {
+      min-height: clamp(42px, 4vw, 54px);
+      padding: 6px 8px;
+      border-radius: 12px;
+      font-size: clamp(15px, 1.6vw, 21px);
+      box-shadow: 0 2px 0 rgba(35, 73, 132, .12);
+    }
+
+    #gameArea:not(.playing) .cabinet .choice.active {
+      box-shadow: 0 5px 12px rgba(44, 143, 226, .35);
+    }
+
+    #gameArea:not(.playing) .cabinet .primary {
+      min-height: clamp(52px, 5vw, 66px);
+      border-radius: 14px;
+      font-size: clamp(20px, 2vw, 27px);
+      box-shadow: 0 6px 0 rgba(177, 46, 106, .45);
+    }
+
+    #gameArea:not(.playing) .cabinet .primary:hover {
+      filter: brightness(1.06);
+      transform: translateY(-2px);
+    }
+
+    @media (max-width: 840px) {
+      #gameArea:not(.playing) .cabinet .start-row {
+        top: 20%;
+        left: 70%;
+        width: 48%;
+        padding: 18px;
+      }
+      #gameArea:not(.playing) .cabinet .setup-group { grid-template-columns: 58px minmax(0, 1fr); gap: 7px; }
+      #gameArea:not(.playing) .cabinet .segmented { gap: 5px; }
+    }
+
+    /* Compact, single-line game status bar. */
+    #gameArea.playing .question-panel.active .hud {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: nowrap;
+      gap: 7px;
+      margin: 0 0 12px;
+    }
+
+    #gameArea.playing .question-panel.active .hud .score,
+    #gameArea.playing .question-panel.active .hud .accuracy,
+    #gameArea.playing .question-panel.active .hud .tag-row,
+    .report-button {
+      min-height: 34px;
+      margin: 0;
+      padding: 6px 9px;
+      border-radius: 9px;
+      white-space: nowrap;
+      font-size: clamp(12px, 1.25vw, 16px);
+      font-weight: 950;
+    }
+
+    #gameArea.playing .question-panel.active .hud .tag-row {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    #gameArea.playing .question-panel.active .hud .tag {
+      min-height: 30px;
+      padding: 5px 8px;
+      white-space: nowrap;
+    }
+
+    .report-button {
+      border: 0;
+      color: #fff;
+      background: #f09b30;
+      box-shadow: 0 3px 0 #bd6810;
+    }
+
+    .report-button:hover { filter: brightness(1.06); transform: translateY(-1px); }
+
+    .report-modal {
+      position: fixed;
+      z-index: 50;
+      inset: 0;
+      display: none;
+      place-items: center;
+      padding: 20px;
+      background: rgba(16, 29, 57, .58);
+    }
+
+    .report-modal.open { display: grid; }
+
+    .report-dialog {
+      width: min(520px, 100%);
+      padding: 22px;
+      border: 2px solid rgba(255, 255, 255, .86);
+      border-radius: 18px;
+      color: #244a83;
+      background: #f7fbff;
+      box-shadow: 0 16px 46px rgba(8, 20, 48, .32);
+    }
+
+    .report-dialog h2 { margin: 0 0 10px; font-size: 24px; }
+    .report-question { margin: 0 0 12px; padding: 12px; border-radius: 10px; background: #e7f1ff; font-weight: 800; line-height: 1.5; }
+    .report-dialog textarea { width: 100%; min-height: 90px; resize: vertical; padding: 10px; border: 1px solid #b9cdeb; border-radius: 10px; color: #244a83; font: inherit; }
+    .report-actions { display: flex; justify-content: flex-end; gap: 9px; margin-top: 14px; }
+    .report-actions button { min-height: 38px; padding: 7px 12px; border-radius: 9px; font-weight: 900; }
+    .report-cancel { border: 1px solid #b9cdeb; color: #35578d; background: #fff; }
+    .report-submit { border: 0; color: #fff; background: #398ee2; }
+
+    @media (max-width: 760px) {
+      #gameArea.playing .question-panel.active .hud { gap: 4px; }
+      #gameArea.playing .question-panel.active .hud .score,
+      #gameArea.playing .question-panel.active .hud .accuracy,
+      #gameArea.playing .question-panel.active .hud .tag-row,
+      .report-button { min-height: 28px; padding: 4px 5px; font-size: 10px; }
+      #gameArea.playing .question-panel.active .hud .tag { min-height: 25px; padding: 4px 5px; }
+    }
+
+    /* Final stage composition: keep the title and question surface in separate visual zones. */
+    body {
+      padding: 0;
+      background: #183e54;
+    }
+
+    body::before {
+      background-image: url("assets/quiz-energy-battle-clean-stage.png");
+      filter: blur(14px) brightness(.7);
+    }
+
+    .shell {
+      width: 100vw;
+      height: 100svh;
+    }
+
+    .machine-layout {
+      height: 100%;
+      aspect-ratio: auto;
+      border-radius: 0;
+      background-image: url("assets/quiz-energy-battle-clean-stage.png");
+      background-position: left center;
+      background-size: cover;
+      box-shadow: none;
+    }
+
+    .machine-layout::before {
+      content: "國語形近字能量戰";
+      position: absolute;
+      z-index: 4;
+      top: 2.4%;
+      left: 50%;
+      width: 64%;
+      color: #fff8de;
+      font-size: clamp(30px, 5vw, 66px);
+      font-weight: 950;
+      line-height: 1.08;
+      letter-spacing: 0;
+      text-align: center;
+      text-shadow: 0 3px 0 #a83c71, 0 7px 18px rgba(61, 24, 67, .48), 0 0 12px rgba(255, 227, 125, .72);
+      transform: translateX(-50%);
+      pointer-events: none;
+    }
+
+    #gameArea.playing .question-panel.active {
+      top: 16.5%;
+      right: 3.5%;
+      bottom: 3.5%;
+      width: 59%;
+      display: flex;
+      flex-direction: column;
+      padding: clamp(12px, 1.65vw, 22px);
+      overflow: hidden;
+    }
+
+    #gameArea.playing .question-panel.active .hud {
+      flex: 0 0 auto;
+      margin-bottom: 8px;
+    }
+
+    #gameArea.playing .question-panel.active .question-box {
+      flex: 0 0 auto;
+      min-height: 0;
+      margin: 0 0 12px;
+      padding: 4.2% 6.5%;
+    }
+
+    #gameArea.playing .question-panel.active .answers {
+      flex: 0 0 auto;
+      gap: clamp(10px, 1.25vw, 16px);
+      margin-top: 0;
+    }
+
+    #gameArea.playing .question-panel.active .answer {
+      min-height: clamp(48px, 6.2vw, 78px);
+    }
+
+    #gameArea.playing .question-panel.active .feedback {
+      min-height: 0;
+      margin-top: 10px;
+    }
+
+    #gameArea.playing .question-panel.active .next-row {
+      margin-top: 8px;
+    }
+
+    @media (max-width: 760px) {
+      .machine-layout::before {
+        top: 2%;
+        width: 78%;
+      }
+
+      #gameArea.playing .question-panel.active {
+        top: 14%;
+        right: 2.5%;
+        bottom: 2.5%;
+        width: 62%;
+        padding: 10px;
+      }
+    }
+
+    /* Professional visual refinement for the classroom game stage. */
+    body::before {
+      background-image: url("assets/quiz-energy-battle-balanced-stage-v2.png");
+    }
+
+    .machine-layout {
+      background-image: url("assets/quiz-energy-battle-balanced-stage-v2.png");
+      background-position: left center;
+    }
+
+    .machine-layout::before { content: none; }
+
+    .game-title {
+      position: absolute;
+      z-index: 6;
+      top: 2.1%;
+      right: 4.5%;
+      width: 61%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(2px, .42vw, 7px);
+      white-space: nowrap;
+      font-family: "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+      font-size: clamp(34px, 5.15vw, 70px);
+      font-weight: 950;
+      line-height: 1;
+      letter-spacing: 0;
+      pointer-events: none;
+      filter: drop-shadow(0 8px 8px rgba(90, 30, 85, .28));
+    }
+
+    .game-title span {
+      position: relative;
+      z-index: 0;
+      isolation: isolate;
+      display: inline-block;
+      color: var(--candy);
+      -webkit-text-fill-color: var(--candy);
+      -webkit-text-stroke: 1px rgba(255,255,255,.72);
+      transform: scaleY(1.08);
+      transform-origin: center bottom;
+      text-shadow:
+        0 2px 0 rgba(255,255,255,.72),
+        0 4px 0 var(--candy-depth),
+        0 7px 0 #a43c72,
+        0 10px 13px rgba(70,24,69,.36);
+    }
+
+    .game-title span::before {
+      content: attr(data-text);
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      color: #fff0d6;
+      -webkit-text-fill-color: #fff0d6;
+      -webkit-text-stroke: clamp(3px, .42vw, 6px) #fff0d6;
+      text-shadow:
+        0 5px 0 var(--candy-depth),
+        0 8px 0 #a43c72,
+        0 12px 16px rgba(70,24,69,.4);
+    }
+
+    .game-title .title-pink { --candy-light: #ffb4d5; --candy: #f45d9f; --candy-dark: #c93478; --candy-depth: #8f245b; }
+    .game-title .title-orange { --candy-light: #ffe18a; --candy: #ffad2f; --candy-dark: #e67418; --candy-depth: #a84a16; }
+    .game-title .title-green { --candy-light: #c9f58d; --candy: #76cc48; --candy-dark: #3c9b35; --candy-depth: #28702b; }
+    .game-title .title-purple { --candy-light: #dfbdff; --candy: #a673e6; --candy-dark: #7544bd; --candy-depth: #4e2c86; }
+
+    #gameArea.playing .question-panel.active {
+      top: 15.5%;
+      right: 3.2%;
+      bottom: 3.2%;
+      width: 60%;
+      gap: 0;
+      border: 2px solid rgba(255,255,255,.92);
+      border-radius: 24px;
+      background: linear-gradient(135deg, rgba(236,249,255,.97), rgba(249,239,255,.97));
+      box-shadow: inset 0 0 0 2px rgba(183,220,255,.72), 0 18px 42px rgba(43,69,118,.27);
+    }
+
+    #gameArea.playing .question-panel.active .hud {
+      min-height: 38px;
+      padding: 2px 4px;
+      border-radius: 12px;
+      background: rgba(255,255,255,.48);
+    }
+
+    #gameArea.playing .question-panel.active .question-box {
+      border: 1px solid rgba(164,198,235,.62);
+      border-radius: 18px;
+      background: rgba(255,255,255,.94);
+      box-shadow: 0 8px 18px rgba(65,92,137,.14);
+    }
+
+    #gameArea.playing .question-panel.active .answer {
+      border-width: 3px;
+      box-shadow: inset 0 2px 3px rgba(255,255,255,.5), 0 5px 0 rgba(62,76,112,.2), 0 9px 16px rgba(43,62,102,.14);
+      transition: transform .16s ease, filter .16s ease, box-shadow .16s ease;
+    }
+
+    #gameArea.playing .question-panel.active .answer:hover:not(:disabled) {
+      transform: translateY(-3px);
+      filter: saturate(1.08) brightness(1.04);
+      box-shadow: inset 0 2px 3px rgba(255,255,255,.55), 0 7px 0 rgba(62,76,112,.18), 0 13px 20px rgba(43,62,102,.18);
+    }
+
+    .stage-drop-capsule {
+      left: max(19.8%, 33.7vh);
+      top: 81%;
+    }
+
+    #gameArea:not(.playing) .cabinet .start-row {
+      left: 67%;
+      width: min(48%, 620px);
+      border: 2px solid rgba(255,255,255,.9);
+      background: linear-gradient(145deg, rgba(248,253,255,.94), rgba(244,237,255,.92));
+      box-shadow: 0 18px 42px rgba(39,66,111,.26), inset 0 1px 0 #fff;
+    }
+
+    @media (max-width: 760px) {
+      .game-title {
+        top: 1.6%;
+        right: 2.5%;
+        width: 67%;
+      }
+
+      #gameArea.playing .question-panel.active {
+        top: 13.5%;
+        right: 2.2%;
+        bottom: 2.2%;
+        width: 64%;
+      }
+
+      #gameArea:not(.playing) .cabinet .start-row {
+        left: 66%;
+        width: 52%;
+      }
+    }
+    /* 2026 magical candy classroom theme. */
+    :root {
+      --glass-surface: rgba(244, 251, 255, .82);
+      --glass-edge: rgba(255, 255, 255, .9);
+      --navy: #173f78;
+      --pink: #ef4d98;
+      --pink-deep: #b92d6b;
+      --sky: #2ba9e8;
+      --sun: #ffc640;
+      --leaf: #65bf2e;
+    }
+
+    body {
+      background: #143a4a;
+    }
+
+    body::before {
+      background-image: url("assets/quiz-energy-magical-tech-v1.png");
+      background-position: center;
+      filter: blur(16px) brightness(.58) saturate(1.08);
+    }
+
+    .machine-layout {
+      isolation: isolate;
+      background-image: url("assets/quiz-energy-magical-tech-v1.png");
+      background-position: center;
+      background-size: cover;
+    }
+
+    .machine-layout::after { content: none; }
+
+    .machine-layout::before {
+      content: "";
+      position: absolute;
+      z-index: 0;
+      inset: 0;
+      background: linear-gradient(90deg, transparent 0 35%, rgba(209, 239, 255, .08) 45%, rgba(235, 245, 255, .2) 100%);
+      pointer-events: none;
+    }
+
+    .back-button {
+      top: 14px;
+      left: 16px;
+      min-height: 42px;
+      padding: 8px 14px;
+      border: 2px solid rgba(255, 255, 255, .9);
+      border-radius: 8px;
+      color: var(--navy);
+      background: rgba(255, 255, 255, .78);
+      backdrop-filter: blur(14px) saturate(1.2);
+      box-shadow: 0 5px 16px rgba(30, 62, 92, .22);
+    }
+
+    .game-title {
+      top: 2.5%;
+      right: 2.4%;
+      width: 65%;
+      gap: 8px;
+      font-family: "Microsoft JhengHei UI", "Microsoft JhengHei", "Arial Rounded MT Bold", sans-serif;
+      font-size: 54px;
+      font-weight: 900;
+      filter: drop-shadow(0 8px 8px rgba(114, 32, 91, .3));
+    }
+
+    .game-title span {
+      transform: scale(1.04, 1.18);
+      transform-origin: center;
+      color: #fffdfd;
+      -webkit-text-fill-color: #fffdfd;
+      -webkit-text-stroke: 1px rgba(255, 255, 255, .94);
+      paint-order: stroke fill;
+      background: none;
+      text-shadow:
+        0 2px 0 #ffd9ec,
+        0 4px 0 #f06aad,
+        0 7px 0 #dc3f91,
+        0 10px 0 #b82d77,
+        0 14px 15px rgba(104, 27, 78, .38);
+    }
+
+    .game-title span::before {
+      color: #fff0d2;
+      -webkit-text-fill-color: #fff0d2;
+      -webkit-text-stroke: 12px #fff0d2;
+      text-shadow:
+        0 5px 0 #ef66aa,
+        0 8px 0 #d83c8d,
+        0 11px 0 #ae286f,
+        0 15px 16px rgba(101, 27, 75, .34);
+    }
+
+    .game-title span::after {
+      content: attr(data-text);
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+      -webkit-text-stroke: 1px transparent;
+      background: linear-gradient(180deg, rgba(255,255,255,.98) 0 14%, rgba(255,255,255,.25) 26%, transparent 42% 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      display: none;
+    }
+
+    .game-title .title-pink { transform: translateY(2px) rotate(-2deg) scale(1.04, 1.18); }
+    .game-title .title-orange { transform: translateY(-1px) rotate(1deg) scale(1.04, 1.18); }
+    .game-title .title-green { transform: translateY(2px) rotate(-1deg) scale(1.04, 1.18); }
+    .game-title .title-purple { transform: translateY(-1px) rotate(2deg) scale(1.04, 1.18); }
+
+    #gameArea:not(.playing) .cabinet .start-row {
+      top: 21%;
+      left: 68.5%;
+      width: 49%;
+      gap: 18px;
+      padding: 24px 28px 26px;
+      border: 2px solid var(--glass-edge);
+      border-radius: 8px;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.88), rgba(236,241,255,.78)),
+        rgba(255,255,255,.76);
+      backdrop-filter: blur(20px) saturate(1.24);
+      box-shadow: inset 0 1px 0 #fff, 0 18px 38px rgba(30, 72, 112, .25);
+    }
+
+    #gameArea:not(.playing) .cabinet .start-row::before {
+      color: var(--navy);
+      font-size: 30px;
+      text-shadow: 0 2px 0 #fff;
+    }
+
+    #gameArea:not(.playing) .cabinet .setup-group {
+      grid-template-columns: 70px minmax(0, 1fr);
+      gap: 12px;
+    }
+
+    #gameArea:not(.playing) .cabinet .setup-label {
+      color: #285287;
+      font-size: 18px;
+    }
+
+    #gameArea:not(.playing) .cabinet .choice {
+      min-height: 46px;
+      border: 2px solid rgba(133, 170, 219, .54);
+      border-radius: 8px;
+      color: #285287;
+      background: rgba(255, 255, 255, .82);
+      font-size: 17px;
+      box-shadow: inset 0 2px 0 rgba(255,255,255,.9), 0 3px 7px rgba(39,76,123,.12);
+      transition: transform .16s ease, box-shadow .16s ease, filter .16s ease;
+    }
+
+    #gameArea:not(.playing) .cabinet .choice:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.03);
+    }
+
+    #gameArea:not(.playing) .cabinet .choice.active {
+      border-color: #fff;
+      color: #fff;
+      background: linear-gradient(180deg, #63c9ff, #2789db);
+      box-shadow: inset 0 2px 0 rgba(255,255,255,.5), 0 5px 0 #1769b1, 0 8px 13px rgba(30,112,180,.25);
+    }
+
+    #gameArea:not(.playing) .cabinet .primary {
+      min-height: 60px;
+      border: 3px solid rgba(255,255,255,.86);
+      border-radius: 8px;
+      color: #fff;
+      background: linear-gradient(180deg, #ff78b4, var(--pink));
+      font-size: 23px;
+      text-shadow: 0 2px 0 rgba(142,32,86,.38);
+      box-shadow: inset 0 3px 0 rgba(255,255,255,.42), 0 7px 0 var(--pink-deep), 0 11px 18px rgba(163,39,103,.24);
+    }
+
+    #gameArea.playing .question-panel.active {
+      top: 16%;
+      right: 2.8%;
+      bottom: 3.5%;
+      width: 61%;
+      padding: 16px 18px 18px;
+      border: 2px solid var(--glass-edge);
+      border-radius: 8px;
+      background: var(--glass-surface);
+      backdrop-filter: blur(22px) saturate(1.18);
+      box-shadow: inset 0 1px 0 #fff, 0 18px 42px rgba(35, 75, 124, .26);
+    }
+
+    #gameArea.playing .question-panel.active .hud {
+      justify-content: flex-start;
+      gap: 8px;
+      min-height: 38px;
+      margin-bottom: 8px;
+      padding: 0;
+      background: transparent;
+    }
+
+    #gameArea.playing .question-panel.active .score,
+    #gameArea.playing .question-panel.active .accuracy,
+    #gameArea.playing .question-panel.active .tag-row,
+    .report-button {
+      min-height: 34px;
+      border: 1px solid rgba(255,255,255,.82);
+      border-radius: 8px;
+      background: rgba(255,255,255,.76);
+      box-shadow: 0 3px 8px rgba(42,78,126,.13);
+    }
+
+    #gameArea.playing .question-panel.active .tag.mode { background: #3999ed; }
+    #gameArea.playing .question-panel.active .tag.hot { background: #f25a86; }
+    .report-button { color: #fff; background: #f29b2f; }
+
+    #gameArea.playing .question-panel.active .combo {
+      border: 2px solid rgba(255,255,255,.84);
+      border-radius: 8px;
+      background: linear-gradient(180deg, #ff6aa9, #df3d84);
+      box-shadow: inset 0 2px 0 rgba(255,255,255,.38), 0 4px 0 #aa2e66;
+    }
+
+    #gameArea.playing .question-panel.active .question-box {
+      margin: 0 0 12px;
+      padding: 18px 24px;
+      border: 0;
+      border-bottom: 2px solid rgba(134, 180, 221, .36);
+      border-radius: 0;
+      background: rgba(255,255,255,.58);
+      box-shadow: none;
+    }
+
+    #gameArea.playing .question-panel.active .prompt {
+      color: #173f78;
+      font-size: 22px;
+      line-height: 1.42;
+      text-shadow: 0 1px 0 #fff;
+    }
+
+    #gameArea.playing .question-panel.active .sentence {
+      color: #31598a;
+      font-size: 17px;
+      line-height: 1.45;
+    }
+
+    #gameArea.playing .question-panel.active .answers {
+      gap: 12px 14px;
+    }
+
+    #gameArea.playing .question-panel.active .answer {
+      min-height: 64px;
+      padding: 10px 15px;
+      border: 3px solid rgba(255,255,255,.9);
+      border-radius: 8px;
+      font-size: 21px;
+      line-height: 1.3;
+      box-shadow: inset 0 3px 0 rgba(255,255,255,.38), 0 5px 0 rgba(40,68,101,.23), 0 9px 15px rgba(35,62,99,.15);
+    }
+
+    #gameArea.playing .question-panel.active .answer:hover:not(:disabled) {
+      transform: translateY(-3px) scale(1.01);
+    }
+
+    #gameArea.playing .question-panel.active .feedback {
+      border: 2px solid rgba(255, 211, 93, .72);
+      border-radius: 8px;
+      color: var(--navy);
+      background: rgba(255, 253, 241, .94);
+      font-size: 16px;
+      line-height: 1.45;
+    }
+
+    #gameArea.playing .question-panel.active .next-row .primary,
+    #gameArea.playing .question-panel.active .next-row .secondary {
+      min-height: 40px;
+      border-radius: 8px;
+    }
+
+    .stage-drop-capsule {
+      left: 20.6%;
+      top: 79.5%;
+      width: 58px;
+      border-width: 4px;
+      box-shadow: inset 0 -8px 12px rgba(0,0,0,.13), 0 8px 14px rgba(21,36,67,.3), 0 0 16px rgba(255,255,255,.7);
+    }
+
+    .result-panel {
+      position: fixed;
+      z-index: 40;
+      inset: 50% auto auto 50%;
+      width: min(520px, calc(100% - 32px));
+      padding: 28px;
+      border: 2px solid var(--glass-edge);
+      border-radius: 8px;
+      background: rgba(248,252,255,.9);
+      backdrop-filter: blur(22px);
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+
+    .result-panel .result-title {
+      color: #184a83;
+      text-shadow: 0 2px 0 #fff, 0 5px 14px rgba(38, 82, 130, .22);
+    }
+
+    .result-panel .result-score {
+      color: #d62f73;
+      text-shadow: 0 3px 0 #fff, 0 7px 16px rgba(172, 38, 99, .28);
+    }
+
+    .result-panel .result-text {
+      color: #315a84;
+    }
+
+    @media (max-width: 1050px) {
+      .game-title { font-size: 39px; }
+      #gameArea:not(.playing) .cabinet .start-row { padding: 18px 20px 20px; gap: 13px; }
+      #gameArea:not(.playing) .cabinet .start-row::before { font-size: 24px; }
+      #gameArea:not(.playing) .cabinet .choice { min-height: 40px; font-size: 15px; }
+      #gameArea:not(.playing) .cabinet .primary { min-height: 50px; font-size: 19px; }
+      #gameArea.playing .question-panel.active { padding: 11px 12px 12px; }
+      #gameArea.playing .question-panel.active .question-box { padding: 12px 16px; }
+      #gameArea.playing .question-panel.active .prompt { font-size: 18px; }
+      #gameArea.playing .question-panel.active .sentence { font-size: 14px; }
+      #gameArea.playing .question-panel.active .answer { min-height: 52px; font-size: 17px; }
+      #gameArea.playing .question-panel.active .feedback { font-size: 13px; }
+      .stage-drop-capsule { width: 48px; }
+    }
+
+    @media (max-width: 720px) {
+      .back-button { top: 6px; left: 7px; min-height: 32px; padding: 4px 8px; font-size: 12px; }
+      .game-title { top: 2%; right: 1.5%; width: 67%; gap: 3px; font-size: 27px; }
+      .game-title span { -webkit-text-stroke-width: 1px; }
+      .game-title span::before { -webkit-text-stroke-width: 4px; }
+      #gameArea:not(.playing) .cabinet .start-row { top: 19%; left: 69%; width: 53%; padding: 10px 11px 12px; gap: 8px; }
+      #gameArea:not(.playing) .cabinet .start-row::before { font-size: 17px; }
+      #gameArea:not(.playing) .cabinet .setup-panel { gap: 7px; }
+      #gameArea:not(.playing) .cabinet .setup-group { grid-template-columns: 42px minmax(0,1fr); gap: 5px; }
+      #gameArea:not(.playing) .cabinet .setup-label { font-size: 12px; }
+      #gameArea:not(.playing) .cabinet .segmented { gap: 4px; }
+      #gameArea:not(.playing) .cabinet .choice { min-height: 31px; padding: 3px; font-size: 11px; }
+      #gameArea:not(.playing) .cabinet .primary { min-height: 36px; font-size: 14px; }
+      #gameArea.playing .question-panel.active { top: 14%; right: 1.5%; bottom: 1.5%; width: 65%; padding: 7px; }
+      #gameArea.playing .question-panel.active .arena-header { margin-bottom: 2px; }
+      #gameArea.playing .question-panel.active .hud { min-height: 27px; margin-bottom: 4px; gap: 3px; }
+      #gameArea.playing .question-panel.active .hud .score,
+      #gameArea.playing .question-panel.active .hud .accuracy,
+      #gameArea.playing .question-panel.active .hud .tag-row,
+      .report-button { min-height: 24px; padding: 3px 4px; font-size: 9px; }
+      #gameArea.playing .question-panel.active .question-box { margin-bottom: 6px; padding: 7px 9px; }
+      #gameArea.playing .question-panel.active .prompt { font-size: 13px; line-height: 1.3; }
+      #gameArea.playing .question-panel.active .sentence { margin-top: 4px; font-size: 10px; }
+      #gameArea.playing .question-panel.active .answers { gap: 6px; }
+      #gameArea.playing .question-panel.active .answer { min-height: 34px; padding: 5px 7px; border-width: 2px; font-size: 12px; }
+      #gameArea.playing .question-panel.active .feedback { margin-top: 5px; padding: 5px 7px; font-size: 9px; }
+      #gameArea.playing .question-panel.active .next-row { margin-top: 4px; }
+      #gameArea.playing .question-panel.active .next-row .primary,
+      #gameArea.playing .question-panel.active .next-row .secondary { min-height: 28px; padding: 3px 8px; font-size: 10px; }
+      .stage-drop-capsule { left: 20.5%; top: 80%; width: 34px; }
+    }
+
+    /* Taller tablet windows crop the wide scene horizontally. Keep the machine
+       fully visible and keep the dispensed capsule under its outlet. */
+    @media (max-aspect-ratio: 3 / 2) {
+      .machine-layout { background-position: 35% center; }
+      .stage-drop-capsule { left: 16.2%; top: 80%; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    }
   </style>
 </head>
 <body>
+  <a class="back-button" href="../index.html">← 回上一層</a>
   <header class="topbar">
     <a class="home" href="../index.html">回國語首頁</a>
     <div class="brand">形近字扭蛋機</div>
@@ -682,33 +2124,47 @@
 
   <main class="shell">
     <section class="machine-layout" id="gameArea">
+      <div class="game-title" aria-label="國語形近字能量戰">
+        <span class="title-pink" data-text="國語">國語</span><span class="title-orange" data-text="形近字">形近字</span><span class="title-green" data-text="能量">能量</span><span class="title-purple" data-text="戰">戰</span>
+      </div>
       <aside class="cabinet" id="cabinet">
         <h1 class="neon-title">國語形近字扭蛋機</h1>
         <div class="gacha-window">
           <div class="dome" aria-hidden="true">
-            <div class="glass"></div>
-            <div class="capsules">
-              <span class="capsule">責</span>
-              <span class="capsule">辯</span>
-              <span class="capsule">睛</span>
-              <span class="capsule">績</span>
-              <span class="capsule">採</span>
-              <span class="capsule">檢</span>
-              <span class="capsule">燥</span>
-              <span class="capsule">竟</span>
-            </div>
+            <img class="machine-balls-photo" src="assets/realistic-gacha-machine-clean.png" alt="">
+            <img class="machine-photo" src="assets/realistic-gacha-machine-cutout.png" alt="">
+            <div class="handle-overlay"></div>
             <div class="base">
               <div class="knob">轉</div>
               <div class="tray"></div>
             </div>
-            <div class="drop-capsule" id="dropCapsule">題</div>
+            <div class="drop-capsule"></div>
           </div>
         </div>
         <div class="start-row">
+          <div class="setup-panel" aria-label="題庫設定">
+            <div class="setup-group">
+              <div class="setup-label">題型</div>
+              <div class="segmented" id="typeChoices">
+                <button class="choice active" data-type="混合" type="button">混合</button>
+                <button class="choice" data-type="形近字" type="button">形近字</button>
+                <button class="choice" data-type="多音字" type="button">多音字</button>
+              </div>
+            </div>
+            <div class="setup-group">
+              <div class="setup-label">難度</div>
+              <div class="segmented" id="difficultyChoices">
+                <button class="choice active" data-difficulty="基礎" type="button">基礎</button>
+                <button class="choice" data-difficulty="進階" type="button">進階</button>
+                <button class="choice" data-difficulty="挑戰" type="button">挑戰</button>
+              </div>
+            </div>
+          </div>
           <button class="primary" id="drawButton">抽一顆扭蛋</button>
           <button class="secondary" id="restartButton">重新開始</button>
         </div>
       </aside>
+      <div class="stage-drop-capsule" aria-hidden="true"></div>
 
       <section class="question-panel" id="questionPanel">
         <div class="arena-header">
@@ -719,6 +2175,7 @@
           <div class="progress" aria-label="答題進度"><span id="progressBar"></span></div>
           <div class="score">分數 <span id="score">0</span></div>
           <div class="stars">星星 <span id="stars">0</span></div>
+          <div class="accuracy">答對率 <span id="accuracy">--</span></div>
         </div>
         <div class="tag-row">
           <span class="tag mode" id="modeTag">準備抽題</span>
@@ -750,29 +2207,89 @@
     </section>
   </main>
 
+  <script src="question-bank-data.js"></script>
   <script>
-    const questions = [
-      { mode: "選字填空", answer: "責", options: ["責", "積", "績", "織"], sentence: "班長做事很有＿任感，大家都很信任他。", explain: "「責任」表示應該承擔的工作或義務。" },
-      { mode: "選字填空", answer: "睛", options: ["晴", "睛", "清", "請"], sentence: "長時間看螢幕後，眼＿容易疲勞。", explain: "和眼睛有關時要用「睛」。" },
-      { mode: "選字填空", answer: "辨", options: ["辨", "辯", "瓣", "辦"], sentence: "閱讀題目時，要先分＿重點再作答。", explain: "「辨」有分辨、辨別的意思。" },
-      { mode: "選字填空", answer: "採", options: ["採", "彩", "踩", "菜"], sentence: "記者＿訪校隊選手，了解他們練習的過程。", explain: "「採訪」是訪問並蒐集資料。" },
-      { mode: "選字填空", answer: "燥", options: ["操", "躁", "燥", "澡"], sentence: "冬天空氣乾＿，皮膚要注意保濕。", explain: "「乾燥」和水分少有關。" },
-      { mode: "找錯別字", answer: "競", options: ["竟", "競", "境", "鏡"], sentence: "校內語文＿賽吸引許多同學報名。", explain: "比賽、競爭要用「競」。" },
-      { mode: "選字填空", answer: "檢", options: ["撿", "檢", "儉", "險"], sentence: "交卷前要仔細＿查，避免粗心錯誤。", explain: "「檢查」是查看是否有問題。" },
-      { mode: "選字填空", answer: "慕", options: ["幕", "墓", "慕", "暮"], sentence: "弟弟很羨＿哥哥能勇敢上台演說。", explain: "「羨慕」表示希望自己也能擁有。" },
-      { mode: "選字填空", answer: "歷", options: ["歷", "曆", "厲", "勵"], sentence: "這本書記錄了臺灣鐵路的發展＿史。", explain: "歷史、經歷要用「歷」。" },
-      { mode: "選字填空", answer: "績", options: ["責", "積", "績", "漬"], sentence: "只要持續努力，成＿一定會慢慢進步。", explain: "「成績」指學習或工作的成果。" },
-      { mode: "選字填空", answer: "辯", options: ["辨", "辯", "瓣", "辮"], sentence: "兩隊針對環保議題展開精采的＿論。", explain: "「辯論」和說理、爭論有關。" },
-      { mode: "選字填空", answer: "清", options: ["晴", "睛", "清", "請"], sentence: "溪水非常＿澈，可以看見水中的石頭。", explain: "「清澈」表示乾淨透明。" },
-      { mode: "選字填空", answer: "既", options: ["即", "既", "暨", "概"], sentence: "＿然答應了，就要準時完成。", explain: "「既然」表示前提已經成立。" },
-      { mode: "選字填空", answer: "厲", options: ["歷", "曆", "厲", "勵"], sentence: "老師用嚴＿的語氣提醒大家注意安全。", explain: "「嚴厲」表示嚴格而認真。" },
-      { mode: "選字填空", answer: "稍", options: ["稍", "梢", "捎", "消"], sentence: "請你＿等一下，老師馬上就來。", explain: "「稍等」表示等一小段時間。" },
-      { mode: "選字填空", answer: "舒", options: ["抒", "舒", "紓", "輸"], sentence: "做完伸展操後，身體感覺很＿服。", explain: "「舒服」表示身心感到安適。" },
-      { mode: "選字填空", answer: "藉", options: ["籍", "藉", "惜", "借"], sentence: "我們可以＿由閱讀認識不同文化。", explain: "「藉由」表示憑藉某種方式。" },
-      { mode: "選字填空", answer: "絕", options: ["決", "絕", "訣", "覺"], sentence: "遇到困難時，不要輕易放棄，才能找到解＿辦法。", explain: "這句要表達解決問題，所以正確詞是「解決」。", displayAnswer: "決" },
-      { mode: "找錯別字", answer: "練", options: ["鍊", "練", "煉", "戀"], sentence: "每天＿習朗讀，可以讓語氣更自然。", explain: "「練習」表示反覆學習或訓練。" },
-      { mode: "選字填空", answer: "維", options: ["唯", "惟", "維", "圍"], sentence: "大家一起＿護教室整潔，學習環境才會更好。", explain: "「維護」表示保持、保護。" }
+    const legacyQuestions = [
+{ mode: "選字填空", answer: "責", options: ["責", "積", "績", "織"], sentence: "班長做事很有＿任感，大家都很信任他。", explain: "「責任」表示應該承擔的工作或義務。" },
+{ mode: "選字填空", answer: "睛", options: ["晴", "睛", "清", "請"], sentence: "長時間看螢幕後，眼＿容易疲勞。", explain: "和眼睛有關時要用「睛」。" },
+{ mode: "選字填空", answer: "辨", options: ["辨", "辯", "瓣", "辦"], sentence: "閱讀題目時，要先分＿重點再作答。", explain: "「辨」有分辨、辨別的意思。" },
+{ mode: "選字填空", answer: "採", options: ["採", "彩", "踩", "菜"], sentence: "記者＿訪校隊選手，了解他們練習的過程。", explain: "「採訪」是訪問並蒐集資料。" },
+{ mode: "選字填空", answer: "燥", options: ["操", "躁", "燥", "澡"], sentence: "冬天空氣乾＿，皮膚要注意保濕。", explain: "「乾燥」和水分少有關。" },
+{ mode: "找錯別字", answer: "競", options: ["竟", "競", "境", "鏡"], sentence: "校內語文＿賽吸引許多同學報名。", explain: "比賽、競爭要用「競」。" },
+{ mode: "選字填空", answer: "檢", options: ["撿", "檢", "儉", "險"], sentence: "交卷前要仔細＿查，避免粗心錯誤。", explain: "「檢查」是查看是否有問題。" },
+{ mode: "選字填空", answer: "慕", options: ["幕", "墓", "慕", "暮"], sentence: "弟弟很羨＿哥哥能勇敢上台演說。", explain: "「羨慕」表示希望自己也能擁有。" },
+{ mode: "選字填空", answer: "歷", options: ["歷", "曆", "厲", "勵"], sentence: "這本書記錄了臺灣鐵路的發展＿史。", explain: "歷史、經歷要用「歷」。" },
+{ mode: "選字填空", answer: "績", options: ["責", "積", "績", "漬"], sentence: "只要持續努力，成＿一定會慢慢進步。", explain: "「成績」指學習或工作的成果。" },
+{ mode: "選字填空", answer: "辯", options: ["辨", "辯", "瓣", "辮"], sentence: "兩隊針對環保議題展開精采的＿論。", explain: "「辯論」和說理、爭論有關。" },
+{ mode: "選字填空", answer: "清", options: ["晴", "睛", "清", "請"], sentence: "溪水非常＿澈，可以看見水中的石頭。", explain: "「清澈」表示乾淨透明。" },
+{ mode: "選字填空", answer: "既", options: ["即", "既", "暨", "概"], sentence: "＿然答應了，就要準時完成。", explain: "「既然」表示前提已經成立。" },
+{ mode: "選字填空", answer: "厲", options: ["歷", "曆", "厲", "勵"], sentence: "老師用嚴＿的語氣提醒大家注意安全。", explain: "「嚴厲」表示嚴格而認真。" },
+{ mode: "選字填空", answer: "稍", options: ["稍", "梢", "捎", "消"], sentence: "請你＿等一下，老師馬上就來。", explain: "「稍等」表示等一小段時間。" },
+{ mode: "選字填空", answer: "舒", options: ["抒", "舒", "紓", "輸"], sentence: "做完伸展操後，身體感覺很＿服。", explain: "「舒服」表示身心感到安適。" },
+{ mode: "選字填空", answer: "藉", options: ["籍", "藉", "惜", "借"], sentence: "我們可以＿由閱讀認識不同文化。", explain: "「藉由」表示憑藉某種方式。" },
+{ mode: "選字填空", answer: "絕", options: ["決", "絕", "訣", "覺"], sentence: "遇到困難時，不要輕易放棄，才能找到解＿辦法。", explain: "這句要表達解決問題，所以正確詞是「解決」。", displayAnswer: "決" },
+{ mode: "找錯別字", answer: "練", options: ["鍊", "練", "煉", "戀"], sentence: "每天＿習朗讀，可以讓語氣更自然。", explain: "「練習」表示反覆學習或訓練。" },
+{ mode: "選字填空", answer: "維", options: ["唯", "惟", "維", "圍"], sentence: "大家一起＿護教室整潔，學習環境才會更好。", explain: "「維護」表示保持、保護。" },
+{ mode: "多音字判讀", category: "多音字", difficulty: "基礎", focus: "角", prompt: "句子中「角」字的注音依序應為何？", answer: "① ㄐㄩㄝˊ／ㄐㄧㄠˇ", options: ["① ㄐㄩㄝˊ／ㄐㄧㄠˇ", "② ㄐㄧㄠˇ／ㄐㄩㄝˊ", "③ ㄐㄩㄝˊ／ㄐㄩㄝˊ", "④ ㄐㄧㄠˇ／ㄐㄧㄠˇ"], sentence: "這齣戲的女主「角」不小心撞到桌「角」受傷了，因此今天無法上場。", explain: "女主角的「角」讀作ㄐㄩㄝˊ；桌角的「角」讀作ㄐㄧㄠˇ。" },
+{ mode: "多音字判讀", category: "多音字", difficulty: "基礎", focus: "調", prompt: "句子中「調」字的注音依序應為何？", answer: "④ ㄊㄧㄠˊ／ㄊㄧㄠˊ", options: ["① ㄊㄧㄠˊ／ㄉㄧㄠˋ", "② ㄉㄧㄠˋ／ㄉㄧㄠˋ", "③ ㄉㄧㄠˋ／ㄊㄧㄠˊ", "④ ㄊㄧㄠˊ／ㄊㄧㄠˊ"], sentence: "老師教我們在「調」色盤上，「調」整出自己喜歡的顏色。", explain: "調色盤、調整的「調」都讀作ㄊㄧㄠˊ，表示配合、調和或整理。" },
+{ mode: "多音字判讀", category: "多音字", difficulty: "基礎", focus: "還", prompt: "句子中「還」字的注音依序應為何？", answer: "① ㄏㄞˊ／ㄏㄨㄢˊ", options: ["① ㄏㄞˊ／ㄏㄨㄢˊ", "② ㄏㄨㄢˊ／ㄏㄞˊ", "③ ㄏㄞˊ／ㄏㄞˊ", "④ ㄏㄨㄢˊ／ㄏㄨㄢˊ"], sentence: "我「還」沒去圖書館歸「還」借來的書籍。", explain: "還沒的「還」讀作ㄏㄞˊ；歸還的「還」讀作ㄏㄨㄢˊ。" },
+{ mode: "多音字判讀", category: "多音字", difficulty: "基礎", focus: "興", prompt: "句子中「興」字的注音依序應為何？", answer: "② ㄒㄧㄥ／ㄒㄧㄥˋ", options: ["① ㄒㄧㄥˋ／ㄒㄧㄥ", "② ㄒㄧㄥ／ㄒㄧㄥˋ", "③ ㄒㄧㄥ／ㄒㄧㄥ", "④ ㄒㄧㄥˋ／ㄒㄧㄥˋ"], sentence: "看到大家「興」奮的神情，就知道大夥兒今天玩得十分盡「興」。", explain: "興奮的「興」讀作ㄒㄧㄥ；盡興的「興」讀作ㄒㄧㄥˋ。" },
+{ mode: "多音字判讀", category: "多音字", difficulty: "基礎", focus: "倒", prompt: "句子中「倒」字的注音依序應為何？", answer: "④ ㄉㄠˇ／ㄉㄠˋ", options: ["① ㄉㄠˋ／ㄉㄠˇ", "② ㄉㄠˇ／ㄉㄠˇ", "③ ㄉㄠˋ／ㄉㄠˋ", "④ ㄉㄠˇ／ㄉㄠˋ"], sentence: "弟弟不小心把水杯弄「倒」了，水「倒」了一地。", explain: "弄倒的「倒」讀作ㄉㄠˇ；水倒了一地的「倒」讀作ㄉㄠˋ。" },
+{ mode: "多音字判讀", category: "多音字", difficulty: "基礎", focus: "轉", prompt: "句子中「轉」字的注音依序應為何？", answer: "① ㄓㄨㄢˋ／ㄓㄨㄢˇ", options: ["① ㄓㄨㄢˋ／ㄓㄨㄢˇ", "② ㄓㄨㄢˇ／ㄓㄨㄢˋ", "③ ㄓㄨㄢˇ／ㄓㄨㄢˇ", "④ ㄓㄨㄢˋ／ㄓㄨㄢˋ"], sentence: "陀螺快速的「轉」動，吸引了所有同學「轉」頭注視。", explain: "轉動的「轉」讀作ㄓㄨㄢˋ；轉頭的「轉」讀作ㄓㄨㄢˇ。" },
+{ mode: "多音字判讀", category: "多音字", difficulty: "基礎", focus: "樂", prompt: "句子中「樂」字的注音依序應為何？", answer: "② ㄩㄝˋ／ㄌㄜˋ", options: ["① ㄌㄜˋ／ㄩㄝˋ", "② ㄩㄝˋ／ㄌㄜˋ", "③ ㄩㄝˋ／ㄩㄝˋ", "④ ㄌㄜˋ／ㄌㄜˋ"], sentence: "聽音「樂」是我感到最快「樂」的事情。", explain: "音樂的「樂」讀作ㄩㄝˋ；快樂的「樂」讀作ㄌㄜˋ。" },
+{ mode: "多音字判讀", category: "多音字", difficulty: "基礎", focus: "沒", prompt: "句子中「沒」字的注音依序應為何？", answer: "③ ㄇㄛˋ／ㄇㄟˊ", options: ["① ㄇㄟˊ／ㄇㄛˋ", "② ㄇㄛˋ／ㄇㄛˋ", "③ ㄇㄛˋ／ㄇㄟˊ", "④ ㄇㄟˊ／ㄇㄟˊ"], sentence: "洪水淹「沒」了農田，讓我們「沒」有乾淨的水可以喝。", explain: "淹沒的「沒」讀作ㄇㄛˋ；沒有的「沒」讀作ㄇㄟˊ。" },
+{ mode: "多音字判讀", category: "多音字", difficulty: "基礎", focus: "空", prompt: "句子中「空」字的注音依序應為何？", answer: "④ ㄎㄨㄥˋ／ㄎㄨㄥˋ", options: ["① ㄎㄨㄥ／ㄎㄨㄥ", "② ㄎㄨㄥ／ㄎㄨㄥˋ", "③ ㄎㄨㄥˋ／ㄎㄨㄥ", "④ ㄎㄨㄥˋ／ㄎㄨㄥˋ"], sentence: "爸爸趁著今天有「空」，帶我到屋後的「空」地玩耍。", explain: "本題標準答案為④：兩個「空」都讀作ㄎㄨㄥˋ。" },
+{ mode: "多音字判讀", category: "多音字", difficulty: "基礎", focus: "答", prompt: "句子中「答」字的注音依序應為何？", answer: "① ㄉㄚ／ㄉㄚˊ", options: ["① ㄉㄚ／ㄉㄚˊ", "② ㄉㄚˊ／ㄉㄚ", "③ ㄉㄚ／ㄉㄚ", "④ ㄉㄚˊ／ㄉㄚˊ"], sentence: "哥哥「答」應我，會教我這題數學題的正確「答」案。", explain: "答應的「答」讀作ㄉㄚ；答案的「答」讀作ㄉㄚˊ。" },
+{ mode: "形近字判讀", category: "形近字", difficulty: "三年級", focus: "在／再", prompt: "句子中的「 」內依序應填入哪兩個字？", answer: "① 在／再", options: ["① 在／再", "② 再／在"], sentence: "我「 」客廳玩耍，請你不要「 」大聲吵我了。", explain: "第一格表示地點，要用「在」；第二格有又一次、繼續的意思，要用「再」。", reference: "參考 111 年三年級第 4 題" },
+{ mode: "形近字判讀", category: "形近字", difficulty: "三年級", focus: "模／摸", prompt: "句子中的「 」內依序應填入哪兩個字？", answer: "① 模／摸", options: ["① 模／摸", "② 摸／模"], sentence: "弟弟手裡拿著飛機「 」型，想要伸手「 」一「 」天上的白雲。", explain: "飛機模型的「模」表示樣式或模型；伸手觸碰要用「摸」，所以後兩格都是「摸」。", reference: "參考 113 年三年級第 3 題" },
+{ mode: "形近字判讀", category: "形近字", difficulty: "三年級", focus: "帶／袋", prompt: "句子中的「 」內依序應填入哪兩個字？", answer: "① 帶／袋", options: ["① 帶／袋", "② 袋／帶"], sentence: "姐姐「 」著遮陽帽，手上提著一個購物「 」。", explain: "戴著、帶著物品可用「帶」；裝東西的袋子要用「袋」。", reference: "參考 112 年三年級第 4 題" },
+{ mode: "形近字判讀", category: "形近字", difficulty: "三年級", focus: "址／扯", prompt: "句子中的「 」內依序應填入哪兩個字？", answer: "① 址／扯", options: ["① 址／扯", "② 扯／址"], sentence: "弟弟不小心把寫著地「 」的小紙條「 」破了。", explain: "地址的「址」和地點有關；把紙弄破是「扯」破。", reference: "參考 111 年三年級第 1 題" },
+{ mode: "形近字判讀", category: "形近字", difficulty: "三年級", focus: "伸／申", prompt: "句子中的「 」內依序應填入哪兩個字？", answer: "① 伸／申", options: ["① 伸／申", "② 申／伸"], sentence: "哥哥「 」出雙手，向老師「 」請加入籃球隊。", explain: "伸出雙手的「伸」有拉長、展開的意思；申請的「申」表示提出請求。", reference: "參考 111 年三年級第 3 題及 111 年五年級第 9 題" },
+{ mode: "形近字判讀", category: "形近字", difficulty: "三年級", focus: "決／絕", prompt: "句子中的「 」內依序應填入哪兩個字？", answer: "① 決／絕", options: ["① 決／絕", "② 絕／決"], sentence: "我下定「 」心要好好練琴，「 」對不讓媽媽擔心。", explain: "下定決心的「決」表示決定；絕對的「絕」表示一定、完全。", reference: "參考 113 年四年級第 4 題" },
+{ mode: "形近字判讀", category: "形近字", difficulty: "三年級", focus: "蹟／積", prompt: "句子中的「 」內依序應填入哪兩個字？", answer: "① 蹟／積", options: ["① 蹟／積", "② 積／蹟"], sentence: "參觀這座古「 」時，我發現角落「 」滿了許多落葉。", explain: "古蹟的「蹟」指遺留下來的事物；積滿的「積」表示累積、堆起來。", reference: "參考 111 年四年級第 3 題" },
+{ mode: "形近字判讀", category: "形近字", difficulty: "三年級", focus: "訊／迅", prompt: "句子中的「 」內依序應填入哪兩個字？", answer: "① 訊／迅", options: ["① 訊／迅", "② 迅／訊"], sentence: "電視資「 」傳播得很「 」速，大家很快就知道了。", explain: "資訊的「訊」和消息有關；迅速的「迅」表示很快。", reference: "參考 113 年四年級第 2 題" },
+{ mode: "形近字判讀", category: "形近字", difficulty: "三年級", focus: "提／題", prompt: "句子中的「 」內依序應填入哪兩個字？", answer: "① 提／題", options: ["① 提／題", "② 題／提"], sentence: "老師「 」醒我們，這道數學「 」比較難，要仔細閱讀。", explain: "提醒的「提」表示提出、提示；數學題的「題」表示題目。", reference: "參考 112 年三年級第 3 題" },
+{ mode: "形近字判讀", category: "形近字", difficulty: "三年級", focus: "幕／慕", prompt: "句子中的「 」內依序應填入哪兩個字？", answer: "① 幕／慕", options: ["① 幕／慕", "② 慕／幕"], sentence: "戲劇一開「 」，大家都非常羨「 」主角神奇的法術。", explain: "開幕的「幕」和戲劇、布幕有關；羨慕的「慕」表示喜愛、嚮往。", reference: "參考 111 年五年級第 3 題及六年級第 3 題" },
+{ mode: "讀音判讀", category: "讀音", difficulty: "四年級", focus: "同音字", prompt: "下列哪一個選項「 」中的國字，讀音是相同的？", answer: "② 一「幅」畫／惜「福」", options: ["① 「推」銷員／「堆」積如山", "② 一「幅」畫／惜「福」", "③ 「偏」遠／「遍」地", "④ 「刻」骨銘心／應「該」"], sentence: "請找出前後兩個字讀音相同的一組。", explain: "「幅」和「福」都讀作ㄈㄨˊ；其他選項前後讀音不同，所以答案是②。", reference: "參考 112 年四年級第 1 題" },
+{ mode: "讀音判讀", category: "讀音", difficulty: "四年級", focus: "傳", prompt: "下列選項中的「傳」字，哪一個的讀音與其他三個不同？", answer: "① 名人「傳」記", options: ["① 名人「傳」記", "② 「傳」說故事", "③ 「傳」奇人物", "④ 「傳」言指出"], sentence: "請判斷「傳」在不同詞語中的讀音。", explain: "傳記的「傳」讀作ㄓㄨㄢˋ；傳說、傳奇、傳言的「傳」讀作ㄔㄨㄢˊ，所以答案是①。", reference: "參考 111 年四年級第 2 題" },
+{ mode: "讀音判讀", category: "讀音", difficulty: "四年級", focus: "同音字", prompt: "下列哪一組「 」中的國字，讀音是完全相同的？", answer: "① 「波」浪／「玻」璃", options: ["① 「波」浪／「玻」璃", "② 詐「騙」／傳「遍」", "③ 侵「襲」／鳥「籠」", "④ 一「副」對聯／幸「福」家庭"], sentence: "請找出前後兩個字讀音完全相同的一組。", explain: "「波」和「玻」都讀作ㄅㄛ；其他選項前後讀音不同，所以答案是①。", reference: "參考 113 年四年級第 1 題" },
+{ mode: "讀音判讀", category: "讀音", difficulty: "四年級", focus: "多音字", prompt: "下列哪一個選項「 」中的字，前後讀音是相同的？", answer: "④ 自不「量」力／彼此較「量」", options: ["① 「著」名畫作／穿「著」典雅", "② 經「濟」繁榮／人才「濟」濟", "③ 「轉」送犯人／各處「轉」轉", "④ 自不「量」力／彼此較「量」"], sentence: "請找出前後兩個「 」中字讀音相同的一組。", explain: "自不量力和彼此較量的「量」都讀作ㄌㄧㄤˋ；其他選項前後讀音不同，所以答案是④。", reference: "參考 113 年四年級第 4 題" },
+{ mode: "讀音判讀", category: "讀音", difficulty: "四年級", focus: "傳", prompt: "下列選項中的「傳」字，哪一個的讀音與其他三個不同？", answer: "③ 名人「傳」記", options: ["① 「傳」說故事", "② 「傳」奇人物", "③ 名人「傳」記", "④ 謠「傳」訊息"], sentence: "請判斷「傳」在不同詞語中的讀音。", explain: "傳記的「傳」讀作ㄓㄨㄢˋ；傳說、傳奇、謠傳的「傳」讀作ㄔㄨㄢˊ，所以答案是③。", reference: "參考 111 年四年級第 2 題" },
+{ mode: "讀音判讀", category: "讀音", difficulty: "四年級", focus: "同音字", prompt: "下列哪一組「 」中的字，前後讀音是「完全相同」的？", answer: "② 一「幅」圖畫／珍惜「福」氣", options: ["① 「推」銷產品／「堆」積如山", "② 一「幅」圖畫／珍惜「福」氣", "③ 「偏」遠地區／走「遍」天下", "④ 「刻」骨銘心／應「該」如此"], sentence: "請找出前後兩個字讀音完全相同的一組。", explain: "「幅」和「福」都讀作ㄈㄨˊ；其他選項前後讀音不同，所以答案是②。", reference: "參考 112 年四年級第 1 題" },
+{ mode: "讀音判讀", category: "讀音", difficulty: "四年級", focus: "不同音字", prompt: "下列哪一組「 」中的字，前後讀音是「不相同」的？", answer: "① 眼神「委」屈／花朵枯「萎」", options: ["① 眼神「委」屈／花朵枯「萎」", "② 出「版」書籍／黑「板」粉筆", "③ 「畢」業典禮／三頭六「臂」", "④ 值得「憐」惜／「鄰」居搬家"], sentence: "請找出前後兩個字讀音不相同的一組。", explain: "委屈的「委」讀作ㄨㄟˇ；枯萎的「萎」常讀作ㄨㄟ，前後讀音不同，所以答案是①。", reference: "參考 111 年四年級第 1 題" },
+{ mode: "讀音判讀", category: "讀音", difficulty: "四年級", focus: "著", prompt: "下列哪一個選項「 」中，「著」字的讀音與其他三個不同？", answer: "① 「著」名畫家", options: ["① 「著」名畫家", "② 穿「著」典雅", "③ 「著」手進行", "④ 棋高一「著」"], sentence: "請判斷「著」在不同詞語中的讀音。", explain: "「著」名的「著」讀作ㄓㄨˋ；穿著、著手、棋高一著的「著」都讀作ㄓㄨㄛˊ，所以答案是①。", reference: "參考 113 年四年級第 4 題" },
+{ mode: "讀音判讀", category: "讀音", difficulty: "四年級", focus: "和", prompt: "下列選項中的「和」字，哪一個的讀音與其他三個不同？", answer: "③ 身體暖「和」", options: ["① 「和」平相處", "② 陽光「和」煦", "③ 身體暖「和」", "④ 心平氣「和」"], sentence: "請判斷「和」在不同詞語中的讀音。", explain: "和平、和煦、心平氣和的「和」讀作ㄏㄜˊ；暖和的「和」常讀作輕聲ㄏㄨㄛ，所以答案是③。", reference: "參考 113 年五年級第 2 題，調整難度" },
+{ mode: "讀音判讀", category: "讀音", difficulty: "四年級", focus: "間", prompt: "下列哪一個選項「 」中，「間」字的讀音與其他三個不同？", answer: "③ 親友「間」隔", options: ["① 房「間」中間", "② 休息時「間」", "③ 親友「間」隔", "④ 彼此之「間」"], sentence: "請判斷「間」在不同詞語中的讀音。", explain: "房間、時間、之間的「間」讀作ㄐㄧㄢ；間隔的「間」讀作ㄐㄧㄢˋ，所以答案是③。", reference: "參考 112 年五年級第 2 題，調整難度" },
+{ mode: "讀音判讀", category: "讀音", difficulty: "四年級", focus: "同音字", prompt: "下列哪一組「 」中的字，前後讀音是「完全相同」的？", answer: "① 巨型「波」浪／「玻」璃擦拭", options: ["① 巨型「波」浪／「玻」璃擦拭", "② 詐「騙」手法／傳「遍」巷弄", "③ 侵「襲」陸地／鳥「籠」擺設", "④ 一「副」對聯／幸「福」家庭"], sentence: "請找出前後兩個字讀音完全相同的一組。", explain: "「波」和「玻」都讀作ㄅㄛ；其他選項前後讀音不同，所以答案是①。", reference: "參考 113 年四年級第 1 題" },
+{ mode: "讀音判讀", category: "讀音", difficulty: "四年級", focus: "重", prompt: "下列哪一個選項「 」中，「重」字的讀音與其他三個不同？", answer: "② 「重」複練習", options: ["① 體「重」增加", "② 「重」複練習", "③ 「重」要人物", "④ 舉「重」比賽"], sentence: "請判斷「重」在不同詞語中的讀音。", explain: "體重、重要、舉重的「重」讀作ㄓㄨㄥˋ；重複的「重」讀作ㄔㄨㄥˊ，所以答案是②。", reference: "根據四年級常用字設計" },
+{ mode: "讀音判讀", category: "讀音", difficulty: "五年級", focus: "興", prompt: "下列哪一個選項「 」中的「興」字，讀音與其他三個「不同」？", answer: "① 「興」奮不已", options: ["① 「興」奮不已", "② 盡「興」而歸", "③ 「興」致勃勃", "④ 高「興」萬分"], sentence: "請判斷「興」在不同詞語中的讀音。", explain: "興奮的「興」讀作ㄒㄧㄥ；盡興、興致、高興的「興」讀作ㄒㄧㄥˋ，所以答案是①。" },
+{ mode: "讀音判讀", category: "讀音", difficulty: "五年級", focus: "惡", prompt: "下列選項中的「惡」字，哪一個的讀音與其他三個「不同」？", answer: "③ 「惡」作劇", options: ["① 厭「惡」他人", "② 羞「惡」之心", "③ 「惡」作劇", "④ 可「惡」至極"], sentence: "請判斷「惡」在不同詞語中的讀音。", explain: "厭惡、羞惡、可惡的「惡」讀作ㄨˋ；惡作劇的「惡」讀作ㄜˋ，所以答案是③。" },
+{ mode: "讀音判讀", category: "讀音", difficulty: "五年級", focus: "間", prompt: "下列哪一個選項「 」中的「間」字，讀音與其他三個「不同」？", answer: "③ 互不「間」斷", options: ["① 房「間」寬敞", "② 時「間」充裕", "③ 互不「間」斷", "④ 彼此之「間」"], sentence: "請判斷「間」在不同詞語中的讀音。", explain: "房間、時間、之間的「間」讀作ㄐㄧㄢ；間斷的「間」讀作ㄐㄧㄢˋ，所以答案是③。" },
+{ mode: "讀音判讀", category: "讀音", difficulty: "五年級", focus: "多音字", prompt: "下列哪一組「 」中的字，前後讀音「完全相同」？", answer: "④ 「看」護病人／「看」診時間", options: ["① 交通「行」人／車「行」老闆", "② 身體暖「和」／性格溫「和」", "③ 景色「勝」地／美不「勝」收", "④ 「看」護病人／「看」診時間"], sentence: "請找出前後兩個字讀音完全相同的一組。", explain: "此題以「看護」作照護、看診都讀作ㄎㄢˋ為準，所以答案是④。其他選項前後讀音不同。" },
+{ mode: "讀音判讀", category: "讀音", difficulty: "五年級", focus: "樂", prompt: "下列選項中的「樂」字，哪一個的讀音是「ㄩㄝˋ」？", answer: "② 享受音「樂」", options: ["① 快「樂」天使", "② 享受音「樂」", "③ 伯「樂」識馬", "④ 自得其「樂」"], sentence: "請找出「樂」讀作ㄩㄝˋ的選項。", explain: "音樂的「樂」讀作ㄩㄝˋ；快樂、自得其樂讀ㄌㄜˋ，伯樂讀ㄌㄜˋ，所以答案是②。" },
+{ mode: "讀音判讀", category: "讀音", difficulty: "五年級", focus: "和", prompt: "下列哪一個選項「 」中的「和」字，讀音是「ㄏㄨㄛˋ」？", answer: "① 攪「和」均勻", options: ["① 攪「和」均勻", "② 風「和」日麗", "③ 心平氣「和」", "④ 暖「和」衣裳"], sentence: "請找出「和」讀作ㄏㄨㄛˋ的選項。", explain: "攪和的「和」可讀作ㄏㄨㄛˋ；風和日麗、心平氣和讀ㄏㄜˊ，暖和常讀輕聲ㄏㄨㄛ，所以答案是①。" },
+{ mode: "讀音判讀", category: "讀音", difficulty: "五年級", focus: "縱", prompt: "下列選項中的「縱」字，哪一個讀音與其他三個「不同」？", answer: "① 「縱」橫交錯", options: ["① 「縱」橫交錯", "② 「縱」虎歸山", "③ 放「縱」行為", "④ 操「縱」自如"], sentence: "請判斷「縱」在不同詞語中的讀音。", explain: "縱橫的「縱」讀作ㄗㄨㄥ；縱虎、放縱、操縱的「縱」讀作ㄗㄨㄥˋ，所以答案是①。" },
+{ mode: "讀音判讀", category: "讀音", difficulty: "五年級", focus: "供", prompt: "下列哪一個選項「 」中的「供」字，讀音為「ㄍㄨㄥ」？", answer: "① 「供」應物品", options: ["① 「供」應物品", "② 提供「供」詞", "③ 案上「供」品", "④ 招「供」實話"], sentence: "請找出「供」讀作ㄍㄨㄥ的選項。", explain: "供應的「供」讀作ㄍㄨㄥ；供詞、供品、招供的「供」讀作ㄍㄨㄥˋ，所以答案是①。" },
+{ mode: "讀音判讀", category: "讀音", difficulty: "五年級", focus: "同音字", prompt: "下列哪一組「 」中的國字，讀音「完全相同」？", answer: "③ 嚎「啕」大哭／「陶」醉其中", options: ["① 偵「辦」案件／爭「辯」是非", "② 走「遍」天下／詐「騙」集團", "③ 嚎「啕」大哭／「陶」醉其中", "④ 損兵「折」將／過河「拆」橋"], sentence: "請找出前後兩個字讀音完全相同的一組。", explain: "「啕」和「陶」都讀作ㄊㄠˊ，所以答案是③。" },
+{ mode: "讀音判讀", category: "讀音", difficulty: "五年級", focus: "湛／勘", prompt: "下列哪一個選項「 」中的國字，讀音與其他三個「不同」？", answer: "③ 「勘」查地形", options: ["① 技藝「湛」深", "② 精「湛」演出", "③ 「勘」查地形", "④ 「湛」藍天空"], sentence: "請判斷「湛／勘」在不同詞語中的讀音。", explain: "湛深、精湛、湛藍的「湛」讀作ㄓㄢˋ；勘查的「勘」讀作ㄎㄢ，所以答案是③。" },
+{ mode: "讀音判讀", category: "讀音", difficulty: "六年級", focus: "塞", prompt: "下列文句「 」中的字，哪一個讀音與其他三者「不同」？", answer: "④ 他在邊「塞」地帶從事研究工作多年。", options: ["① 排水孔要定期清理，以免淤「塞」積水。", "② 他在球賽中為了敷衍「塞」責，表現得很不理想。", "③ 老子曾說：「大巧若拙，大辯若訥，大盈若沖，其用不「塞」」。", "④ 他在邊「塞」地帶從事研究工作多年。"], sentence: "請判斷「塞」在不同文句中的讀音。", explain: "淤塞、塞責、其用不塞的「塞」多讀作ㄙㄜˋ；邊塞的「塞」讀作ㄙㄞˋ，所以答案是④。", reference: "參考 111 年六年級第 2 題" },
+{ mode: "讀音判讀", category: "讀音", difficulty: "六年級", focus: "載", prompt: "下列選項「 」中的「載」字，哪一個讀音與其他三者「不同」？", answer: "③ 港口旁的大貨船承「載」著滿滿的集裝箱準備出航。", options: ["① 雖然這是一次千「載」難逢的機會，但他卻放棄了。", "② 這本雜誌詳細記「載」了臺灣茶產業的發展史。", "③ 港口旁的大貨船承「載」著滿滿的集裝箱準備出航。", "④ 這篇關於歷史研究的三年五「載」報導，值得一看。"], sentence: "請判斷「載」在不同詞語中的讀音。", explain: "千載、記載、三年五載的「載」讀作ㄗㄞˇ；承載的「載」讀作ㄗㄞˋ，所以答案是③。", reference: "參考 112 年六年級第 2 題" },
+{ mode: "讀音判讀", category: "讀音", difficulty: "六年級", focus: "多音字", prompt: "下列哪一組「 」中的字，前後讀音「完全相同」？", answer: "③ 媽媽「和」雞蛋攪「和」均勻後，才將麵粉倒入。", options: ["① 這件工作「與」其推託，不如大家「與」會共同商量。", "② 「從」前他總能「從」容不迫地面對各種挑戰。", "③ 媽媽「和」雞蛋攪「和」均勻後，才將麵粉倒入。", "④ 姊姊「供」應資料，請證人提供正確的「供」詞。"], sentence: "請找出前後讀音完全相同的一組。", explain: "此題以兩個「和」都作攪拌、混合義，讀作ㄏㄨㄛˋ為準，所以答案是③。", reference: "參考 112 年五年級第 2 題及來源 1" },
+{ mode: "讀音判讀", category: "讀音", difficulty: "六年級", focus: "強", prompt: "下列選項「 」中的「強」字，哪一個讀音與其他三者「不同」？", answer: "② 他「強」詞奪理的態度，讓在場的所有人都感到不滿。", options: ["① 面對這種「強」烈電磁波的干擾，飛機導航可能會出錯。", "② 他「強」詞奪理的態度，讓在場的所有人都感到不滿。", "③ 我們必須「強」化防震意識，才能在災害中保護自己。", "④ 墨西哥灣流是海中一條方向明確且「強」勁的水流。"], sentence: "請判斷「強」在不同詞語中的讀音。", explain: "強烈、強化、強勁的「強」讀作ㄑㄧㄤˊ；強詞奪理的「強」讀作ㄑㄧㄤˇ，所以答案是②。", reference: "參考 112 年五年級第 14 題及 114 年四年級第 12 題" },
+{ mode: "讀音判讀", category: "讀音", difficulty: "六年級", focus: "處", prompt: "下列選項「 」中的「處」字，哪一個讀音與其他三者「不同」？", answer: "② 校長室位在辦公大樓二樓的那個轉「處」。", options: ["① 姊姊是一個處事認真、待人隨「和」的人。", "② 校長室位在辦公大樓二樓的那個轉「處」。", "③ 他對於同學的「惡」作劇行為，覺得難以「處」理。", "④ 我們應該要好好「處」罰那個破壞公物的惡霸。"], sentence: "請判斷「處」在不同詞語中的讀音。", explain: "轉處的「處」讀作ㄔㄨˋ；處理、處罰讀作ㄔㄨˇ。第①選項標示在「和」上，但文句含處事，建議後續複核題幹標示。", reference: "參考 111 年三年級第 2 題及五年級相關內容" },
+{ mode: "讀音判讀", category: "讀音", difficulty: "六年級", focus: "與", prompt: "下列哪一個選項「 」中的「與」字，讀音為「ㄩˋ」？", answer: "② 他參「與」了這項工程，非常期待完工。", options: ["① 「與」其在這裡抱怨，不如趕緊想辦法解決。", "② 他參「與」了這項工程，非常期待完工。", "③ 老師「與」班上同學過得好不好，我都很關心。", "④ 「與」虎謀皮是一件非常危險的事情。"], sentence: "請找出「與」讀作ㄩˋ的選項。", explain: "參與的「與」讀作ㄩˋ；其他選項多讀作ㄩˇ，所以答案是②。", reference: "參考來源 1 疑義表說明" },
+{ mode: "讀音判讀", category: "讀音", difficulty: "六年級", focus: "和", prompt: "下列哪一組「 」中的字，前後讀音「不相同」？", answer: "③ 攪「和」均勻／暖「和」衣裳", options: ["① 陽光「和」煦／性情溫「和」", "② 隨聲附「和」／曲高「和」寡", "③ 攪「和」均勻／暖「和」衣裳", "④ 心平氣「和」／互不傷「和」氣"], sentence: "請找出前後兩個「和」讀音不相同的一組。", explain: "攪和可讀ㄏㄨㄛˋ；暖和常讀輕聲ㄏㄨㄛ，前後不同，所以答案是③。", reference: "參考 113 年五年級第 2 題" },
+{ mode: "讀音判讀", category: "讀音", difficulty: "六年級", focus: "間", prompt: "下列選項中的「間」字，哪一個的讀音是「ㄐㄧㄢˋ」？", answer: "④ 互不「間」斷", options: ["① 休息時「間」", "② 房間中「間」", "③ 彼此之「間」", "④ 互不「間」斷"], sentence: "請找出「間」讀作ㄐㄧㄢˋ的選項。", explain: "間斷的「間」讀作ㄐㄧㄢˋ，所以答案是④。", reference: "參考 112 年五年級第 2 題" },
+{ mode: "讀音判讀", category: "讀音", difficulty: "六年級", focus: "多音字", prompt: "下列哪一個選項「 」中的字，前後讀音是「相同」的？", answer: "③ 「看」護病人／「看」診時間", options: ["① 景色「勝」地／「勝」任愉快", "② 音「樂」教室／快「樂」時光", "③ 「看」護病人／「看」診時間", "④ 交通「行」人／銀行「行」號"], sentence: "請找出前後讀音相同的一組。", explain: "看護、看診的「看」都讀作ㄎㄢˋ，所以答案是③。", reference: "參考 114 年五年級第 2 題" },
+{ mode: "讀音判讀", category: "讀音", difficulty: "六年級", focus: "注音", prompt: "下列選項「 」中的字，哪一個注音是「正確」的？", answer: "① 老師做事從不偏「頗」：ㄆㄛˇ", options: ["① 老師做事從不偏「頗」：ㄆㄛˇ", "② 把我嚇得手足無「措」：ㄓㄨㄛˊ", "③ 依「偎」在媽媽懷裡：ㄨㄟˋ", "④ 民「宿」總讓人有賓至如歸感：ㄕㄨˋ"], sentence: "請找出注音正確的一項。", explain: "偏頗的「頗」讀作ㄆㄛˇ；措讀ㄘㄨㄛˋ，偎讀ㄨㄟ，宿讀ㄙㄨˋ，所以答案是①。", reference: "參考 111 年六年級第 1 題" },
+{ mode: "讀音判讀", category: "讀音", difficulty: "六年級", focus: "咀剖券氛", prompt: "下列選項中的「咀、剖、券、氛」字，哪一個對應注音是「正確」的？", answer: "② 「剖」析詳盡：ㄆㄡˇ", options: ["① 細細「咀」嚼：ㄗㄨˇ", "② 「剖」析詳盡：ㄆㄡˇ", "③ 勝「券」在握：ㄐㄩㄢˋ", "④ 寧靜「氛」圍：ㄈㄣˋ"], sentence: "請找出注音正確的一項。", explain: "剖析的「剖」讀作ㄆㄡˇ；咀讀ㄐㄩˇ，券讀ㄑㄩㄢˋ，氛讀ㄈㄣ，所以答案是②。", reference: "參考 113 年六年級第 1、2 題" },
+{ mode: "讀音判讀", category: "讀音", difficulty: "六年級", focus: "毀", prompt: "下列哪一個選項中的字，讀音與「毀」相同？", answer: "③ 不「毀」一兵一卒", options: ["① 自慚形「穢」", "② 萬劫不「復」", "③ 不「毀」一兵一卒", "④ 莊嚴「宏」偉"], sentence: "請找出讀音與「毀」相同的選項。", explain: "毀讀ㄏㄨㄟˇ，第三選項同字同音，所以答案是③。", reference: "根據六年級常考讀音設計" },
+{ mode: "讀音判讀", category: "讀音", difficulty: "六年級", focus: "同音字", prompt: "下列哪一組「 」中的字，前後讀音「完全相同」？", answer: "③ 班門弄「斧」／破「釜」沉舟", options: ["① 小路蜿「蜒」／蜻「蜓」點水", "② 臉部腫「脹」／水「漲」船高", "③ 班門弄「斧」／破「釜」沉舟", "④ 自甘「墮」落／天花亂「墜」"], sentence: "請找出前後讀音完全相同的一組。", explain: "斧、釜都讀ㄈㄨˇ，所以答案是③。", reference: "參考 114 年五年級第 1 題" },
+{ mode: "讀音判讀", category: "讀音", difficulty: "六年級", focus: "湛／勘", prompt: "下列哪一個選項「 」中的字，讀音與其他三個「不同」？", answer: "④ 「勘」查地形", options: ["① 技術精「湛」", "② 技藝「湛」深", "③ 「湛」藍天空", "④ 「勘」查地形"], sentence: "請判斷「湛／勘」在不同詞語中的讀音。", explain: "湛讀ㄓㄢˋ；勘讀ㄎㄢ，所以答案是④。", reference: "參考 114 年五年級第 3 題設計" }
     ];
+
+    // The shared question-bank file is the primary source for both the game and review page.
+    const questions = window.QUESTION_BANK || legacyQuestions;
 
     let round = [];
     let index = 0;
@@ -780,12 +2297,47 @@
     let stars = 0;
     let streak = 0;
     let bestStreak = 0;
+    let correctCount = 0;
+    let attemptCount = 0;
+    let currentQuestion = null;
     let answered = false;
     let audioContext = null;
     let soundOn = true;
+    let selectedType = "混合";
+    let selectedDifficulty = "基礎";
 
     const $ = id => document.getElementById(id);
     const shuffle = list => [...list].sort(() => Math.random() - .5);
+
+    function getQuestionType(q) {
+      if (q.category === "多音字" || q.category === "讀音") return "多音字";
+      return "形近字";
+    }
+
+    function getDifficultyLevel(q) {
+      if (q.difficulty === "三年級" || q.difficulty === "基礎") return "基礎";
+      if (q.difficulty === "四年級" || q.difficulty === "進階") return "進階";
+      if (q.difficulty === "五年級" || q.difficulty === "六年級" || q.difficulty === "挑戰") return "挑戰";
+      return "進階";
+    }
+
+    function buildRound() {
+      const byType = selectedType === "混合"
+        ? questions
+        : questions.filter(q => getQuestionType(q) === selectedType);
+      const exact = byType.filter(q => getDifficultyLevel(q) === selectedDifficulty);
+      const source = exact.length >= 10 ? exact : byType;
+      return shuffle(source.length ? source : questions).slice(0, 10);
+    }
+
+    function updateSetupButtons() {
+      document.querySelectorAll("[data-type]").forEach(button => {
+        button.classList.toggle("active", button.dataset.type === selectedType);
+      });
+      document.querySelectorAll("[data-difficulty]").forEach(button => {
+        button.classList.toggle("active", button.dataset.difficulty === selectedDifficulty);
+      });
+    }
 
     function initAudio() {
       if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -829,12 +2381,17 @@
     }
 
     function startGame() {
-      round = shuffle(questions).slice(0, 10);
+      $("gameArea").classList.remove("playing");
+      updateSetupButtons();
+      round = buildRound();
       index = 0;
       score = 0;
       stars = 0;
       streak = 0;
       bestStreak = 0;
+      correctCount = 0;
+      attemptCount = 0;
+      $("combo").dataset.bonus = "";
       $("resultPanel").classList.add("hidden");
       $("gameArea").classList.remove("hidden");
       updateHud();
@@ -843,10 +2400,13 @@
 
     function setReady() {
       answered = true;
+      $("questionPanel").classList.remove("active");
+      $("cabinet").classList.remove("drawing");
+      $("cabinet").classList.remove("dispensed");
       $("modeTag").textContent = "準備抽題";
       $("countTag").textContent = `第 ${index + 1} / 10 題`;
-      $("prompt").textContent = "按下扭蛋按鈕，抽出這一題。";
-      $("sentence").innerHTML = "看清楚形近字，再依句意選答案。";
+      $("prompt").textContent = `目前題庫：${selectedType} / ${selectedDifficulty}`;
+      $("sentence").innerHTML = "選好題型與難度後，按下扭蛋按鈕抽出題目。";
       $("answers").innerHTML = "";
       $("feedback").classList.add("hidden");
       $("nextButton").classList.add("hidden");
@@ -856,32 +2416,44 @@
     function drawQuestion() {
       initAudio();
       playSound("draw");
+      const q = round[index];
       const cabinet = $("cabinet");
-      const capsule = $("dropCapsule");
-      cabinet.classList.remove("shake");
-      capsule.classList.remove("active");
-      void capsule.offsetWidth;
-      cabinet.classList.add("shake");
-      capsule.classList.add("active");
+      $("questionPanel").classList.remove("active");
+      cabinet.classList.remove("drawing");
+      cabinet.classList.remove("dispensed");
+      void cabinet.offsetWidth;
+      cabinet.classList.add("drawing");
       $("drawButton").disabled = true;
-      setTimeout(renderQuestion, 760);
+      $("modeTag").textContent = "扭蛋轉動中";
+      $("prompt").textContent = "扭蛋正在旋轉，看看會掉出哪一顆題目球。";
+      $("sentence").innerHTML = "球落到出口後，題目就會出現。";
+      $("answers").innerHTML = "";
+      $("feedback").classList.add("hidden");
+      $("nextButton").classList.add("hidden");
+      setTimeout(renderQuestion, 1600);
     }
 
     function renderQuestion() {
       const q = round[index];
+      currentQuestion = q;
+      $("gameArea").classList.add("playing");
+      $("cabinet").classList.remove("drawing");
+      $("cabinet").classList.add("dispensed");
+      $("questionPanel").classList.add("active");
       answered = false;
       $("modeTag").textContent = q.mode;
       $("countTag").textContent = `第 ${index + 1} / 10 題`;
-      $("prompt").textContent = "依照句子的意思，選出最適合的字。";
-      $("sentence").innerHTML = q.sentence.replace("＿", '<span class="blank">?</span>');
+      $("prompt").textContent = q.prompt || "依照句子的意思，選出最適合的字。";
+      $("sentence").innerHTML = q.sentence.includes("＿")
+        ? q.sentence.replace("＿", '<span class="blank">?</span>')
+        : q.sentence;
       $("answers").innerHTML = "";
       $("feedback").classList.add("hidden");
       $("nextButton").classList.add("hidden");
 
-      shuffle(q.options).forEach((option, optionIndex) => {
+      q.options.forEach((option, optionIndex) => {
         const button = document.createElement("button");
         button.className = "answer";
-        button.dataset.key = ["A", "B", "C", "D"][optionIndex];
         button.textContent = option;
         button.onclick = () => chooseAnswer(button, option, q);
         $("answers").appendChild(button);
@@ -891,16 +2463,21 @@
     function chooseAnswer(button, option, q) {
       if (answered) return;
       answered = true;
-      const accepted = q.displayAnswer || q.answer;
-      const correct = option === accepted;
+      const acceptedList = q.acceptedAnswers || [q.displayAnswer || q.answer];
+      const accepted = acceptedList.join("、");
+      const correct = acceptedList.includes(option);
+      attemptCount += 1;
+      if (correct) correctCount += 1;
       document.querySelectorAll(".answer").forEach(item => {
         item.disabled = true;
-        if (item.textContent === accepted) item.classList.add("correct");
+        if (acceptedList.includes(item.textContent)) item.classList.add("correct");
       });
 
       if (correct) {
-        score += 10;
         streak += 1;
+        const comboBonus = Math.max(0, streak - 1) * 2;
+        score += 10 + comboBonus;
+        $("combo").dataset.bonus = comboBonus ? `+${comboBonus}` : "";
         bestStreak = Math.max(bestStreak, streak);
         if (streak % 3 === 0) stars += 1;
         button.classList.add("correct");
@@ -908,6 +2485,7 @@
         $("feedback").innerHTML = `答對了！<strong>${accepted}</strong> 用在這裡最合適。${q.explain}`;
       } else {
         streak = 0;
+        $("combo").dataset.bonus = "";
         button.classList.add("wrong");
         playSound("wrong");
         $("feedback").innerHTML = `再想想看。這題答案是 <strong>${accepted}</strong>。${q.explain}`;
@@ -923,6 +2501,7 @@
       $("score").textContent = score;
       $("stars").textContent = stars;
       $("combo").textContent = streak;
+      $("accuracy").textContent = `${correctCount}/${round.length || 10}`;
       $("progressBar").style.width = `${index / 10 * 100}%`;
     }
 
@@ -933,7 +2512,7 @@
       }
       index += 1;
       updateHud();
-      setReady();
+      drawQuestion();
     }
 
     function finishGame() {
@@ -952,7 +2531,7 @@
         $("resultTitle").textContent = "形近字滿分高手";
         $("resultText").textContent = "太漂亮了！你能在句子裡分辨細節，已經很像國語小偵探。";
       } else if (score >= 80) {
-        $("resultTitle").textContent = "通過高年級挑戰";
+        $("resultTitle").textContent = "通過挑戰";
         $("resultText").textContent = "表現穩定，接下來可以增加找錯別字或限時題。";
       } else {
         $("resultTitle").textContent = "再抽幾顆就更熟";
@@ -961,9 +2540,84 @@
     }
 
     $("drawButton").onclick = drawQuestion;
+    $("cabinet").onclick = event => {
+      if (event.target.closest("button, a") || $("drawButton").disabled) return;
+      drawQuestion();
+    };
+    document.querySelector(".start-row").onclick = event => event.stopPropagation();
+    $("cabinet").onclick = null;
+    document.querySelector(".next-row").append($("restartButton"));
+
+    const statusBar = document.querySelector(".hud");
+    statusBar.append(document.querySelector(".tag-row"));
+    const reportButton = document.createElement("button");
+    reportButton.type = "button";
+    reportButton.className = "report-button";
+    reportButton.textContent = "錯題回報";
+    statusBar.append(reportButton);
+
+    const reportModal = document.createElement("div");
+    reportModal.className = "report-modal";
+    reportModal.innerHTML = `
+      <div class="report-dialog" role="dialog" aria-modal="true" aria-labelledby="reportTitle">
+        <h2 id="reportTitle">錯題回報</h2>
+        <p class="report-question" id="reportQuestion"></p>
+        <textarea id="reportNote" placeholder="請寫下你發現的問題，例如：正確答案應為哪一項？"></textarea>
+        <div class="report-actions">
+          <button class="report-cancel" type="button">取消</button>
+          <button class="report-submit" type="button">儲存並複製回報</button>
+        </div>
+      </div>`;
+    document.body.append(reportModal);
+
+    function closeReport() {
+      reportModal.classList.remove("open");
+    }
+
+    function reportText() {
+      const q = currentQuestion;
+      return [
+        "國語形近字能量戰錯題回報",
+        `題目：${q.prompt}`,
+        `內容：${q.sentence}`,
+        `選項：${q.options.join(" / ")}`,
+        `目前答案：${q.answer}`,
+        `回報說明：${$("reportNote").value.trim() || "未填寫"}`
+      ].join("\n");
+    }
+
+    reportButton.onclick = () => {
+      if (!currentQuestion) return;
+      $("reportQuestion").textContent = `${currentQuestion.prompt} ${currentQuestion.sentence}`;
+      $("reportNote").value = "";
+      reportModal.classList.add("open");
+    };
+    reportModal.querySelector(".report-cancel").onclick = closeReport;
+    reportModal.querySelector(".report-submit").onclick = async () => {
+      const report = reportText();
+      const reports = JSON.parse(localStorage.getItem("similarCharactersGachaReports") || "[]");
+      reports.push({ report, createdAt: new Date().toISOString() });
+      localStorage.setItem("similarCharactersGachaReports", JSON.stringify(reports));
+      try { await navigator.clipboard.writeText(report); } catch { /* Copy is unavailable in some local-file browsers. */ }
+      closeReport();
+      alert("錯題回報已儲存，回報內容也已嘗試複製。");
+    };
+
     $("nextButton").onclick = nextQuestion;
     $("restartButton").onclick = startGame;
     $("againButton").onclick = startGame;
+    document.querySelectorAll("[data-type]").forEach(button => {
+      button.onclick = () => {
+        selectedType = button.dataset.type;
+        startGame();
+      };
+    });
+    document.querySelectorAll("[data-difficulty]").forEach(button => {
+      button.onclick = () => {
+        selectedDifficulty = button.dataset.difficulty;
+        startGame();
+      };
+    });
     $("soundButton").onclick = () => {
       initAudio();
       soundOn = !soundOn;
